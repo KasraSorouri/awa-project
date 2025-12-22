@@ -1,0 +1,16 @@
+{
+  "name": "awa-project",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Kasra Sorouri",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev:client": "cd awa-client && npm run dev",
+    "dev:server": "cd awa-server && npm run dev",
+    "dev:all": "npm run dev:client & npm run dev:server",
+    "build": "cd awa-client && npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
+}
