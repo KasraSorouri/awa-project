@@ -1,7 +1,6 @@
 import { DataTypes } from 'sequelize';
 
-module.exports = {
-  up: async (queryInterface: any) => {
+export const up = async ({ context: queryInterface }: any) => {
     await queryInterface.createTable('users', {
       id: {
         type: DataTypes.INTEGER,
@@ -13,37 +12,36 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
+      password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       email: {
         type: DataTypes.STRING,
         allowNull: true,
         unique: true,
       },
-      password: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
-      firstName: {
+      first_name: {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      lastName: {
+      last_name: {
         type: DataTypes.STRING,
         allowNull: true,
       },
-      createdAt: {
+      created_at: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
       },
-      updatedAt: {
+      updated_at: {
         type: DataTypes.DATE,
         allowNull: false,
         defaultValue: DataTypes.NOW,
       },
     });
-  },
+  };
 
-  down: async (queryInterface: any) => {
+export const down = async ({ context: queryInterface }: any) => {
     await queryInterface.dropTable('users');
-  },
-};
+  };

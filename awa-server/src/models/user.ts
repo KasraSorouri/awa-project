@@ -63,7 +63,7 @@ User.init(
     },
     updatedAt: {
       type: DataTypes.DATE,
-      allowNull: false,
+      defaultValue: Date.now(),
     },
   },
   {

@@ -7,7 +7,7 @@ if (!DATABASE_URL) {
 }
 
 const sequelize : Sequelize = new Sequelize(DATABASE_URL, {
-  logging: true,
+  logging: console.log,
 });
 
 const migrationConf = {
@@ -20,11 +20,17 @@ const migrationConf = {
 };
 
 const runMigrations = async () => {
-  const migrator = new Umzug(migrationConf);
-  const migrations = await migrator.up();
-  console.log('Migrations up to date', {
-    files: migrations.map((mig) => mig.name),
-  });
+  try {
+    const migrator = new Umzug(migrationConf);
+    const migrations = await migrator.up();
+    console.log('Migrations up to date', {
+      files: migrations.map((mig) => mig.name),
+    });
+  } catch (error) {
+    console.error('Migration failed!');
+    console.error('Error running migrations:', error);
+    process.exit(1);
+  }
 };
 
 const rollbackMigration = async () => {
