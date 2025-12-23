@@ -15,11 +15,17 @@ const validate =  (validations: ValidationChain[]) => {
 };
 
 const registerValidationRules : ValidationChain[] = [
-    body('username').trim().escape().notEmpty().isLength({ min: 3, max: 25 }).withMessage('Name is required, length should be between 3 and 25'),
+    body('username').trim().escape().notEmpty().isLength({ min: 3, max: 25 }).withMessage('Username is required, length should be between 3 and 25'),
     body('password').trim().escape().isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
-    body('email').isEmail().optional().withMessage('Invalid email format'),
+    body('email').trim().escape().isEmail().optional().withMessage('Invalid email format'),
     body('firstName').optional(),
     body('lastName').optional(),
   ];
 
+const loginValidationRules : ValidationChain[] = [
+    body('username').trim().escape().notEmpty().withMessage('Username is required.'),
+    body('password').trim().escape().notEmpty().withMessage('Password is required'),
+ ];
+
 export const validateRegisterData = validate(registerValidationRules);
+export const validateLoginData = validate(loginValidationRules);

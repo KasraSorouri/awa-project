@@ -20,14 +20,14 @@ interface IUserCreationAttributes extends Optional<IUserAttributes, 'id' | 'crea
 };
 
 class User extends Model<IUserAttributes, IUserCreationAttributes> implements IUserAttributes {
-  public id!: number;
-  public username!: string;
-  public password!: string;
-  public firstName!: string;
-  public lastName!: string;
-  public email!: string;
-  public createdAt!: Date;
-  public updatedAt!: Date;
+  declare id: number;
+  declare username: string;
+  declare password: string;
+  declare firstName: string;
+  declare lastName: string;
+  declare email: string;
+  declare createdAt: Date;
+  declare updatedAt: Date;
 }
 
 User.init(
