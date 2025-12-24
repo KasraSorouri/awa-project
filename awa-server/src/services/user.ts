@@ -73,7 +73,7 @@ const loginUser = async (userData: IUser) => {
     };
 
     const token = Jwt.sign(payload, SECRET, { expiresIn: '1h' });
-    return token;
+    return {token};
 
   } catch (error) {
     if (error instanceof Error) {
@@ -84,12 +84,31 @@ const loginUser = async (userData: IUser) => {
   }
 }
 
+// Get User Info
+const getUser = async (userId: number) => {
+
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    console.error(error);
+    throw new Error('Error getting user info');
+  }
+}
+
 
 
 
 export default {
   createUser,
-  loginUser
+  loginUser,
+  getUser
 }
 
 
