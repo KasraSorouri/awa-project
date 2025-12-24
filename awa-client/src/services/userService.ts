@@ -8,11 +8,8 @@ const getUser = async (token: string) => {
     headers: { Authorization: `Bearer ${token}` }
   }
   try {
-
     const response = await axios.get(`${api_url}/users/user`,config);
-
     if (response.status === 200) {
-      console.log('service ',response.data);
       return response.data;
     }
 

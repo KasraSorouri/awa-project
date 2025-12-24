@@ -8,11 +8,8 @@ interface IUserData {
 }
 const loginService = async (userData: IUserData) => {
   try {
-
     const response = await axios.post(`${api_url}/users/login`, userData);
-
     if (response.status === 200) {
-      console.log('service ',response.data);
       localStorage.setItem('awa-token', response.data.token);
       return response.data;
     }

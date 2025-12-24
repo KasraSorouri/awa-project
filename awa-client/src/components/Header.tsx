@@ -12,25 +12,24 @@ import Menu from '@mui/material/Menu';
 //import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import MailIcon from '@mui/icons-material/Mail';
-import NotificationsIcon from '@mui/icons-material/Notifications';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { Button } from '@mui/material';
 
+import { useNavigate } from 'react-router-dom';
 
 interface IUserData {
   user_id: number,
   username: string,
-  firstName: string,
-  lastName: string,
-  email: string,
+  firstName?: string,
+  lastName?: string,
+  email?: string,
 }
 
 type THeaderProps = {
   user: IUserData | null
 }
-
-
 
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -73,9 +72,17 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 const Header = ({user}:THeaderProps) => {
-  console.log('user :', user)
+
+  const navigate = useNavigate()
+
+  const showUser = user ? 
+    (user.firstName && user.lastName) ? (user.firstName + ' ' + user.lastName) :
+    (user.firstName) ? (user.firstName) :
+    (user.lastName) ? (user.lastName) :
+    user.username : null;
+
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = 
     React.useState<null | HTMLElement>(null);
 
   const isMenuOpen = Boolean(anchorEl);
@@ -144,7 +151,7 @@ const Header = ({user}:THeaderProps) => {
       <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
           <Badge badgeContent={4} color="error">
-            <MailIcon />
+            <InventoryIcon />
           </Badge>
         </IconButton>
         <p>My Files</p>
@@ -156,7 +163,7 @@ const Header = ({user}:THeaderProps) => {
           color="inherit"
         >
           <Badge badgeContent={17} color="error">
-            <NotificationsIcon />
+            <FolderSharedIcon />
           </Badge>
         </IconButton>
         <p>Shared Files</p>
@@ -213,7 +220,7 @@ const Header = ({user}:THeaderProps) => {
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton size="large" aria-label="show 4 new mails" color="inherit">
               <Badge badgeContent={4} color="error">
-                <MailIcon />
+                <InventoryIcon />
               </Badge>
             </IconButton>
             <IconButton
@@ -222,8 +229,11 @@ const Header = ({user}:THeaderProps) => {
               color="inherit"
             >
               <Badge badgeContent={17} color="error">
-                <NotificationsIcon />
+                <FolderSharedIcon />
               </Badge>
+              <Typography variant='h5' sx={{ marginLeft: '2rem' }}>
+                {showUser}
+              </Typography>
             </IconButton>
             <IconButton
               size="large"
@@ -236,12 +246,15 @@ const Header = ({user}:THeaderProps) => {
             >
               <AccountCircle />
             </IconButton>
-            <Button variant='contained' sx={{ alignItems: 'end'}} onClick={handleLogout} >Logout</Button>
+            <Button variant='contained' sx={{ margin: '0 1rem' }} onClick={handleLogout} >Logout</Button>
           </Box>
           </> :
           <>
-          <Button variant='contained' sx={{ alignItems: 'end'}} >Login</Button>
-          <Button variant='contained' sx={{ alignItems: 'end'}} >Sign Up</Button>
+          <Box sx={{ flexGrow: 1 }} />
+          <Box sx={{ display: { xs: 'none', md: 'flex' } }} />
+          <Button variant='contained' sx={{ margin: '0 1rem' }} onClick={() => navigate('/login')} >Login</Button>
+          <Button variant='contained' sx={{}} onClick={() => navigate('/register')} >Sign Up</Button>
+          
           </>
           }
           { user &&

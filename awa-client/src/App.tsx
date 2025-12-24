@@ -9,6 +9,7 @@ import Header from './components/Header'
 import { useToken } from './services/useToken'
 
 import userService from './services/userService'
+import UserPage from './components/UserPage'
 
 interface IUserData {
   user_id: number,
@@ -22,9 +23,9 @@ interface IUserData {
 
 function App() {
   const [user, setUser] = useState<IUserData | null>(null)
-  console.log(' app user ', user)
   const {token} = useToken()
-
+  console.log('app user : ', user)
+  
   useEffect(() => {
     const getUserInfo = async(token: string) => {
       try{
@@ -39,16 +40,16 @@ function App() {
     if (token) {
       getUserInfo(token)
     }
-  }, [token])
+  }, [])
   
   return (
     <>
-    <Header user={user}/>
       <BrowserRouter>
+        <Header user={user}/>
         <Routes>
-          <Route path='/' element={<h1>Home</h1>}/>
-          <Route path='/login' element={<Login />}/>
-          <Route path='/register' element={<Register />}/>
+          <Route path='/' element={<UserPage/> } />
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
         </Routes>
     
     </BrowserRouter>

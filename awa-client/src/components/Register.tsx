@@ -22,9 +22,7 @@ const Register = () => {
   }
   const [formData, setFormData] = useState<IUserData>(initFormData)
 
-  console.log(' formData ', formData)
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('name : ',e.target,  'value : ', e.target.value)
     setFormData({
       ...formData,
       [e.target.name]: e.target.value

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { Box, Button, FormControl, TextField, Typography } from '@mui/material'
 import loginService from '../services/loginService'
@@ -11,15 +11,15 @@ interface IUserData {
 
 const Login = () => {
 
+  const navigate = useNavigate()
+
   const initFormData : IUserData = {
     username: '',
     password: '',
   }
   const [formData, setFormData] = useState<IUserData>(initFormData)
 
-  console.log(' formData ', formData)
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('name : ',e.target,  'value : ', e.target.value)
     setFormData({
       ...formData,
       [e.target.name]: e.target.value
@@ -31,8 +31,9 @@ const Login = () => {
     const result = await loginService(formData)
     if (result) {
       setFormData(initFormData)
+      navigate('/')
+      window.location.reload()
     }
-    console.log(result)
   }
 
 

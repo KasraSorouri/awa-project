@@ -5,6 +5,10 @@ import { SECRET } from '../configs/config';
 import { User } from '../models';
 import { IUser } from '../types/userTypes';
 
+
+const userQuery = {
+  attributes: ['id', 'username', 'firstName', 'lastName', 'email'],
+}
 // Register a user
 const createUser  = async( userData: IUser) => {
   const { username, password, email, firstName, lastName } = userData;
@@ -88,7 +92,7 @@ const loginUser = async (userData: IUser) => {
 const getUser = async (userId: number) => {
 
   try {
-    const user = await User.findByPk(userId);
+    const user = await User.findByPk(userId,userQuery);
     if (!user) {
       throw new Error('User not found');
     }
