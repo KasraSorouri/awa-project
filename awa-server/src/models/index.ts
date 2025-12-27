@@ -3,8 +3,8 @@ import Folder from './folder'
 import File from './file'
 import UserFiles from './userFiles'
 
-User.belongsToMany(File, { through: UserFiles, foreignKey: 'user' });
-File.belongsToMany(User, { through: UserFiles, foreignKey: 'file' });
+User.belongsToMany(File, { through: UserFiles, foreignKey: 'userId' });
+File.belongsToMany(User, { through: UserFiles, foreignKey: 'fileId' });
 Folder.hasMany(File, { foreignKey: 'folderId', as: 'files' });
 File.belongsTo(Folder, { foreignKey: 'folderId', as: 'folder' });
 Folder.belongsTo(Folder, { foreignKey: 'parentFolder', as: 'parent' });

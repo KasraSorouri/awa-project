@@ -28,6 +28,10 @@ export const up = async ({ context: queryInterface }: any) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      editable: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+      },
       deleted: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,

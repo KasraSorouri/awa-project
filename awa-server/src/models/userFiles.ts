@@ -4,10 +4,10 @@ import { sequelize } from '../configs/database';
 
 interface IUserFileAttributes {
   id: number;
-  file: number;
-  user: number;
+  fileId: number;
+  userId: number;
   role: string;
-  activated: boolean;
+  activated?: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -20,8 +20,8 @@ interface IUserFileCreationAttributes extends Optional<IUserFileAttributes, 'id'
 
 class UserFiles extends Model<IUserFileAttributes, IUserFileCreationAttributes> implements IUserFileAttributes {
   declare id: number;
-  declare file: number;
-  declare user: number;
+  declare fileId: number;
+  declare userId: number;
   declare role: string;
   declare activated: boolean;
   declare createdAt: Date;
@@ -35,7 +35,7 @@ UserFiles.init(
       autoIncrement: true,
       primaryKey: true,
     },
-    file: {
+    fileId: {
       type: DataTypes.NUMBER,
       references: {
         model: 'file',
@@ -43,7 +43,7 @@ UserFiles.init(
       },
       allowNull: false,
     },
-    user: {
+    userId: {
       type: DataTypes.NUMBER,
       references: {
         model: 'user',

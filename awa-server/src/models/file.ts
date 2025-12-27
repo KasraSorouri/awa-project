@@ -8,14 +8,17 @@ interface IFileAttributes {
   folderId: number;
   fileType: string;
   address: string;
+  editable: boolean;
   deleted: boolean;
   activated: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
 
-interface IFileCreationAttributes extends Optional<IFileAttributes, 'id' | 'createdAt' | 'updatedAt'> {
+interface IFileCreationAttributes extends Optional<IFileAttributes, 'id' | 'createdAt' | 'updatedAt' | 'activated' | 'deleted'> {
   id?: number;
+  activated?: boolean;
+  deleted?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 };
@@ -26,6 +29,7 @@ class File extends Model<IFileAttributes, IFileCreationAttributes> implements IF
   declare folderId: number;
   declare fileType: string;
   declare address: string;
+  declare editable: boolean;
   declare deleted: boolean;
   declare activated: boolean;
   declare createdAt: Date;
@@ -58,6 +62,10 @@ File.init(
     },
     address: {
       type: DataTypes.STRING,
+      allowNull: false,
+    },
+    editable: {
+      type: DataTypes.BOOLEAN,
       allowNull: false,
     },
     deleted: {

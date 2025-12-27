@@ -1,7 +1,6 @@
 
 import { IFolder } from '../types/folderTypes';
-import { Folder } from '../models';
-import { User } from '../models';
+import { Folder, User, File } from '../models';
 
 
 const folderQuery = {
@@ -20,7 +19,12 @@ const folderQuery = {
       model: User,
       as: 'user',
       attributes: ['id', 'username'],
-    }
+    },
+    {
+      model: File,
+      as: 'files',
+      attributes: ['id', 'fileName'],
+    },
   ],
   attributes: ['id', 'folderName'],
 }
@@ -31,12 +35,14 @@ interface IUserFolders {
   userId: number;
   parent: IUserFolders | null;
   subFolders: IUserFolders[];
+  files: File[];
 }
 
 interface IFolderTree {
   id: number;
   folderName: string;
   subFolders: IFolderTree[];
+  files: File[];
 }
 
 
@@ -48,7 +54,8 @@ const makeFolderTree = (folders: IUserFolders[]) => {
         folderMap.set(folder.id, {
             id: folder.id,
             folderName: folder.folderName,
-            subFolders: [] 
+            subFolders: [],
+            files: folder.files
         });
     });
 
@@ -106,6 +113,7 @@ export const getFolders = async (userId: number) => {
   try {
     const folders = await Folder.findAll({ where: { 'userId' : userId }, ...folderQuery });
 
+    console.log('file * folder ', folders)
     const plainFolders = folders.map(folder => folder.get({ plain: true })) as unknown as IUserFolders[]
     const folderTree = makeFolderTree(plainFolders);
     return folderTree;

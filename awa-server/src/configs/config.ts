@@ -3,10 +3,12 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const PORT : string  = process.env.PORT || '3000';
+const PORT: string  = process.env.PORT || '3000';
 
-const DATABASE_URL : string = process.env.DATABASE_URL || '';
+const DATABASE_URL: string = process.env.DATABASE_URL || '';
 
-const SECRET : string = process.env.SECRET || 'secret*secret*secret';
+const SECRET: string = process.env.SECRET || 'secret*secret*secret';
 
-export { PORT, DATABASE_URL, SECRET };
+const STORAGE_DIR: string = process.env.STORAGE_DIR || 'storage';
+
+export { PORT, DATABASE_URL, SECRET, STORAGE_DIR };
