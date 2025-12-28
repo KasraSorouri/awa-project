@@ -20,7 +20,6 @@ interface IUserData {
 }
 
 
-
 function App() {
   const [user, setUser] = useState<IUserData | null>(null)
   const {token} = useToken()
@@ -41,13 +40,13 @@ function App() {
       getUserInfo(token)
     }
   }, [])
-  
+  console.log(' token : ', token)
   return (
     <>
       <BrowserRouter>
         <Header user={user}/>
         <Routes>
-          <Route path='/' element={<UserPage/> } />
+          <Route path='/' element={token ? <UserPage token={token} /> : <Login /> } />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
         </Routes>
