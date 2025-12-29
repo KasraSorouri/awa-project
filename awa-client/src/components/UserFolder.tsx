@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Tooltip, Typography } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Tooltip, Typography } from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
@@ -10,30 +10,13 @@ import ShowFolder from './ShowFolder';
 import folderService from '../services/folderService';
 import fileService from '../services/fileService';
 
+import { IFolder } from '../types/folderTypes';
+
 
 interface FolderProps {
-    token: string;
+    folders: IFolder[];
 }
 
-interface IFile {
-  id: number,
-  fileName: string,
-  folderId: number,
-  content: string,
-  deleted: boolean,
-  activated: boolean,
-  currentUser: number,
-  createdAt: string,
-  updatedAt: string
-}
-
-interface IFolder {
-  id: number,
-  folderName: string,
-  userId: number,
-  subFolders: IFolder[],
-  files: IFile[],
-}
 
 interface INewFolderData {
   folderName: string,
@@ -51,36 +34,17 @@ interface IUploadFileData extends INewFileData {
 }
 
 
-const UserFolder = ({token}: FolderProps) => {
-  const [folders, setFolders] = useState<IFolder[]>([])
+const UserFolder = ({folders}: FolderProps) => {
   const [activeFolder, setActiveFolder] = useState<number | null>(null)
+
   const [openAddFolder, setOpenAddFolder] = useState<boolean>(false)
   const [openAddFile, setOpenAddFile] = useState<boolean>(false)
   const [openUploadFile, setOpenUploadFile] = useState<boolean>(false)
 
-
   const [newFolder, setNewFolder] = useState<string>('')
   const [newFile, setNewFile] = useState<string>('')
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
-
-  useEffect(() => {
-    const getFolders = async() => {
-      try{
-        const result = await folderService.getUserFolders()
-        if (result) {
-          setFolders(result)
-        }
-      } catch (error) {
-        console.log(error)
-      }
-    }
-    if (token) {
-      getFolders()
-    }
-   },[token])
-
-  console.log('folders : ', folders)
-  console.log('activefolder : ', activeFolder)
+  const [fileType, setFileType] = useState<string>('')
 
   const handleAddFolder = () => {
     setOpenAddFolder(true)
@@ -102,8 +66,8 @@ const UserFolder = ({token}: FolderProps) => {
       parentFolder: activeFolder?.toString()
     }
     try{
-      const result = await folderService.createFolder(newFolderData)
-      setFolders(result)
+      await folderService.createFolder(newFolderData)
+      setNewFolder('')
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message)
@@ -118,12 +82,12 @@ const UserFolder = ({token}: FolderProps) => {
     setOpenAddFile(false)
     const newFileData: INewFileData = {
       fileName: newFile,
-      folderId: activeFolder as number,
+      folderId: activeFolder,
       fileType: 'document'
     }
     try{
-      const result = await fileService.createFile(newFileData)
-      console.log('** file created ' , result)
+      await fileService.createFile(newFileData)
+      setNewFile('')
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message)
@@ -145,8 +109,9 @@ const UserFolder = ({token}: FolderProps) => {
       file: uploadedFile,
     }
     try{
-      const result = await fileService.uploadFile(newFileData)
-      console.log('** file created ', result)
+      await fileService.uploadFile(newFileData)
+      setUploadedFile(null)
+      setNewFile('')
     } catch (error) {
       if (error instanceof Error) {
         console.log(error.message)
@@ -249,7 +214,7 @@ const UserFolder = ({token}: FolderProps) => {
               label="File"
               type='file'
               fullWidth
-              variant='outlined'
+              variant='standard'
               onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
                 if (event.target.files) {
                   setUploadedFile(event.target.files[0]);
@@ -267,6 +232,19 @@ const UserFolder = ({token}: FolderProps) => {
               value={newFile}
               onChange={(e)=>setNewFile(e.target.value)}
             />
+            <FormControl fullWidth sx={{ marginTop: '5px'}}>
+              <InputLabel id='fileType'>File Type</InputLabel>
+              <Select
+                labelId='fileTypelable'
+                id='fileTypelable'
+                value={fileType}
+                label='File Type'
+                onChange={(e) => setFileType(e.target.value)}
+              >
+                <MenuItem value={'document'}>Document</MenuItem>
+                <MenuItem value={'image'}>Image</MenuItem>
+              </Select>
+            </FormControl>
           </form>
         </DialogContent>
         <DialogActions>

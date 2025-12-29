@@ -2,15 +2,17 @@
 
 import UserFolder from './UserFolder';
 
+import { IFolder } from '../types/folderTypes';
+
 
 interface IUserPageProps {
-    token: string;
+    folders: IFolder[];
 }
-const UserPage = ({token}: IUserPageProps) => {
+const UserPage = ({folders}: IUserPageProps) => {
   return (
     <>
     <h1>UserPage</h1>
-    {token &&<UserFolder token={token} />}
+    <UserFolder folders={folders} />
     </>
   )
 }

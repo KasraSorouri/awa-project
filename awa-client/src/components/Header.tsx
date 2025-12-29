@@ -1,4 +1,6 @@
 import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -12,12 +14,16 @@ import Menu from '@mui/material/Menu';
 //import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import InventoryIcon from '@mui/icons-material/Inventory';
-import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { Button } from '@mui/material';
 
-import { useNavigate } from 'react-router-dom';
+import FolderIcon from '@mui/icons-material/Folder';
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import InventoryIcon from '@mui/icons-material/Inventory';
+
+
+
+import { IFolder } from '../types/folderTypes';
 
 interface IUserData {
   user_id: number,
@@ -29,6 +35,7 @@ interface IUserData {
 
 type THeaderProps = {
   user: IUserData | null
+  folders: IFolder[]
 }
 
 const Search = styled('div')(({ theme }) => ({
@@ -71,8 +78,28 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const Header = ({user}:THeaderProps) => {
 
+const countRepository = (folders: IFolder[]) => {
+  let countFolder = 0;
+  let countFile = 0;
+  const countShare = 0;
+
+  const countItems = (folders:IFolder[]) =>{
+    folders.forEach((folder: IFolder) => {
+      countFile = countFile + folder.files.length;
+      countFolder = countFolder + 1
+      countItems(folder.subFolders)
+    })
+    return {countFile, countFolder}
+  }
+
+  ({countFile ,countFolder} = countItems(folders))
+  return {countFile, countFolder, countShare}
+
+}
+
+const Header = ({user, folders}:THeaderProps) => {
+  const {countFile, countFolder, countShare} = countRepository(folders);
   const navigate = useNavigate()
 
   const showUser = user ? 
@@ -150,7 +177,7 @@ const Header = ({user}:THeaderProps) => {
     >
       <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={4} color="error">
+          <Badge badgeContent={countFile} color="error">
             <InventoryIcon />
           </Badge>
         </IconButton>
@@ -162,7 +189,7 @@ const Header = ({user}:THeaderProps) => {
           aria-label="show 17 new notifications"
           color="inherit"
         >
-          <Badge badgeContent={17} color="error">
+          <Badge badgeContent={countShare} color="error">
             <FolderSharedIcon />
           </Badge>
         </IconButton>
@@ -215,11 +242,15 @@ const Header = ({user}:THeaderProps) => {
                 inputProps={{ 'aria-label': 'search' }}
               />
             </Search>
-          
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
             <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={4} color="error">
+              <Badge badgeContent={countFolder} color="error">
+                <FolderIcon />
+              </Badge>
+            </IconButton>
+            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
+              <Badge badgeContent={countFile} color="error">
                 <InventoryIcon />
               </Badge>
             </IconButton>
@@ -228,7 +259,7 @@ const Header = ({user}:THeaderProps) => {
               aria-label="show 17 new notifications"
               color="inherit"
             >
-              <Badge badgeContent={17} color="error">
+              <Badge badgeContent={countShare} color="error">
                 <FolderSharedIcon />
               </Badge>
               <Typography variant='h5' sx={{ marginLeft: '2rem' }}>

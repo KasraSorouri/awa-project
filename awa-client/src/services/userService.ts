@@ -1,12 +1,13 @@
 import axios from 'axios'
 
 import { api_url } from '../configs/config'
+import authService from './authService'
 
-const getUser = async (token: string) => {
-
+const getUser = async () => {
+  const authorization: string = authService()
   const config = {
-    headers: { Authorization: `Bearer ${token}` }
-  }
+      headers: { Authorization: authorization},
+    }
   try {
     const response = await axios.get(`${api_url}/users/user`,config);
     if (response.status === 200) {

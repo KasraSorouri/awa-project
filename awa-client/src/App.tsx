@@ -10,6 +10,9 @@ import { useToken } from './services/useToken'
 
 import userService from './services/userService'
 import UserPage from './components/UserPage'
+import folderService from './services/folderService'
+
+import { IFolder } from './types/folderTypes'
 
 interface IUserData {
   user_id: number,
@@ -22,13 +25,15 @@ interface IUserData {
 
 function App() {
   const [user, setUser] = useState<IUserData | null>(null)
+  const [folders, setFolders] = useState<IFolder[]>([])
   const {token} = useToken()
   console.log('app user : ', user)
+  console.log('app token : ', token)
   
   useEffect(() => {
-    const getUserInfo = async(token: string) => {
+    const getUserInfo = async() => {
       try{
-        const result = await userService.getUser(token)
+        const result = await userService.getUser()
         if (result) {
           setUser(result)
         }
@@ -36,17 +41,32 @@ function App() {
         console.log(error)
       }
     }
-    if (token) {
-      getUserInfo(token)
+
+    const getUserFiles = async () => {
+      try {
+        const result = await folderService.getUserFolders()
+        if (result) {
+          setFolders(result)
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log(error.message)
+        }
+        console.log(error)
+      }
     }
-  }, [])
-  console.log(' token : ', token)
+    if (token) {
+      getUserInfo()
+      getUserFiles()
+    }
+  }, [token])
+
   return (
     <>
       <BrowserRouter>
-        <Header user={user}/>
+        <Header user={user} folders={folders} />
         <Routes>
-          <Route path='/' element={token ? <UserPage token={token} /> : <Login /> } />
+          <Route path='/' element={user ? <UserPage folders={folders} /> : <Login /> } />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
         </Routes>
