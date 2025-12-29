@@ -1,6 +1,7 @@
 
 import { IFolder } from '../types/folderTypes';
 import { Folder, User, File } from '../models';
+import { Op } from 'sequelize';
 
 
 const folderQuery = {
@@ -79,13 +80,12 @@ const makeFolderTree = (folders: IUserFolders[]) => {
 
 // Create a new folder
 export const createFolder = async (folderData: IFolder) => {
-  
   // Check if the folder already exists
    const searchParams = {
     where: {
       userId: folderData.userId,
       folderName: folderData.folderName,
-      ...(folderData.parentFolder && { parentFolder: folderData.parentFolder }),
+      parentFolder: folderData.parentFolder ? folderData.parentFolder :  { [Op.is]: null} ,
     }}
   try{
     const existingFolder = await Folder.findOne(searchParams);
@@ -95,13 +95,18 @@ export const createFolder = async (folderData: IFolder) => {
     }
 
   } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    console.log(error);
     throw new Error('Error checking folder');
   }
 
   try {
     const folder = new Folder(folderData);
     await folder.save();
-    return folder;
+    const result = await getFolders(folder.userId)
+    return result;
   } catch (error) {
     throw new Error('Error creating folder');
   }
