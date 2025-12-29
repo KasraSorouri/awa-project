@@ -6,8 +6,9 @@ import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
-import ShowFolder from "./ShowFolder";
-import folderService from '../services/folderservice';
+import ShowFolder from './ShowFolder';
+import folderService from '../services/folderService';
+import fileService from '../services/fileService';
 
 
 interface FolderProps {
@@ -31,7 +32,7 @@ interface IFolder {
   folderName: string,
   userId: number,
   subFolders: IFolder[],
-  Filse: IFile[],
+  files: IFile[],
 }
 
 interface INewFolderData {
@@ -39,14 +40,28 @@ interface INewFolderData {
   parentFolder?: string,
 }
 
+interface INewFileData {
+  fileName: string,
+  folderId: number | null,
+  fileType: string,
+}
+
+interface IUploadFileData extends INewFileData {
+  file: File
+}
+
 
 const UserFolder = ({token}: FolderProps) => {
   const [folders, setFolders] = useState<IFolder[]>([])
   const [activeFolder, setActiveFolder] = useState<number | null>(null)
   const [openAddFolder, setOpenAddFolder] = useState<boolean>(false)
+  const [openAddFile, setOpenAddFile] = useState<boolean>(false)
+  const [openUploadFile, setOpenUploadFile] = useState<boolean>(false)
 
 
   const [newFolder, setNewFolder] = useState<string>('')
+  const [newFile, setNewFile] = useState<string>('')
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null)
 
   useEffect(() => {
     const getFolders = async() => {
@@ -68,16 +83,15 @@ const UserFolder = ({token}: FolderProps) => {
   console.log('activefolder : ', activeFolder)
 
   const handleAddFolder = () => {
-    console.log('add folder')
     setOpenAddFolder(true)
   }
 
   const handleAddFile = () => {
-    console.log('add file')
+    setOpenAddFile(true)
   }
 
   const handleUploadFile = () => {
-    console.log('upload file')
+    setOpenUploadFile(true)
   }
 
   const handleAddFolderSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
@@ -97,6 +111,50 @@ const UserFolder = ({token}: FolderProps) => {
       console.log(error)
     }
   }
+
+
+  const handleAddFileSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setOpenAddFile(false)
+    const newFileData: INewFileData = {
+      fileName: newFile,
+      folderId: activeFolder as number,
+      fileType: 'document'
+    }
+    try{
+      const result = await fileService.createFile(newFileData)
+      console.log('** file created ' , result)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message)
+      }
+      console.log(error)
+    }
+  }
+
+  const handleUploadFileSubmit = async(event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    setOpenUploadFile(false)
+    if (!uploadedFile) {
+      return
+    }
+    const newFileData: IUploadFileData = {
+      fileName: newFile ? newFile: uploadedFile.name,
+      folderId: activeFolder,
+      fileType: uploadedFile.type,
+      file: uploadedFile,
+    }
+    try{
+      const result = await fileService.uploadFile(newFileData)
+      console.log('** file created ', result)
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message)
+      }
+      console.log(error)
+    }
+  }
+
 
   return (
     <Box 
@@ -149,6 +207,72 @@ const UserFolder = ({token}: FolderProps) => {
           <Button onClick={()=> setOpenAddFolder(false)}>Cancel</Button>
           <Button type='submit' form="addFolder-form" >
             Add
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openAddFile} onClose={()=>setOpenAddFile(false)} >
+        <DialogTitle>File Name</DialogTitle>
+        <DialogContent>
+          <form  onSubmit={handleAddFileSubmit} id="addFile-form">
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="newfile"
+              name="newFile"
+              label="File Name"
+              type="text"
+              fullWidth
+              variant='outlined'
+              value={newFile}
+              onChange={(e)=>setNewFile(e.target.value)}
+            />
+          </form>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=> setOpenAddFile(false)}>Cancel</Button>
+          <Button type='submit' form="addFile-form" >
+            save
+          </Button>
+        </DialogActions>
+      </Dialog>
+      <Dialog open={openUploadFile} onClose={()=>setOpenUploadFile(false)} >
+        <DialogTitle>Upload File</DialogTitle>
+        <DialogContent>
+          <form  onSubmit={handleUploadFileSubmit} id="uploadFile-form">
+            <TextField
+              autoFocus
+              required
+              margin="dense"
+              id="fileUpload"
+              name="FileUplaod"
+              label="File"
+              type='file'
+              fullWidth
+              variant='outlined'
+              onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                if (event.target.files) {
+                  setUploadedFile(event.target.files[0]);
+                }}}
+            />
+            <TextField
+              required
+              margin="dense"
+              id="newfile"
+              name="newFile"
+              label="File Name"
+              type="text"
+              fullWidth
+              variant='outlined'
+              value={newFile}
+              onChange={(e)=>setNewFile(e.target.value)}
+            />
+          </form>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={()=> setOpenUploadFile(false)}>Cancel</Button>
+          <Button type='submit' form='uploadFile-form' >
+            Upload
           </Button>
         </DialogActions>
       </Dialog>

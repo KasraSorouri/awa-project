@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Box, Typography } from "@mui/material"
 
 import FolderIcon from '@mui/icons-material/Folder';
-//import ShowSubFolder from "./ShowSubFolder";
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 
 
 interface IFile {
@@ -22,7 +22,7 @@ interface IFolder {
   folderName: string;
   userId: number;
   subFolders: IFolder[];
-  Filse: IFile[];
+  files: IFile[];
 }
 
 interface IShowFolderProps {
@@ -57,11 +57,25 @@ const ShowFolder = ({folders, activeFolder, setActiveFolder}:IShowFolderProps) =
               <Typography variant={folder.id === activeFolder ? "h4" : "h5"}  color={folder.id === activeFolder ?  '#000000' : '#4D4D4D' }>{folder.folderName}</Typography>
             </Box>
             {showChild.includes(folder.id) &&
-              <Box marginLeft={5} >
-                <ShowFolder folders={folder.subFolders} activeFolder={activeFolder} setActiveFolder={setActiveFolder} />
-              </Box>}
+              <>
+                <Box marginLeft={5} >
+                  <ShowFolder folders={folder.subFolders} activeFolder={activeFolder} setActiveFolder={setActiveFolder} />
+                </Box>
+                {folder.files.map((file) => {
+                  return (
+                    <Box key={file.id}
+                      display={'flex'}
+                      flexDirection={'row'}
+                      marginLeft={1} 
+                    >
+                      <InsertDriveFileIcon fontSize="large" sx={{color: "#4D4D4D", marginRight:'3px'}} />
+                      <Typography variant="h5" color='#4D4D4D' >{file.fileName}</Typography>
+                    </Box>
+                  )})}
+            </>}
           </div>)
       })}
+
     </>
   )
 }

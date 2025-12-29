@@ -19,8 +19,7 @@ export const up = async ({ context: queryInterface }: any) => {
         allowNull: true
       },
       file_type: {
-        type: DataTypes.ENUM,
-        values: ['document','image'],
+        type: DataTypes.STRING,
         defaultValue: 'document',
         allowNull: false,
       },

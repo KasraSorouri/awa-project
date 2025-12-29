@@ -55,8 +55,7 @@ File.init(
       allowNull: false,
     },
     fileType: {
-      type: DataTypes.ENUM,
-      values: ['document','image'],
+      type: DataTypes.STRING,
       defaultValue: 'document',
       allowNull: false,
     },

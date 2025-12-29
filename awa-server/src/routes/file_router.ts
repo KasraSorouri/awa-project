@@ -28,7 +28,7 @@ router.post('/create', validateToken, validateFileData, async (req: Request, res
 router.post('/upload', validateToken, upload.single('file') , async (req: Request, res: Response) => {
   const fileData = req.body;
   console.log('body: ',req.body);
-  console.log('file : ' ,req.file);
+  console.log('file : ',req.file);
   fileData.userId = req.user.id;
 
   const file: Express.Multer.File | undefined = req.file;
