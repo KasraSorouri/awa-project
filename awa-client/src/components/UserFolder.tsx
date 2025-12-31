@@ -15,6 +15,8 @@ import { IFolder } from '../types/folderTypes';
 
 interface FolderProps {
     folders: IFolder[];
+    activeFolder: number | null;
+    setActiveFolder: (id: number | null) => void;
 }
 
 
@@ -34,8 +36,8 @@ interface IUploadFileData extends INewFileData {
 }
 
 
-const UserFolder = ({folders}: FolderProps) => {
-  const [activeFolder, setActiveFolder] = useState<number | null>(null)
+const UserFolder = ({folders, activeFolder, setActiveFolder}: FolderProps) => {
+  //const [activeFolder, setActiveFolder] = useState<number | null>(null)
 
   const [openAddFolder, setOpenAddFolder] = useState<boolean>(false)
   const [openAddFile, setOpenAddFile] = useState<boolean>(false)

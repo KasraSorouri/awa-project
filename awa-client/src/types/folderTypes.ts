@@ -17,4 +17,9 @@ export interface IFolder {
   userId: number,
   subFolders: IFolder[],
   files: IFile[],
+  deleted?: boolean,
+  activated?: boolean,
+  currentUser?: number,
+  createdAt?: string,
+  updatedAt?: string
 }

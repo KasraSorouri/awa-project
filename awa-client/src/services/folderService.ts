@@ -54,7 +54,28 @@ const createFolder = async (folderData: IFolderData) => {
   }
 }
 
+const deleteFolder = async (id: number) => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+    }
+  try {
+    const response = await axios.delete(`${api_url}/folders/delete/${id}`, config);
+    if (response.status === 200) {
+      return response.data;
+    }
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
+
 export default {
   getUserFolders,
-  createFolder
+  createFolder,
+  deleteFolder
 }

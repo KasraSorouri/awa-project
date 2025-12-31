@@ -14,7 +14,6 @@ const folderQuery = {
     {
       model: Folder,
       as: 'subFolders',
-      attributes: ['id', 'folderName'],
     },
     {
       model: User,
@@ -24,10 +23,8 @@ const folderQuery = {
     {
       model: File,
       as: 'files',
-      attributes: ['id', 'fileName'],
     },
   ],
-  attributes: ['id', 'folderName'],
 }
 
 interface IUserFolders {
@@ -37,6 +34,8 @@ interface IUserFolders {
   parent: IUserFolders | null;
   subFolders: IUserFolders[];
   files: File[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 interface IFolderTree {
@@ -55,6 +54,8 @@ const makeFolderTree = (folders: IUserFolders[]) => {
         folderMap.set(folder.id, {
             id: folder.id,
             folderName: folder.folderName,
+            createdAt: folder.createdAt,
+            updatedAt: folder.updatedAt,
             subFolders: [],
             files: folder.files
         });
