@@ -20,7 +20,7 @@ import fileService from '../services/fileService';
 import folderService from '../services/folderService';
 
 import { IFolder } from '../types/folderTypes'
-import { Box, Button, Stack, Tooltip, Typography } from '@mui/material';
+import { Button, Stack, Tooltip, Typography } from '@mui/material';
 
 interface Column {
   id: 'name' | 'dateCreated' | 'dateModified' | 'type' ;
@@ -64,10 +64,11 @@ interface IShowFolderContentProps {
   folders: IFolder[],
   activeFolder: number | null;
   setActiveFolder: (id: number | null) => void;
+  setActiveFile: (id: number | null) => void;
 }
 
 
-const ShowFolderContent = ({folders, activeFolder, setActiveFolder}: IShowFolderContentProps) => {
+const ShowFolderContent = ({folders, activeFolder, setActiveFolder, setActiveFile}: IShowFolderContentProps) => {
   console.log('ShowFolderContent', folders)
 
   const folder:IFolder = folders.find((folder) => folder.id === activeFolder) || folders[0]
@@ -114,8 +115,9 @@ const ShowFolderContent = ({folders, activeFolder, setActiveFolder}: IShowFolder
     console.log('Item clicked:', id, type);
     if (type === 'folder') {
       setActiveFolder(id)
+      setActiveFile(null)
     } else {
-      console.log('File clicked:', id);
+      setActiveFile(id)
     }
   }
 

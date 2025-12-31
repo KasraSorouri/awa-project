@@ -17,6 +17,7 @@ interface FolderProps {
     folders: IFolder[];
     activeFolder: number | null;
     setActiveFolder: (id: number | null) => void;
+    setActiveFile: (id: number | null) => void;
 }
 
 
@@ -36,8 +37,7 @@ interface IUploadFileData extends INewFileData {
 }
 
 
-const UserFolder = ({folders, activeFolder, setActiveFolder}: FolderProps) => {
-  //const [activeFolder, setActiveFolder] = useState<number | null>(null)
+const UserFolder = ({folders, activeFolder, setActiveFolder, setActiveFile}: FolderProps) => {
 
   const [openAddFolder, setOpenAddFolder] = useState<boolean>(false)
   const [openAddFile, setOpenAddFile] = useState<boolean>(false)
@@ -149,7 +149,7 @@ const UserFolder = ({folders, activeFolder, setActiveFolder}: FolderProps) => {
           <Typography variant="h5" align="left" color="#4D4D4D">My Drive /</Typography>
         </Stack>
       </Box>
-      <ShowFolder folders={folders} activeFolder={activeFolder} setActiveFolder={setActiveFolder} />
+      <ShowFolder folders={folders} activeFolder={activeFolder} setActiveFolder={setActiveFolder} setActiveFile={setActiveFile} />
       <Dialog open={openAddFolder} onClose={()=>setOpenAddFolder(false)} >
         <DialogTitle>New Folder</DialogTitle>
         <DialogContent>

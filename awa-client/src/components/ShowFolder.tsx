@@ -29,10 +29,11 @@ interface IShowFolderProps {
   folders: IFolder[];
   activeFolder: number | null;
   setActiveFolder: (id: number) => void;
+  setActiveFile: (id: number | null) => void;
 }
 
 
-const ShowFolder = ({folders, activeFolder, setActiveFolder}:IShowFolderProps) =>{
+const ShowFolder = ({folders, activeFolder, setActiveFolder, setActiveFile}:IShowFolderProps) =>{
   const [showChild, setShowChild] = useState<number[]>([])
 
   console.log('active folder  : ', activeFolder)
@@ -46,6 +47,7 @@ const ShowFolder = ({folders, activeFolder, setActiveFolder}:IShowFolderProps) =
              flexDirection={'row'}
              onClick={() => {
               setActiveFolder(folder.id)
+              setActiveFile(null)
               if (showChild.includes(folder.id)){
                 setShowChild(showChild.filter((id) => id !== folder.id))
               } else {
@@ -59,7 +61,7 @@ const ShowFolder = ({folders, activeFolder, setActiveFolder}:IShowFolderProps) =
             {showChild.includes(folder.id) &&
               <>
                 <Box marginLeft={5} >
-                  <ShowFolder folders={folder.subFolders} activeFolder={activeFolder} setActiveFolder={setActiveFolder} />
+                  <ShowFolder folders={folder.subFolders} activeFolder={activeFolder} setActiveFolder={setActiveFolder} setActiveFile={setActiveFile} />
                 </Box>
                 {folder.files.map((file) => {
                   return (
@@ -67,6 +69,9 @@ const ShowFolder = ({folders, activeFolder, setActiveFolder}:IShowFolderProps) =
                       display={'flex'}
                       flexDirection={'row'}
                       marginLeft={1} 
+                      onClick={() => {
+                        setActiveFile(file.id)
+                      }}
                     >
                       <InsertDriveFileIcon fontSize="large" sx={{color: "#4D4D4D", marginRight:'3px'}} />
                       <Typography variant="h5" color='#4D4D4D' >{file.fileName}</Typography>
