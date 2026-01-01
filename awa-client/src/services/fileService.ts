@@ -2,6 +2,7 @@ import axios from 'axios';
 
 import { api_url } from '../configs/config';
 import authService from './authService';
+import { IEditFileData } from '../types/folderTypes';
 
 interface INewFileData {
   fileName: string,
@@ -87,9 +88,51 @@ const deleteFile = async (id: number) => {
   }
 }
 
+const readFile = async (id: number) => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+    }
+  try {
+    const response = await axios.get(`${api_url}/files/edit/${id}`, config);
+    if (response.status === 200) {
+      return response.data;
+    }
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
+
+const saveFile = async (fileData: IEditFileData) => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+    }
+  try {
+    const response = await axios.post(`${api_url}/files/save/${fileData.id}`, {fileData}, config);
+    if (response.status === 200) {
+      return response.data;
+    }
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
+
 
 export default {
   createFile,
   uploadFile,
-  deleteFile
+  deleteFile,
+  readFile,
+  saveFile
 }

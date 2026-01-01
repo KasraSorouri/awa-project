@@ -3,8 +3,9 @@ export interface IFile {
   id: number,
   fileName: string,
   folderId: number,
-  content: string,
+  fileContent: string,
   deleted: boolean,
+  editable: boolean,
   activated: boolean,
   currentUser: number,
   createdAt: string,
@@ -22,4 +23,10 @@ export interface IFolder {
   currentUser?: number,
   createdAt?: string,
   updatedAt?: string
+}
+
+export interface IEditFileData {
+  id: number,
+  fileName: string,
+  fileContent: string
 }

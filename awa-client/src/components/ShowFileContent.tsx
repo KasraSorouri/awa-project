@@ -1,25 +1,115 @@
-import { colors, Paper } from '@mui/material';
+import { useEffect } from 'react';
+import { Box, Button, colors, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+import fileService from '../services/fileService';
+
+import ShareIcon from '@mui/icons-material/Share';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import SaveIcon from '@mui/icons-material/Save';
+import CloseIcon from '@mui/icons-material/Close';
+import EditIcon from '@mui/icons-material/Edit';
+
+import ConfirmationDialog from './ConfirmationDialog';
+
+import { IEditFileData, IFile } from '../types/folderTypes';
+import { IConfirmation } from '../types/alertTypes';
 
 
 
+interface ShowFileContentProps {
+  activeFile: number;
+  setActiveFile: (id: number | null) => void;
+}
 
 
+const ShowFileContent = ({activeFile, setActiveFile}: ShowFileContentProps) => {
+  const [value, setValue] = useState<string>('');
+  const [file, setFile] = useState<IFile|null>(null);
+  const [editMode, setEditMode] = useState<boolean>(false);
+  const [fileName, setFileName] = useState<string>('');
+  const [confirm, setConfirm] = useState<IConfirmation>({
+    askConfirm: false,
+    title: '',
+    message: '',
+    confirm: () => {},
+    cancel: () => {}
+  });
 
-const ShowFileContent = () => {
-  const [value, setValue] = useState('');
+
+  useEffect(() => {
+
+    const readFileContent = async () => {
+      try {
+        const result = await fileService.readFile(activeFile);
+        console.log('File content retrieved:', result);
+        setValue(result.fileContent);
+        setFile(result.file);
+        setFileName(result.file.fileName);
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error('Error reading file:', error.message);
+        }
+        console.error('Unknown error reading file');
+      }
+    };
+
+    readFileContent();
+  }, [activeFile]);
+
+
+  const handleSaveFile = async () => {
+    try {
+      if (file) {
+        const fileData: IEditFileData = {
+          id: file.id,
+          fileName: fileName,
+          fileContent: value
+        }
+        await fileService.saveFile(fileData);
+        setEditMode(false);
+        console.log('File content saved successfully');
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error('Error saving file:', error.message);
+      }
+      console.error('Unknown error saving file');
+    }
+  };
+
+  const handleEditFile = () => {
+    setEditMode(true);
+  }; 
+  
+  const handleCancelEdit = () => {
+    setConfirm({
+      askConfirm: true,
+      title: 'Cancel edit',
+      message: `Are you sure you want to cancel editing?/n
+                All changes will be lost.`,
+      confirm: () => {
+        setEditMode(false);
+        setFileName(file?.fileName || '');
+        setConfirm({...confirm, askConfirm: false});
+        setActiveFile(null);
+      },
+      cancel: () => {
+        setConfirm({...confirm, askConfirm: false});
+      }
+    });
+  };
 
   return(
     <div className="show-content">
-      <h1> File Content</h1>
       <Paper elevation={3}
         sx={{
           padding: 0,
           marginTop: 0,
           backgroundColor: colors.grey[100],
           '& .ql-toolbar': {
+            display: editMode ? 'block' : 'none',
             backgroundColor: '#f0f0f0', 
             borderTopLeftRadius: '4px',
             borderTopRightRadius: '4px',
@@ -47,9 +137,57 @@ const ShowFileContent = () => {
             stroke: colors.blue[600],
           },
         }}
-      >           
-        <ReactQuill theme='snow' value={value} onChange={setValue} />
+      >  
+        <Box display='flex' justifyContent='space-between' alignItems='center' borderBottom={`1px solid ${colors.grey[300]}`}>
+          <Stack direction={'row'} alignItems='center' spacing={1} sx={{padding: 1}}>
+            {editMode ?
+              <TextField
+                value={fileName}
+                onChange={(e) => setFileName(e.target.value)}
+                variant='outlined'
+                size='small'
+                sx={{ backgroundColor: 'white'}}
+              />
+              : <Typography variant="h6" sx={{padding: 1}}>{fileName}</Typography>
+            }
+          </Stack>
+          <Stack direction={'row'} justifyContent={'right'} spacing={1} sx={{padding: 1}}>
+          <Tooltip title='Edit'>
+            <Button onClick={handleEditFile} disabled={editMode}>
+              <EditIcon />
+            </Button>
+          </Tooltip>
+          <Tooltip title='Save'>
+            <Button onClick={handleSaveFile} disabled={!editMode}>
+              <SaveIcon />
+            </Button>
+          </Tooltip>
+          <Tooltip title='Share'>
+            <Button>
+              <ShareIcon />
+            </Button>
+          </Tooltip>
+          <Tooltip title='Download'>
+            <Button>
+              <FileDownloadIcon />
+            </Button>
+          </Tooltip>
+          <Tooltip title='Close'>
+            <Button onClick={handleCancelEdit} disabled={!editMode}>
+              <CloseIcon />
+            </Button>
+          </Tooltip> 
+          </Stack>     
+        </Box>
+        <ReactQuill theme='snow' value={value} onChange={setValue} readOnly={!editMode} />
       </Paper>
+      <ConfirmationDialog
+        askConfirm={confirm.askConfirm}
+        title={confirm.title}
+        message={confirm.message}
+        onConfirm={confirm.confirm}
+        onCancel={confirm.cancel}
+      />
     </div>
   )
 }

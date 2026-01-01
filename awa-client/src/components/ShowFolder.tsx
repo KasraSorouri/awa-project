@@ -2,28 +2,12 @@ import { useState } from 'react'
 import { Box, Typography } from "@mui/material"
 
 import FolderIcon from '@mui/icons-material/Folder';
+import ArticleIcon from '@mui/icons-material/Article';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 
+import { IFolder } from '../types/folderTypes';
 
-interface IFile {
-  id: number,
-  fileName: string,
-  folderId: number,
-  content: string,
-  deleted: boolean,
-  activated: boolean,
-  currentUser: number,
-  createdAt: string,
-  updatedAt: string
-}
 
-interface IFolder {
-  id: number;
-  folderName: string;
-  userId: number;
-  subFolders: IFolder[];
-  files: IFile[];
-}
 
 interface IShowFolderProps {
   folders: IFolder[];
@@ -73,7 +57,11 @@ const ShowFolder = ({folders, activeFolder, setActiveFolder, setActiveFile}:ISho
                         setActiveFile(file.id)
                       }}
                     >
-                      <InsertDriveFileIcon fontSize="large" sx={{color: "#4D4D4D", marginRight:'3px'}} />
+
+                      {file.editable ?
+                        <ArticleIcon fontSize="large" sx={{color: "#4D4D4D", marginRight:'3px'}} />
+                        : <InsertDriveFileIcon fontSize="large" sx={{color: "#4D4D4D", marginRight:'3px'}} />
+                      }
                       <Typography variant="h5" color='#4D4D4D' >{file.fileName}</Typography>
                     </Box>
                   )})}

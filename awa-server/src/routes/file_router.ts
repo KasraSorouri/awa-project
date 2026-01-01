@@ -5,6 +5,7 @@ import { validateFileData } from '../middlewares/fileDataValidator';
 import upload from '../middlewares/multerMiddleware';
 
 import fileServices from '../services/file';
+import { IEditFileData } from '../types/fileTypes';
 
 const router = Router();
 
@@ -81,7 +82,7 @@ router.delete('/remove/:id', validateToken, async (req: Request, res: Response) 
 })
 
 // Edit a File
-router.post('/edit/:id', validateToken, async (req: Request, res: Response) => {
+router.get('/edit/:id', validateToken, async (req: Request, res: Response) => {
   const fileId = parseInt(req.params.id);
   const userId = req.user.id;
   try {
@@ -100,10 +101,9 @@ router.post('/edit/:id', validateToken, async (req: Request, res: Response) => {
 router.post('/save/:id', validateToken, async (req: Request, res: Response) => {
   const fileId = parseInt(req.params.id);
   const userId = req.user.id;
-  const fileContent = req.body.fileContent;
-  console.log('** router ** fileContent: ', fileContent);
+  const fileData: IEditFileData = req.body.fileData;
   try {
-    const file = await fileServices.saveFile(fileId, fileContent, userId);
+    const file = await fileServices.saveFile(fileId, fileData, userId);
     return res.status(200).json(file);
   } catch (error) {
     if (error instanceof Error) {

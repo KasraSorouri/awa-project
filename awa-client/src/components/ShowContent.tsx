@@ -15,9 +15,6 @@ interface IShowContentProps {
 
 
 const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setActiveFile}: IShowContentProps) => {
-    console.log(folders)
-
-
     if (folders.length === 0) {
         return <div>Loading...</div>
     }
@@ -25,7 +22,7 @@ const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setAct
         <div className="show-content">
             {activeFile === null 
              ? <ShowFolderContent folders={folders} activeFolder={activeFolder} setActiveFolder={setActiveFolder} setActiveFile={setActiveFile} />
-             : <ShowFileContent />
+             : <ShowFileContent activeFile={activeFile} setActiveFile={setActiveFile} />
             }
         </div>
     )

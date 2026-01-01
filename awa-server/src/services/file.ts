@@ -1,6 +1,6 @@
 
 import { File, UserFiles, Folder } from '../models';
-import { IFile, IFileData, IFileParam, IUserFile } from '../types/fileTypes';
+import { IEditFileData, IFile, IFileData, IFileParam, IUserFile } from '../types/fileTypes';
 import storeFile from '../utils/storeFile';
 
 const fileQuery = {
@@ -179,15 +179,18 @@ const openFile = async (fileId: number, userId: number) => {
     if (!file.editable) {
       throw new Error('File is not editable');
     }
-
+    /*
     if(file.activated) {
       throw new Error('File is opened by another user');
     }
-  
+    */
     file.activated = true;
     const fileContent = await storeFile.openFile(file.address);
-
-    return fileContent
+    const result = {
+      file,
+      fileContent
+    }
+    return result
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -197,7 +200,7 @@ const openFile = async (fileId: number, userId: number) => {
 }
 
 // save a file
-const saveFile = async (fileId: number, fileContent: string, userId: number) => {
+const saveFile = async (fileId: number, fileData: IEditFileData, userId: number) => {
   try {
     const userFile = await UserFiles.findOne({ where: { fileId, userId } });
     if (!userFile) {
@@ -211,13 +214,17 @@ const saveFile = async (fileId: number, fileContent: string, userId: number) => 
       throw new Error('File not found');
     }
 
-    const result = await storeFile.writeToFile(file.address, fileContent)
+    const result = await storeFile.writeToFile(file.address, fileData.fileContent);
+
+    file.fileName = fileData.fileName;
     file.activated = false;
     await file.save();
+
     userFile.activated = false;
     await userFile.save();
 
-    return result
+    const response = { file, fileContent: result }
+    return response
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);

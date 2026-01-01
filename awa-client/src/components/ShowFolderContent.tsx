@@ -9,6 +9,7 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 
 import FolderIcon from '@mui/icons-material/Folder';
+import ArticleIcon from '@mui/icons-material/Article';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import DeleteIcon from '@mui/icons-material/Delete';
 import ShareIcon from '@mui/icons-material/Share';
@@ -58,6 +59,7 @@ interface Data {
   dateModified: Date;
   type: string;
   contents: number ;
+  editable?: boolean;
 }
 
 interface IShowFolderContentProps {
@@ -93,7 +95,8 @@ const ShowFolderContent = ({folders, activeFolder, setActiveFolder, setActiveFil
       dateCreated: new Date(file.createdAt),
       dateModified: new Date(file.updatedAt),
       type: 'file',
-      contents: 0
+      contents: 0,
+      editable: file.editable
     }
   }))
     
@@ -168,16 +171,22 @@ const ShowFolderContent = ({folders, activeFolder, setActiveFolder, setActiveFil
                     <TableCell onClick ={() => setActiveItem(row.id, row.type)}> 
                       <Stack direction={'row'} spacing={1}>
                         {row.type === 'folder' ? 
-                          <FolderIcon fontSize="medium" sx={{color: "#fee634f4"}} /> :
-                          <InsertDriveFileIcon fontSize="medium" sx={{color: "#4D4D4D"}} />
+                          <FolderIcon fontSize="medium" sx={{color: "#fee634f4"}} />
+                          : row.editable ?
+                            <ArticleIcon fontSize="medium" sx={{color: "#4D4D4D"}} />
+                          : <InsertDriveFileIcon fontSize="medium" sx={{color: "#4D4D4D"}} />
                         }
                         <Typography variant="body1" component="span" >
                           {row.name}
                         </Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell align="right">{row.dateCreated.toLocaleString('EN-GB', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}</TableCell>
-                    <TableCell align="right">{row.dateModified.toLocaleString('EN-GB', { year: '2-digit', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })}</TableCell>
+                    <TableCell align="right">{row.dateCreated.toLocaleString('En-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
+                      .replace('.', ':').replaceAll('/','.').replace(',','')}
+                    </TableCell>
+                    <TableCell align="right">{row.dateModified.toLocaleString('EN-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
+                      .replace('.', ':').replaceAll('/','.').replace(',','')}
+                    </TableCell>
                     <TableCell align="right">
                       <Stack direction={'row'} spacing={1}>
                         <Tooltip title='Delete' >

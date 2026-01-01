@@ -31,3 +31,9 @@ export interface IFileParam {
   file?: Express.Multer.File;
 }
 
+export interface IEditFileData {
+  id: number,
+  fileName: string,
+  fileContent: string
+}
+
