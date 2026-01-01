@@ -20,7 +20,6 @@ interface IShowFolderProps {
 const ShowFolder = ({folders, activeFolder, setActiveFolder, setActiveFile}:IShowFolderProps) =>{
   const [showChild, setShowChild] = useState<number[]>([])
 
-  console.log('active folder  : ', activeFolder)
   return(
     <>
       {folders.map((folder) =>{

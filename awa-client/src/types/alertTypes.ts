@@ -5,3 +5,9 @@ export interface IConfirmation {
   confirm: () => void;
   cancel: () => void;
 }
+
+export interface IAlert {
+  type: 'success' | 'error' | 'info' | 'warning';
+  message: string;
+  showAlert: boolean;
+}

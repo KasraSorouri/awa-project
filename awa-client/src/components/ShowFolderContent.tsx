@@ -22,6 +22,7 @@ import folderService from '../services/folderService';
 
 import { IFolder } from '../types/folderTypes'
 import { Button, Stack, Tooltip, Typography } from '@mui/material';
+import { IAlert } from '../types/alertTypes';
 
 interface Column {
   id: 'name' | 'dateCreated' | 'dateModified' | 'type' ;
@@ -67,10 +68,11 @@ interface IShowFolderContentProps {
   activeFolder: number | null;
   setActiveFolder: (id: number | null) => void;
   setActiveFile: (id: number | null) => void;
+  setAlertData: (alert: IAlert) => void;
 }
 
 
-const ShowFolderContent = ({folders, activeFolder, setActiveFolder, setActiveFile}: IShowFolderContentProps) => {
+const ShowFolderContent = ({folders, activeFolder, setActiveFolder, setActiveFile, setAlertData}: IShowFolderContentProps) => {
   console.log('ShowFolderContent', folders)
 
   const folder:IFolder = folders.find((folder) => folder.id === activeFolder) || folders[0]
@@ -115,7 +117,6 @@ const ShowFolderContent = ({folders, activeFolder, setActiveFolder, setActiveFil
   };
 
   const setActiveItem = (id: number, type: string) => {
-    console.log('Item clicked:', id, type);
     if (type === 'folder') {
       setActiveFolder(id)
       setActiveFile(null)
@@ -129,20 +130,22 @@ const ShowFolderContent = ({folders, activeFolder, setActiveFolder, setActiveFil
     try {
       if (type === 'folder') {
         await folderService.deleteFolder(id);
+        setAlertData({type: 'success', message: 'Folder deleted successfully', showAlert: true});
+        rows.filter((row) => row.type === 'folder' && row.id !== id);
       } else {
         const result = await fileService.deleteFile(id);
         if (result) {
-          console.log('File deleted successfully');
+          setAlertData({type: 'success', message: 'File deleted successfully',showAlert: true});
           rows.filter((row) => row.type === 'file' && row.id !== id);
         }
       }
     } catch (error) {
       if (error instanceof Error) {
-        console.error('Error deleting item:', error.message);
+        console.log('Error deleting item:', error.message);
+        setAlertData({type: 'error', message: error.message, showAlert: true});
       }
       console.error('Error deleting item:', error);
     }
-    console.log('Delete clicked');
   }
 
   return (

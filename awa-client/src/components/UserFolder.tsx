@@ -11,6 +11,7 @@ import folderService from '../services/folderService';
 import fileService from '../services/fileService';
 
 import { IFolder } from '../types/folderTypes';
+import { IAlert } from "../types/alertTypes";
 
 
 interface FolderProps {
@@ -18,6 +19,8 @@ interface FolderProps {
     activeFolder: number | null;
     setActiveFolder: (id: number | null) => void;
     setActiveFile: (id: number | null) => void;
+    setEditMode: (edit: boolean) => void;
+    setAlertData: (data:IAlert) => void;
 }
 
 
@@ -37,7 +40,7 @@ interface IUploadFileData extends INewFileData {
 }
 
 
-const UserFolder = ({folders, activeFolder, setActiveFolder, setActiveFile}: FolderProps) => {
+const UserFolder = ({folders, activeFolder, setActiveFolder, setActiveFile, setEditMode, setAlertData}: FolderProps) => {
 
   const [openAddFolder, setOpenAddFolder] = useState<boolean>(false)
   const [openAddFile, setOpenAddFile] = useState<boolean>(false)
@@ -69,10 +72,21 @@ const UserFolder = ({folders, activeFolder, setActiveFolder, setActiveFile}: Fol
     }
     try{
       await folderService.createFolder(newFolderData)
+      setAlertData(
+        {
+          type: 'success',
+          message: 'Folder created successfully',
+          showAlert: true
+        })
       setNewFolder('')
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message)
+        setAlertData(
+          {
+            type: 'error',
+            message: error.message,
+            showAlert: true
+          })
       }
       console.log(error)
     }
@@ -88,11 +102,18 @@ const UserFolder = ({folders, activeFolder, setActiveFolder, setActiveFile}: Fol
       fileType: 'document'
     }
     try{
-      await fileService.createFile(newFileData)
+      const result = await fileService.createFile(newFileData)
+      setActiveFile(result.id)
+      setEditMode(true)
       setNewFile('')
     } catch (error) {
       if (error instanceof Error) {
-        console.log(error.message)
+        setAlertData(
+          {
+            type: 'error',
+            message: error.message,
+            showAlert: true
+          })
       }
       console.log(error)
     }

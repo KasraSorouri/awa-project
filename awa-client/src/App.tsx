@@ -28,7 +28,6 @@ function App() {
   const [folders, setFolders] = useState<IFolder[]>([])
   const {token} = useToken()
   console.log('app user : ', user)
-  console.log('app token : ', token)
   
   useEffect(() => {
     const getUserInfo = async() => {

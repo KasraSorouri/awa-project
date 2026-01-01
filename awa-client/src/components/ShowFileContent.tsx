@@ -21,13 +21,14 @@ import { IConfirmation } from '../types/alertTypes';
 interface ShowFileContentProps {
   activeFile: number;
   setActiveFile: (id: number | null) => void;
+  editMode: boolean;
+  setEditMode: (edit: boolean) => void;
 }
 
 
-const ShowFileContent = ({activeFile, setActiveFile}: ShowFileContentProps) => {
+const ShowFileContent = ({activeFile, setActiveFile, editMode, setEditMode}: ShowFileContentProps) => {
   const [value, setValue] = useState<string>('');
   const [file, setFile] = useState<IFile|null>(null);
-  const [editMode, setEditMode] = useState<boolean>(false);
   const [fileName, setFileName] = useState<string>('');
   const [confirm, setConfirm] = useState<IConfirmation>({
     askConfirm: false,
@@ -43,7 +44,6 @@ const ShowFileContent = ({activeFile, setActiveFile}: ShowFileContentProps) => {
     const readFileContent = async () => {
       try {
         const result = await fileService.readFile(activeFile);
-        console.log('File content retrieved:', result);
         setValue(result.fileContent);
         setFile(result.file);
         setFileName(result.file.fileName);
@@ -87,8 +87,7 @@ const ShowFileContent = ({activeFile, setActiveFile}: ShowFileContentProps) => {
     setConfirm({
       askConfirm: true,
       title: 'Cancel edit',
-      message: `Are you sure you want to cancel editing?/n
-                All changes will be lost.`,
+      message: 'Are you sure you want to cancel editing?\nAll changes will be lost.',
       confirm: () => {
         setEditMode(false);
         setFileName(file?.fileName || '');
