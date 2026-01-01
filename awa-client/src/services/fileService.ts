@@ -128,11 +128,74 @@ const saveFile = async (fileData: IEditFileData) => {
   }
 }
 
+// Read Recyle Bin
+const getRecycleBin = async () => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+    }
+  try {
+    const response = await axios.get(`${api_url}/files/recycle-bin`, config);
+    if (response.status === 200) {
+      return response.data;
+    }
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
+
+const removeFile = async (fileIds: number[]) => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+    }
+  try {
+    const response = await axios.post(`${api_url}/files/remove`, { fileIds }, config);
+    if (response.status === 200) {
+      return response.data;
+    }
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
+
+const restoreFile = async (fileIds: number[]) => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+    }
+  try {
+    const response = await axios.post(`${api_url}/files/restore`, { fileIds }, config);
+    if (response.status === 200) {
+      return response.data;
+    }
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
 
 export default {
   createFile,
   uploadFile,
   deleteFile,
   readFile,
-  saveFile
+  saveFile,
+  getRecycleBin,
+  removeFile,
+  restoreFile
 }

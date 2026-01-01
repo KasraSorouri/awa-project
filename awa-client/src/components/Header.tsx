@@ -20,10 +20,11 @@ import { Button } from '@mui/material';
 import FolderIcon from '@mui/icons-material/Folder';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import InventoryIcon from '@mui/icons-material/Inventory';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 
 
-import { IFolder } from '../types/folderTypes';
+import { IFolder, IFile } from '../types/folderTypes';
 
 interface IUserData {
   user_id: number,
@@ -36,6 +37,7 @@ interface IUserData {
 type THeaderProps = {
   user: IUserData | null
   folders: IFolder[]
+  recycledFiles: IFile[]
 }
 
 const Search = styled('div')(({ theme }) => ({
@@ -98,7 +100,7 @@ const countRepository = (folders: IFolder[]) => {
 
 }
 
-const Header = ({user, folders}:THeaderProps) => {
+const Header = ({user, folders, recycledFiles}:THeaderProps) => {
   const {countFile, countFolder, countShare} = countRepository(folders);
   const navigate = useNavigate()
 
@@ -189,6 +191,18 @@ const Header = ({user, folders}:THeaderProps) => {
           aria-label="show 17 new notifications"
           color="inherit"
         >
+          <Badge badgeContent={recycledFiles.length} color="error">
+            <DeleteIcon />
+          </Badge>
+        </IconButton>
+        <p>Deleted Files</p>
+      </MenuItem>
+      <MenuItem>
+        <IconButton
+          size="large"
+          aria-label="show 17 new notifications"
+          color="inherit"
+        >
           <Badge badgeContent={countShare} color="error">
             <FolderSharedIcon />
           </Badge>
@@ -258,14 +272,24 @@ const Header = ({user, folders}:THeaderProps) => {
               size="large"
               aria-label="show 17 new notifications"
               color="inherit"
+              onClick={()=> navigate('/recycled')}
+            >
+              <Badge badgeContent={recycledFiles.length} color="error">
+                <DeleteIcon />
+              </Badge>
+            </IconButton>
+            <IconButton
+              size="large"
+              aria-label="show 17 new notifications"
+              color="inherit"
             >
               <Badge badgeContent={countShare} color="error">
                 <FolderSharedIcon />
               </Badge>
+            </IconButton>
               <Typography variant='h5' sx={{ marginLeft: '2rem' }}>
                 {showUser}
               </Typography>
-            </IconButton>
             <IconButton
               size="large"
               edge="end"

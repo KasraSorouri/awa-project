@@ -66,11 +66,11 @@ router.delete('/delete/:id', validateToken, async (req: Request, res: Response) 
 
 
 // Remove a File
-router.delete('/remove/:id', validateToken, async (req: Request, res: Response) => {
-  const fileId = parseInt(req.params.id);
+router.post('/remove', validateToken, async (req: Request, res: Response) => {
+  const fileIds = req.body.fileIds as number[];
   const userId = req.user.id;
   try {
-    const folder = await fileServices.removeFile(fileId, userId);
+    const folder = await fileServices.removeFile(fileIds, userId);
     return res.status(200).json(folder);
   } catch (error) {
     if (error instanceof Error) {
@@ -105,6 +105,37 @@ router.post('/save/:id', validateToken, async (req: Request, res: Response) => {
   try {
     const file = await fileServices.saveFile(fileId, fileData, userId);
     return res.status(200).json(file);
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+  }
+})
+
+// Read Recycle Bin Files
+router.get('/recycle-bin', validateToken,  async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  try {
+    const files = await fileServices.getRecycledFiles(userId);
+    return res.status(200).json(files);
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+  }
+})
+
+// Restore File
+router.post('/restore', validateToken, async (req: Request, res: Response) => {
+  const fileIds = req.body.fileIds as number[];
+  const userId = req.user.id;
+  try {
+    const result = await fileServices.restoreFile(fileIds, userId);
+    return res.status(200).json(result);
   } catch (error) {
     if (error instanceof Error) {
       return res.status(400).json({ error: error.message });

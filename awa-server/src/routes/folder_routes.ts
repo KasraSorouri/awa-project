@@ -41,8 +41,20 @@ router.get('/getFolders', validateToken, async (req: Request, res: Response) => 
   }
 })
 
-
-
-
+// Delete a Folder
+router.delete('/delete/:id', validateToken, async (req: Request, res: Response) => {
+  const folderId = parseInt(req.params.id);
+  const userId = req.user.id;
+  try {
+    await folderServices.deleteFolder(folderId, userId);
+    res.status(200).json({ message: 'Folder deleted successfully' });
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+  }
+})
 
 export default router;

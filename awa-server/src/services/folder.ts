@@ -1,7 +1,8 @@
 
 import { IFolder } from '../types/folderTypes';
 import { Folder, User, File } from '../models';
-import { Op } from 'sequelize';
+import { Op, where } from 'sequelize';
+import { log } from 'console';
 
 
 const folderQuery = {
@@ -23,6 +24,7 @@ const folderQuery = {
     {
       model: File,
       as: 'files',
+      where: { deleted: false },
     },
   ],
 }
@@ -119,7 +121,6 @@ export const getFolders = async (userId: number) => {
   try {
     const folders = await Folder.findAll({ where: { 'userId' : userId }, ...folderQuery });
 
-    console.log('file * folder ', folders)
     const plainFolders = folders.map(folder => folder.get({ plain: true })) as unknown as IUserFolders[]
     const folderTree = makeFolderTree(plainFolders);
     return folderTree;
@@ -132,7 +133,39 @@ export const getFolders = async (userId: number) => {
   }
 };
 
+// Remove a Folder
+export const deleteFolder = async (folderId: number, userId: number) => {
+  try {  
+    // Check folder 
+    const folder = await Folder.findByPk(folderId,{...folderQuery});
+    if (!folder) {
+      throw new Error('Folder not found');
+    }
+    // Check folder ownership
+    if (folder.userId !== userId) {
+      throw new Error('Unauthorized');
+    }
+
+    // Check if folder is empty
+    const files = await File.findAll({ where: { folderId: folderId } });
+    const folders = await Folder.findAll({ where: { parentFolder: folderId } });
+    if (files && files.length > 0 || folders && folders.length > 0) {
+      throw new Error('Folder is not empty');
+    }
+    // Delete folder
+    await folder.destroy();
+    return true;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    console.log(error);
+    throw new Error('Error deleting folder');
+  }
+};
+
 export default {
   createFolder,
-  getFolders
+  getFolders,
+  deleteFolder,
 }

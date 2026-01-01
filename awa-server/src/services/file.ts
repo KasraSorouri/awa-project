@@ -1,9 +1,26 @@
 
-import { File, UserFiles, Folder } from '../models';
+import { stripTypeScriptTypes } from 'module';
+import { File, UserFiles, Folder, User } from '../models';
 import { IEditFileData, IFile, IFileData, IFileParam, IUserFile } from '../types/fileTypes';
 import storeFile from '../utils/storeFile';
 
 const fileQuery = {
+  include: [
+    {
+      model: UserFiles,
+      as: 'userFiles',
+      attributes: ['userId', 'role'],
+    },
+    {
+      model: Folder,
+      as: 'folder',
+      attributes: ['id', 'folderName'],
+    }
+  ],
+  attributes: ['id', 'fileName', 'folderId', 'fileType', 'address', 'editable', 'deleted', 'activated'],
+}
+
+const RecycleQuery = {
   include: [
     {
       model: UserFiles,
@@ -136,30 +153,41 @@ const deleteFile = async (fileId: number, userId: number) => {
 }
 
 // Remove a file
-const removeFile = async (fileId: number, userId: number) => {
+const removeFile = async (fileIds: number[], userId: number) => {
   try {
-    const userFile = await UserFiles.findOne({ where: { fileId, userId } });
+    const userFile = await UserFiles.findAll({ where: { fileId: fileIds, userId } });
     if (!userFile) {
       throw new Error('File not found');
     }
-    if (userFile.role !== 'owner') {
-      throw new Error('User does not have permission to remove this file');
-    }
-    const file = await File.findOne({ where: { id: fileId } });
 
-    if (!file) {
+    const files = await File.findAll({ where: { id: fileIds } });
+
+    if (!files) {
       throw new Error('File not found');
     }
-
-    await storeFile.removeFile(file.address)
-    await file.destroy();
-  
-    return true
+    let counter = 0;
+    const errors: Error[] = [];
+    for (const file of files) {
+      try {
+        await storeFile.removeFile(file.address)
+        await file.destroy();
+        counter ++;
+      } catch (error) {
+        if (error instanceof Error) {
+          errors.push(new Error(error.message));
+        }
+        errors.push(new Error('Error removing file'));
+      }
+    }
+    if (errors.length > 0) {
+      throw new Error(errors.join(', '));
+    }
+    return {message: `${counter} files removed`};
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
     }
-    throw new Error('Error deleting file');
+    throw new Error('Error removing file');
   }
 }
 
@@ -233,11 +261,81 @@ const saveFile = async (fileId: number, fileData: IEditFileData, userId: number)
   }
 }
 
+// Read recycleBin files
+const getRecycledFiles = async (userId: number) => {
+  try {
+
+    const deletedFiles = await File.findAll({
+      where: { deleted: true },
+      include: [
+        {
+          model: User,
+          where: { id: userId }
+        },
+        {
+          model: Folder,
+          as: 'folder',
+          attributes: ['id', 'folderName'],
+        }
+      ]
+    })
+    return deletedFiles;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Error reading recycle bin files');
+  }
+};
+
+
+// Restore Files
+const restoreFile = async (fileIds: number[], userId: number) => {
+  try {
+    const userFiles = await UserFiles.findAll({ where: { fileId: fileIds, userId } });
+    if (!userFiles) {
+      throw new Error('File not found');
+    }
+
+    const files = await File.findAll({ where: { id: fileIds } });
+
+    if (!files) {
+      throw new Error('File not found');
+    }
+
+    let counter = 0;
+    const errors: Error[] = [];
+    for (const file of files) {
+      try {
+        file.deleted = false;
+        await file.save();
+        counter ++;
+      } catch (error) {
+        if (error instanceof Error) {
+          errors.push(new Error(error.message));
+        }
+        errors.push(new Error('Error restoring file'));
+      }
+    }
+    if (errors.length > 0) {
+      throw new Error(errors.join(', '));
+    }
+    return {message: `${counter} files restored`};
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Error restoring file');
+  }
+}
+
 export default {
   createFile,
   uploadFile,
   deleteFile,
   removeFile,
   openFile,
-  saveFile
+  saveFile,
+  getRecycledFiles,
+  restoreFile
 }

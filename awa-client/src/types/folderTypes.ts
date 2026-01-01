@@ -30,3 +30,12 @@ export interface IEditFileData {
   fileName: string,
   fileContent: string
 }
+
+interface ISimpleFolder {
+  id: number,
+  folderName: string
+}
+
+export interface IRecycledFiles extends IFile {
+  folder: ISimpleFolder
+}
