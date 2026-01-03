@@ -92,7 +92,6 @@ function App() {
           <Route path='/register' element={<Register />} />
           <Route path='/recycled' element={user ? <ShowRecycledFiles recycledFiles={recycledFiles} /> : <Login /> } />
         </Routes>
-    
     </BrowserRouter>
     </>
   )

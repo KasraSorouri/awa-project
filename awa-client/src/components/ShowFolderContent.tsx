@@ -16,12 +16,13 @@ import ShareIcon from '@mui/icons-material/Share';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
+import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 
 import fileService from '../services/fileService';
 import folderService from '../services/folderService';
 
 import { IFolder } from '../types/folderTypes'
-import { Button, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Stack, Tooltip, Typography } from '@mui/material';
 import { IAlert } from '../types/alertTypes';
 
 interface Column {
@@ -151,8 +152,61 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
     }
   }
 
+  if (!(folder.subFolders.length !== 0 || folder.files.length !== 0 )) {
+    return(
+      <Paper sx={{ width: '100%', overflow: 'hidden', minHeight: '60vh' }}>
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', padding: 2, borderBottom: '1px solid #e0e0e0' }}>
+          <Tooltip title='Up Folder' >
+            <Button
+              type='button'
+              size='small'
+              variant='contained'
+              sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
+              onClick={() => setActiveFolder(folder.parent || 0)}
+            >
+             <DriveFolderUploadIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
+            </Button>  
+          </Tooltip>
+        </Box>
+        <Typography variant="h6" component="h2" sx={{ padding: 2 }}>This folder is empty</Typography>
+      </Paper>
+    )
+  }
+
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+    <Paper sx={{ width: '100%', overflow: 'hidden', minHeight: '60vh' }}>
+      <Box 
+        sx={{ 
+          display: 'flex', 
+          justifyContent: 'space-between', 
+          alignItems: 'center', 
+          padding: 2,
+          borderBottom: '1px solid #e0e0e0' // Optional divider
+        }}
+      >
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <Tooltip title='Up Folder' >
+            <Button
+              type='button'
+              size='small'
+              variant='contained'
+              sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
+              onClick={() => setActiveFolder(folder.parent || 0)}
+            >
+             <DriveFolderUploadIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
+            </Button>  
+          </Tooltip>
+        </Box>
+        <TablePagination
+        rowsPerPageOptions={[5, 10, 50]}
+        component="div"
+        count={rows.length}
+        rowsPerPage={rowsPerPage}
+        page={page}
+        onPageChange={handleChangePage}
+        onRowsPerPageChange={handleChangeRowsPerPage}
+      />
+      </Box>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
           <TableHead>
@@ -259,15 +313,6 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
           </TableBody>
         </Table>
       </TableContainer>
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 50]}
-        component="div"
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
     </Paper>
   );
 }

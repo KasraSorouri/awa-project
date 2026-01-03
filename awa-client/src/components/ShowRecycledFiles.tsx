@@ -52,8 +52,6 @@ interface Data {
   editable?: boolean;
 }
 
-
-
 interface ShowRecycledFilesProps {
   recycledFiles: IRecycledFiles[];
 }
@@ -186,7 +184,6 @@ const ShowFileContent = ({recycledFiles}: ShowRecycledFilesProps) => {
     }
   };
 
-
 return(
   <Grid size={{ xs: 9, lg: 12 }} border={'solid'} borderColor={'#4d4d4d'} borderRadius={5} padding={3} margin={{ xs: 1, lg: 5}}>
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -226,7 +223,7 @@ return(
             </Button>
           </Tooltip>
         </Box>
-              <TablePagination
+        <TablePagination
         rowsPerPageOptions={[5, 10, 50]}
         component="div"
         count={rows.length}
@@ -332,8 +329,6 @@ return(
       </TableContainer>
     </Paper>
     <ShowAlert type={alertData.type} message={alertData.message} showAlert={alertData.showAlert} setAlertData={setAlertData} />
-
-
     </Grid>
   );
 };

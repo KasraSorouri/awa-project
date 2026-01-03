@@ -17,12 +17,9 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
 import { Button } from '@mui/material';
 
-import FolderIcon from '@mui/icons-material/Folder';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import DeleteIcon from '@mui/icons-material/Delete';
-
-
 
 import { IFile, IFolderTree } from '../types/folderTypes';
 
@@ -258,13 +255,13 @@ const Header = ({user, folders, recycledFiles}:THeaderProps) => {
             </Search>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={countFolder} color="error">
-                <FolderIcon />
-              </Badge>
-            </IconButton>
-            <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-              <Badge badgeContent={countFile} color="error">
+            <IconButton 
+              size="large"
+              aria-label="My Drive"
+              color="inherit"
+              onClick={()=> navigate('/')}
+            >
+              <Badge badgeContent={countFolder+countFile} color="error">
                 <InventoryIcon />
               </Badge>
             </IconButton>
@@ -287,7 +284,7 @@ const Header = ({user, folders, recycledFiles}:THeaderProps) => {
                 <FolderSharedIcon />
               </Badge>
             </IconButton>
-              <Typography variant='h5' sx={{ marginLeft: '2rem' }}>
+              <Typography variant='h5' sx={{ margin: '2rem' }}>
                 {showUser}
               </Typography>
             <IconButton

@@ -19,12 +19,11 @@ interface IShowContentProps {
 
 const findCurrentFolder = (folders: IFolder[], activeFolder: number): IFolder | undefined => {
   
-
   for(const folder of folders) {
     if (folder.id === activeFolder) {
       return folder
     } 
-    if (folder.subFolders.length > 0) {
+    if (folder.subFolders) {
       const subFolder: IFolder | undefined = findCurrentFolder(folder.subFolders, activeFolder)
       if (subFolder) {
         return subFolder
@@ -37,16 +36,9 @@ const findCurrentFolder = (folders: IFolder[], activeFolder: number): IFolder | 
 
 
 const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setActiveFile, editMode, setEditMode, setAlertData}: IShowContentProps) => {
-  
-
 
   const folder: IFolder | undefined = findCurrentFolder(folders, activeFolder)
   const currentFolder: IFolder = folder ? folder : folders[0]
-
-  console.log('ShowContent * current folder', folder)
-
-
-
 
   if (folders.length === 0) {
     return <div>Loading...</div>
