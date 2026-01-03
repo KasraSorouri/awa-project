@@ -17,9 +17,13 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import DriveFileMoveIcon from '@mui/icons-material/DriveFileMove';
 import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
+import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
+import NoteAddIcon from '@mui/icons-material/NoteAdd';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 
 import fileService from '../services/fileService';
 import folderService from '../services/folderService';
+
 
 import { IFolder } from '../types/folderTypes'
 import { Box, Button, Stack, Tooltip, Typography } from '@mui/material';
@@ -70,10 +74,13 @@ interface IShowFolderContentProps {
   setActiveFolder: (id: number) => void;
   setActiveFile: (id: number | null) => void;
   setAlertData: (alert: IAlert) => void;
+  handleAddFile: () => void;
+  handleAddFolder: () => void;
+  handleUploadFile: () => void;
 }
 
 
-const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile, setAlertData}: IShowFolderContentProps) => {
+const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile, setAlertData, handleAddFile, handleAddFolder, handleUploadFile}: IShowFolderContentProps) => {
   console.log('ShowFolderContent * active folder', activeFolder)
   console.log('ShowFolderContent * folders', folder)
   
@@ -167,6 +174,15 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
              <DriveFolderUploadIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
             </Button>  
           </Tooltip>
+          <Tooltip title='Add new Folder' >
+            <Button id='addFolder'  variant='contained' size='small' sx={{ width: '10px'}} onClick={handleAddFolder} ><CreateNewFolderIcon /></Button>
+          </Tooltip>
+          <Tooltip title='Add new File' >
+            <Button id='addFile'  variant='contained' size='small' sx={{ width: '10px'}} onClick={handleAddFile} ><NoteAddIcon /></Button>
+          </Tooltip>
+          <Tooltip title='Upload a File' >
+            <Button id='uploadFile'  variant='contained' size='small' sx={{ width: '10px'}} onClick={handleUploadFile} ><CloudUploadIcon /></Button>
+          </Tooltip> 
         </Box>
         <Typography variant="h6" component="h2" sx={{ padding: 2 }}>This folder is empty</Typography>
       </Paper>
@@ -190,12 +206,27 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
               type='button'
               size='small'
               variant='contained'
-              sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
+              sx={{ width: '50px', minWidth:'50px', padding: '5px' }}
               onClick={() => setActiveFolder(folder.parent || 0)}
             >
              <DriveFolderUploadIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
             </Button>  
           </Tooltip>
+          <Tooltip title='Add new Folder' >
+            <Button id='addFolder'  variant='contained' size='small' sx={{ width: '50px', minWidth:'50px', padding: '5px' }} onClick={handleAddFolder} >
+              <CreateNewFolderIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
+            </Button>
+          </Tooltip> 
+          <Tooltip title='Add new File' >
+            <Button id='addFile'  variant='contained' size='small' sx={{ width: '50px', minWidth:'50px', padding: '5px' }} onClick={handleAddFile} >
+              <NoteAddIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
+            </Button>
+          </Tooltip>
+          <Tooltip title='Upload a File' >
+            <Button id='uploadFile'  variant='contained' size='small' sx={{ width: '50px', minWidth:'50px', padding: '5px' }} onClick={handleUploadFile} >
+              <CloudUploadIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
+            </Button>
+          </Tooltip> 
         </Box>
         <TablePagination
         rowsPerPageOptions={[5, 10, 50]}

@@ -15,6 +15,9 @@ interface IShowContentProps {
   editMode: boolean;
   setEditMode: (edit: boolean) => void;
   setAlertData: (alert: IAlert) => void;
+  handleAddFile: () => void;
+  handleAddFolder: () => void;
+  handleUploadFile: () => void;
 }
 
 const findCurrentFolder = (folders: IFolder[], activeFolder: number): IFolder | undefined => {
@@ -35,7 +38,7 @@ const findCurrentFolder = (folders: IFolder[], activeFolder: number): IFolder | 
 }
 
 
-const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setActiveFile, editMode, setEditMode, setAlertData}: IShowContentProps) => {
+const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setActiveFile, editMode, setEditMode, setAlertData, handleAddFile, handleAddFolder, handleUploadFile}: IShowContentProps) => {
 
   const folder: IFolder | undefined = findCurrentFolder(folders, activeFolder)
   const currentFolder: IFolder = folder ? folder : folders[0]
@@ -46,7 +49,16 @@ const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setAct
   return (
     <div className="show-content">
       {activeFile === null 
-        ? <ShowFolderContent folder={currentFolder} activeFolder={activeFolder} setActiveFolder={setActiveFolder} setActiveFile={setActiveFile} setAlertData={setAlertData} />
+        ? <ShowFolderContent 
+            folder={currentFolder}
+            activeFolder={activeFolder}
+            setActiveFolder={setActiveFolder}
+            setActiveFile={setActiveFile} 
+            setAlertData={setAlertData}
+            handleAddFile={handleAddFile}
+            handleAddFolder={handleAddFolder}
+            handleUploadFile={handleUploadFile}
+           />
         : <ShowFileContent activeFile={activeFile} setActiveFile={setActiveFile} editMode={editMode} setEditMode={setEditMode} />
       }
    </div>
