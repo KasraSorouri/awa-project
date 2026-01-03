@@ -3,7 +3,6 @@ import axios from 'axios';
 import { api_url } from '../configs/config'
 import authService from './authService';
 
-
 interface IFolderData {
   folderName: string;
   parentFolder?: string;
@@ -18,6 +17,7 @@ const getUserFolders = async () => {
   try {
     const response = await axios.get(`${api_url}/folders/getFolders`,config);
     if (response.status === 200) {
+      console.log(`** get foder data -> \n`,response.data)
       return response.data;
     }
 

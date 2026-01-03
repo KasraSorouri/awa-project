@@ -15,14 +15,25 @@ export interface IFile {
 export interface IFolder {
   id: number,
   folderName: string,
-  userId: number,
+  userId?: number,
   subFolders: IFolder[],
   files: IFile[],
+  parent: number | null,
   deleted?: boolean,
   activated?: boolean,
   currentUser?: number,
-  createdAt?: string,
-  updatedAt?: string
+  createdAt?: Date,
+  updatedAt?: Date
+}
+
+export interface IFolderTree {
+  id: number;
+  folderName: string;
+  subFolders: IFolderTree[]; 
+  parent: number | null;    
+  files: IFile[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface IEditFileData {

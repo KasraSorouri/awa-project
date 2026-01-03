@@ -2,18 +2,19 @@ import { useState } from 'react';
 
 import UserFolder from './UserFolder';
 
-import { IFolder } from '../types/folderTypes';
+import { IFolderTree } from '../types/folderTypes';
 import { Grid } from '@mui/material';
 import ShowContent from './ShowContent';
 import ShowAlert from './ShowAlert';
 import { IAlert } from '../types/alertTypes';
 
-
 interface IUserPageProps {
-    folders: IFolder[];
+  folders: IFolderTree[];
 }
+
+
 const UserPage = ({folders}: IUserPageProps) => {
-  const [activeFolder, setActiveFolder] = useState<number | null>(null)
+  const [activeFolder, setActiveFolder] = useState<number>(0)
   const [activeFile, setActiveFile] = useState<number | null>(null);
   const [editMode, setEditMode] = useState<boolean>(false)
   const [alertData, setAlertData] = useState<IAlert>({
@@ -21,6 +22,11 @@ const UserPage = ({folders}: IUserPageProps) => {
     message: '',
     showAlert: false
   });
+
+  
+
+
+
 
   return (
     <>

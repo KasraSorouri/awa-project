@@ -11,6 +11,13 @@ export const up = async ({ context: queryInterface }: any) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      user_id: {
+        type: DataTypes.INTEGER,
+        references: { model: 'users', key: 'id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        allowNull: false,
+      },
       folder_id: {
         type: DataTypes.INTEGER,
         references: { model: 'folders', key: 'id' },
@@ -39,7 +46,13 @@ export const up = async ({ context: queryInterface }: any) => {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
       },
-
+      current_user: {
+        type: DataTypes.INTEGER,
+        references: { model: 'users', key: 'id' },
+        onDelete: 'CASCADE',
+        onUpdate: 'CASCADE',
+        allowNull: true,
+      },
       created_at: {
         type: DataTypes.DATE,
         allowNull: false,

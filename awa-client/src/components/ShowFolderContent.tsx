@@ -64,18 +64,21 @@ interface Data {
 }
 
 interface IShowFolderContentProps {
-  folders: IFolder[],
-  activeFolder: number | null;
-  setActiveFolder: (id: number | null) => void;
+  folder: IFolder,
+  activeFolder: number;
+  setActiveFolder: (id: number) => void;
   setActiveFile: (id: number | null) => void;
   setAlertData: (alert: IAlert) => void;
 }
 
 
-const ShowFolderContent = ({folders, activeFolder, setActiveFolder, setActiveFile, setAlertData}: IShowFolderContentProps) => {
-  console.log('ShowFolderContent', folders)
+const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile, setAlertData}: IShowFolderContentProps) => {
+  console.log('ShowFolderContent * active folder', activeFolder)
+  console.log('ShowFolderContent * folders', folder)
+  
 
-  const folder:IFolder = folders.find((folder) => folder.id === activeFolder) || folders[0]
+
+  console.log('ShowFolderContent * folder', activeFolder, '->' ,folder)
   const rows: Data[]= []
 
   if (folder.subFolders.length>0) {
@@ -107,7 +110,7 @@ const ShowFolderContent = ({folders, activeFolder, setActiveFolder, setActiveFil
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const handleChangePage = (event: unknown, newPage: number) => {
+  const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
   };
 
@@ -168,9 +171,9 @@ const ShowFolderContent = ({folders, activeFolder, setActiveFolder, setActiveFil
           <TableBody>
             {rows
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((row) => {
+              .map((row, index) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={row.id} >
+                  <TableRow hover role="checkbox" tabIndex={-1} key={index} >
                     <TableCell onClick ={() => setActiveItem(row.id, row.type)}> 
                       <Stack direction={'row'} spacing={1}>
                         {row.type === 'folder' ? 

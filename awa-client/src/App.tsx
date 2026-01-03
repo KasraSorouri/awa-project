@@ -13,7 +13,7 @@ import userService from './services/userService'
 import UserPage from './components/UserPage'
 import folderService from './services/folderService'
 
-import { IFolder, IRecycledFiles } from './types/folderTypes'
+import { IRecycledFiles, IFolderTree } from './types/folderTypes'
 import fileService from './services/fileService'
 
 interface IUserData {
@@ -27,12 +27,12 @@ interface IUserData {
 
 function App() {
   const [user, setUser] = useState<IUserData | null>(null)
-  const [folders, setFolders] = useState<IFolder[]>([])
+  const [folders, setFolders] = useState<IFolderTree[]>([])
   const [recycledFiles, setRecycledFiles] = useState<IRecycledFiles[]>([])
 
   const {token} = useToken()
   console.log('app user : ', user)
-
+  console.log('app folders : ', folders)
   console.log('recycled bin:', recycledFiles
     
   )
@@ -52,7 +52,7 @@ function App() {
       try {
         const result = await folderService.getUserFolders()
         if (result) {
-          setFolders(result)
+          setFolders([...result])
         }
       } catch (error) {
         if (error instanceof Error) {
@@ -90,7 +90,7 @@ function App() {
           <Route path='/' element={user ? <UserPage folders={folders} /> : <Login /> } />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
-          <Route path='/recycled' element={<ShowRecycledFiles recycledFiles={recycledFiles} /> } />
+          <Route path='/recycled' element={user ? <ShowRecycledFiles recycledFiles={recycledFiles} /> : <Login /> } />
         </Routes>
     
     </BrowserRouter>

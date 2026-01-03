@@ -24,20 +24,20 @@ import DeleteIcon from '@mui/icons-material/Delete';
 
 
 
-import { IFolder, IFile } from '../types/folderTypes';
+import { IFile, IFolderTree } from '../types/folderTypes';
 
 interface IUserData {
-  user_id: number,
-  username: string,
-  firstName?: string,
-  lastName?: string,
-  email?: string,
+  user_id: number;
+  username: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
 }
 
 type THeaderProps = {
-  user: IUserData | null
-  folders: IFolder[]
-  recycledFiles: IFile[]
+  user: IUserData | null;
+  folders: IFolderTree[];
+  recycledFiles: IFile[];
 }
 
 const Search = styled('div')(({ theme }) => ({
@@ -81,13 +81,13 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 
-const countRepository = (folders: IFolder[]) => {
+const countRepository = (folders: IFolderTree[]) => {
   let countFolder = 0;
   let countFile = 0;
   const countShare = 0;
 
-  const countItems = (folders:IFolder[]) =>{
-    folders.forEach((folder: IFolder) => {
+  const countItems = (folders:IFolderTree[]) =>{
+    folders.forEach((folder: IFolderTree) => {
       countFile = countFile + folder.files.length;
       countFolder = countFolder + 1
       countItems(folder.subFolders)

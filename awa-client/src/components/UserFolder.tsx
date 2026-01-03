@@ -1,7 +1,21 @@
 import { useState } from "react";
 
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, MenuItem, Select, Stack, TextField, Tooltip, Typography } from "@mui/material";
-import HomeIcon from '@mui/icons-material/Home';
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl, 
+  InputLabel,
+  MenuItem, 
+  Select, 
+  Stack, 
+  TextField,
+  Tooltip,
+} from "@mui/material";
+
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -10,14 +24,14 @@ import ShowFolder from './ShowFolder';
 import folderService from '../services/folderService';
 import fileService from '../services/fileService';
 
-import { IFolder } from '../types/folderTypes';
+import { IFolderTree } from '../types/folderTypes';
 import { IAlert } from "../types/alertTypes";
 
 
 interface FolderProps {
-    folders: IFolder[];
-    activeFolder: number | null;
-    setActiveFolder: (id: number | null) => void;
+    folders: IFolderTree[];
+    activeFolder: number;
+    setActiveFolder: (id: number) => void;
     setActiveFile: (id: number | null) => void;
     setEditMode: (edit: boolean) => void;
     setAlertData: (data:IAlert) => void;
@@ -42,6 +56,7 @@ interface IUploadFileData extends INewFileData {
 
 const UserFolder = ({folders, activeFolder, setActiveFolder, setActiveFile, setEditMode, setAlertData}: FolderProps) => {
 
+  console.log('user folder * folders', folders)
   const [openAddFolder, setOpenAddFolder] = useState<boolean>(false)
   const [openAddFile, setOpenAddFile] = useState<boolean>(false)
   const [openUploadFile, setOpenUploadFile] = useState<boolean>(false)
@@ -164,12 +179,6 @@ const UserFolder = ({folders, activeFolder, setActiveFolder, setActiveFile, setE
           <Button id='uploadFile'  variant='contained' size='small' sx={{ width: '10px'}} onClick={handleUploadFile} ><CloudUploadIcon /></Button>
         </Tooltip> 
       </Stack>
-      <Box onClick={() => setActiveFolder(null)}>
-        <Stack direction={'row'} >
-          <HomeIcon fontSize="large" sx={{color: "#4D4D4D", marginRight:'3px'}} />
-          <Typography variant="h5" align="left" color="#4D4D4D">My Drive /</Typography>
-        </Stack>
-      </Box>
       <ShowFolder folders={folders} activeFolder={activeFolder} setActiveFolder={setActiveFolder} setActiveFile={setActiveFile} />
       <Dialog open={openAddFolder} onClose={()=>setOpenAddFolder(false)} >
         <DialogTitle>New Folder</DialogTitle>

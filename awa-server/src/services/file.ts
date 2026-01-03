@@ -50,6 +50,7 @@ const createFile = async (fileData: IFileData) => {
 
   const newFile: IFile = {
     fileName: fileData.fileName,
+    userId: fileData.userId,
     folderId: fileData.folderId,
     fileType: fileData.fileType,
     editable: true,
@@ -95,6 +96,7 @@ const uploadFile = async (fileData: IFileData, file: Express.Multer.File) => {
 
   const newFile: IFile = {
     fileName: fileData.fileName,
+    userId: fileData.userId,
     folderId: fileData.folderId,
     fileType: fileData.fileType,
     editable: false,

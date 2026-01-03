@@ -1,6 +1,7 @@
 
 export interface IFile {
   fileName: string;
+  userId: number;
   folderId: number;
   fileType: string;
   address: string;

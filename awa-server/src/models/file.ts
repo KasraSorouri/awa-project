@@ -5,19 +5,22 @@ import { sequelize } from '../configs/database';
 interface IFileAttributes {
   id: number;
   fileName: string;
+  userId: number;
   folderId: number;
   fileType: string;
   address: string;
   editable: boolean;
   deleted: boolean;
   activated: boolean;
+  currentUser: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
-interface IFileCreationAttributes extends Optional<IFileAttributes, 'id' | 'createdAt' | 'updatedAt' | 'activated' | 'deleted'> {
+interface IFileCreationAttributes extends Optional<IFileAttributes, 'id' | 'createdAt' | 'updatedAt' | 'activated' | 'deleted' | 'currentUser'> {
   id?: number;
   activated?: boolean;
+  currentUser?: number;
   deleted?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
@@ -27,11 +30,13 @@ class File extends Model<IFileAttributes, IFileCreationAttributes> implements IF
   declare id: number;
   declare fileName: string;
   declare folderId: number;
+  declare userId: number;
   declare fileType: string;
   declare address: string;
   declare editable: boolean;
   declare deleted: boolean;
   declare activated: boolean;
+  declare currentUser: number;
   declare createdAt: Date;
   declare updatedAt: Date;
 }
@@ -47,12 +52,19 @@ File.init(
       type: DataTypes.STRING,
       allowNull: false,
     },
+    userId:{
+      type: DataTypes.INTEGER,
+      references: { model: 'users', key: 'id' },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+      allowNull: false,
+    },
     folderId: {
       type: DataTypes.INTEGER,
       references: { model: 'folders', key: 'id' },
       onDelete: 'CASCADE',
       onUpdate: 'CASCADE',
-      allowNull: false,
+      allowNull: true,
     },
     fileType: {
       type: DataTypes.STRING,
@@ -74,6 +86,13 @@ File.init(
     activated: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+    currentUser: {
+      type: DataTypes.INTEGER,
+      references: { model: 'users', key: 'id' },
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE',
+      allowNull: true,
     },
     createdAt: {
       type: DataTypes.DATE,

@@ -2,7 +2,8 @@
 import { IFolder } from '../types/folderTypes';
 import { Folder, User, File } from '../models';
 import { Op, where } from 'sequelize';
-import { log } from 'console';
+
+import outputMaker from '../utils/outputMaker';
 
 
 const folderQuery = {
@@ -10,76 +11,22 @@ const folderQuery = {
     {
       model: Folder,
       as: 'parent',
-      attributes: ['id', 'folderName'],
+      attributes: ['id', 'folderName', 'createdAt', 'updatedAt' ],
     },
     {
       model: Folder,
       as: 'subFolders',
+      attributes: ['id', 'folderName', 'createdAt', 'updatedAt'],
     },
     {
       model: User,
-      as: 'user',
+      as: 'folderOwner',
       attributes: ['id', 'username'],
     },
-    {
-      model: File,
-      as: 'files',
-      where: { deleted: false },
-    },
   ],
+  attributes: ['id', 'folderName', 'createdAt', 'updatedAt', 'userId'],
 }
 
-interface IUserFolders {
-  id: number;
-  folderName: string;
-  userId: number;
-  parent: IUserFolders | null;
-  subFolders: IUserFolders[];
-  files: File[];
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-interface IFolderTree {
-  id: number;
-  folderName: string;
-  subFolders: IFolderTree[];
-  files: File[];
-}
-
-
-// Make The folder tree
-const makeFolderTree = (folders: IUserFolders[]) => {
-  const folderMap = new Map();
-    
-    folders.forEach(folder => {
-        folderMap.set(folder.id, {
-            id: folder.id,
-            folderName: folder.folderName,
-            createdAt: folder.createdAt,
-            updatedAt: folder.updatedAt,
-            subFolders: [],
-            files: folder.files
-        });
-    });
-
-    const rootFolders : IFolderTree[] = [];
-
-    folders.forEach(folder => {
-        const currentFolder = folderMap.get(folder.id);
-        
-        const parentId = folder.parent ? folder.parent.id : null;
-
-        if (parentId && folderMap.has(parentId)) {
-            const parentFolder = folderMap.get(parentId);
-            parentFolder.subFolders.push(currentFolder);
-        } else {
-            rootFolders.push(currentFolder);
-        }
-    });
-
-  return rootFolders;
-}
 
 // Create a new folder
 export const createFolder = async (folderData: IFolder) => {
@@ -119,11 +66,14 @@ export const createFolder = async (folderData: IFolder) => {
 export const getFolders = async (userId: number) => {
 
   try {
+    // Get User folder
     const folders = await Folder.findAll({ where: { 'userId' : userId }, ...folderQuery });
-
-    const plainFolders = folders.map(folder => folder.get({ plain: true })) as unknown as IUserFolders[]
-    const folderTree = makeFolderTree(plainFolders);
-    return folderTree;
+    // Get User Files
+    const files = await File.findAll({ where: { 'userId' : userId, deleted: false } });
+    
+    // Process Repository Output
+    const result = outputMaker.userFilesFolders(folders, files);
+    return result;
 
   } catch (error) {
     if (error instanceof Error) {
@@ -141,6 +91,7 @@ export const deleteFolder = async (folderId: number, userId: number) => {
     if (!folder) {
       throw new Error('Folder not found');
     }
+
     // Check folder ownership
     if (folder.userId !== userId) {
       throw new Error('Unauthorized');
