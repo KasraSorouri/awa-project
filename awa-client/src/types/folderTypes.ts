@@ -36,23 +36,30 @@ export interface IFolderTree {
   updatedAt?: Date;
 }
 
+
+export interface INewFolderData {
+  folderName: string,
+  parentFolder?: number | null,
+}
+
 export interface IEditFileData {
   id: number,
   fileName: string,
   fileContent: string
 }
 
-interface ISimpleFolder {
+export interface ISimpleFolder {
   id: number,
   folderName: string
 }
 
 export interface IRecycledFiles extends IFile {
-  folder: ISimpleFolder
+  folder: ISimpleFolder | null
 }
 
 export interface IFileCounter {
-  fileCounter: number;
-  folderCounter: number;
-  sharedCounter: number;
+  fileCounter?: number;
+  folderCounter?: number;
+  recycledCounter?: number;
+  sharedCounter?: number;
 }

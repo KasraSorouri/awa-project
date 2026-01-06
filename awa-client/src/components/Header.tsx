@@ -21,7 +21,7 @@ import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { IFile, IFileCounter } from '../types/folderTypes';
+import { IFileCounter } from '../types/folderTypes';
 
 interface IUserData {
   user_id: number;
@@ -34,7 +34,6 @@ interface IUserData {
 type THeaderProps = {
   user: IUserData | null;
   counter: IFileCounter;
-  recycledFiles: IFile[];
 }
 
 const Search = styled('div')(({ theme }) => ({
@@ -80,7 +79,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 
 
 
-const Header = ({user, counter, recycledFiles}:THeaderProps) => {
+const Header = ({user, counter}:THeaderProps) => {
 
   const navigate = useNavigate()
 
@@ -170,7 +169,7 @@ const Header = ({user, counter, recycledFiles}:THeaderProps) => {
           aria-label="show 17 new notifications"
           color="inherit"
         >
-          <Badge badgeContent={recycledFiles.length} color="error">
+          <Badge badgeContent={counter.recycledCounter} color="error">
             <DeleteIcon />
           </Badge>
         </IconButton>
@@ -243,7 +242,7 @@ const Header = ({user, counter, recycledFiles}:THeaderProps) => {
               color="inherit"
               onClick={()=> navigate('/')}
             >
-              <Badge badgeContent={counter.fileCounter+counter.folderCounter} color="error">
+              <Badge badgeContent={(counter.fileCounter|| 0)+ (counter.folderCounter||0)} color="error">
                 <InventoryIcon />
               </Badge>
             </IconButton>
@@ -253,7 +252,7 @@ const Header = ({user, counter, recycledFiles}:THeaderProps) => {
               color="inherit"
               onClick={()=> navigate('/recycled')}
             >
-              <Badge badgeContent={recycledFiles.length} color="error">
+              <Badge badgeContent={counter.recycledCounter} color="error">
                 <DeleteIcon />
               </Badge>
             </IconButton>

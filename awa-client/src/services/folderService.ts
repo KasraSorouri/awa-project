@@ -3,11 +3,7 @@ import axios from 'axios';
 import { api_url } from '../configs/config'
 import authService from './authService';
 
-interface IFolderData {
-  folderName: string;
-  parentFolder?: string;
-}
-
+import { INewFolderData } from '../types/folderTypes';
 
 const getUserFolders = async () => {
   const authorization: string = authService()
@@ -32,7 +28,7 @@ const getUserFolders = async () => {
 
 
 
-const createFolder = async (folderData: IFolderData) => {
+const createFolder = async (folderData: INewFolderData) => {
   console.log('*** folder service * create ' ,folderData)
   const authorization: string = authService()
   const config = {

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import UserFolder from './UserFolder';
 
-import { IFile, IFileCounter, IFolderTree } from '../types/folderTypes';
+import { IFile, IFileCounter, IFolderTree, INewFolderData } from '../types/folderTypes';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import ShowContent from './ShowContent';
 import ShowAlert from './ShowAlert';
@@ -11,10 +11,6 @@ import fileService from '../services/fileService';
 import folderService from '../services/folderService';
 
 
-interface INewFolderData {
-  folderName: string,
-  parentFolder?: string,
-}
 
 interface INewFileData {
   fileName: string,
@@ -76,10 +72,11 @@ const countRepository = (folders: IFolderTree[]) => {
 }
 
 interface IUserPageProps {
-  setCounter : (counters: IFileCounter) => void;
+  updateCounter : (counters: IFileCounter) => void;
+  counter: IFileCounter;
 }
 
-const UserPage = ({setCounter}: IUserPageProps) => {
+const UserPage = ({counter, updateCounter}: IUserPageProps) => {
 
   const [folders, setFolders] = useState<IFolderTree[]>([])
 
@@ -103,6 +100,7 @@ const UserPage = ({setCounter}: IUserPageProps) => {
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [fileType, setFileType] = useState<string>('')
 
+  console.log('*** active folder ->', activeFolder)
 
   useEffect(() => {
     const getUserFiles = async () => {
@@ -111,7 +109,7 @@ const UserPage = ({setCounter}: IUserPageProps) => {
         if (result) {
           setFolders([...result])
           const counters = countRepository([...result])
-          setCounter(counters)
+          updateCounter(counters)
         }
       } catch (error) {
         if (error instanceof Error) {
@@ -142,20 +140,19 @@ const UserPage = ({setCounter}: IUserPageProps) => {
     setOpenAddFolder(false)
     const newFolderData: INewFolderData = {
       folderName: newFolder,
-      parentFolder: activeFolder?.toString()
+      parentFolder: activeFolder !==0 ? activeFolder : null
     }
     try{
       const result = await folderService.createFolder(newFolderData)
-
+      setFolders(result)
+      updateCounter({fileCounter:(counter.folderCounter || 0) +1 })
       setAlertData(
         {
           type: 'success',
           message: 'Folder created successfully',
           showAlert: true
         })
-      setFolders(result)
-      const counters = countRepository([...result])
-      setCounter(counters)
+      
       setNewFolder('')
     } catch (error) {
       if (error instanceof Error) {
@@ -176,7 +173,7 @@ const UserPage = ({setCounter}: IUserPageProps) => {
     setOpenAddFile(false)
     const newFileData: INewFileData = {
       fileName: newFile,
-      folderId: activeFolder,
+      folderId: activeFolder !==0 ? activeFolder : null,
       fileType: 'document'
     }
     try{
@@ -184,6 +181,7 @@ const UserPage = ({setCounter}: IUserPageProps) => {
       // update data
       const updatedFolders : IFolderTree[] = updateAddFile(folders, activeFolder, result)
       setFolders([...updatedFolders])
+      updateCounter({fileCounter:(counter.fileCounter || 0) +1 })
       setActiveFile(result.id)
       setEditMode(true)
       setNewFile('')
@@ -208,7 +206,7 @@ const UserPage = ({setCounter}: IUserPageProps) => {
     }
     const newFileData: IUploadFileData = {
       fileName: newFile ? newFile: uploadedFile.name,
-      folderId: activeFolder,
+      folderId: activeFolder !==0 ? activeFolder : null,
       fileType: uploadedFile.type,
       file: uploadedFile,
     }
@@ -217,6 +215,7 @@ const UserPage = ({setCounter}: IUserPageProps) => {
       // Update Data
       const updatedFolders : IFolderTree[] = updateAddFile(folders, activeFolder, result)
       setFolders([...updatedFolders])
+      updateCounter({fileCounter:(counter.fileCounter || 0) +1 })
       setUploadedFile(null)
       setNewFile('')
     } catch (error) {
@@ -230,8 +229,14 @@ const UserPage = ({setCounter}: IUserPageProps) => {
   const handleDeleteUpdate = (item:'file'|'folder', id: number) => {
     const result = updateDeleteItem(folders, activeFolder, item, id)
     setFolders([...result])
-    const counters = countRepository([...result])
-    setCounter(counters)
+  
+    if (item === 'file') {
+      updateCounter({fileCounter:(counter.fileCounter || 0) -1,
+        recycledCounter:(counter.recycledCounter || 0) +1
+       })
+    } else {
+      updateCounter({folderCounter:(counter.folderCounter || 0) -1 })
+    }
   }
 
   return (

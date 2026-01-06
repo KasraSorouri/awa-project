@@ -12,8 +12,7 @@ import { useToken } from './services/useToken'
 import userService from './services/userService'
 import UserPage from './components/UserPage'
 
-import { IRecycledFiles } from './types/folderTypes'
-import fileService from './services/fileService'
+import { IFileCounter, IRecycledFiles } from './types/folderTypes'
 
 interface IUserData {
   user_id: number,
@@ -30,11 +29,24 @@ function App() {
   const [counter, setCounter] = useState({
     fileCounter: 0,
     folderCounter: 0,
+    recycledCounter: 0,
     sharedCounter: 0
   })
 
   const {token} = useToken()
   console.log('app user : ', user)
+  console.log('recycledFiles : ', recycledFiles)
+  console.log('**** Counter : ', counter)
+
+  const updateCounter = (newCounters: IFileCounter) => {
+    setCounter({
+      fileCounter: newCounters.fileCounter ? newCounters.fileCounter : counter.fileCounter,
+      folderCounter: newCounters.folderCounter ? newCounters.folderCounter : counter.folderCounter,
+      recycledCounter: newCounters.recycledCounter ? newCounters.recycledCounter : counter.recycledCounter,
+      sharedCounter: newCounters.sharedCounter ? newCounters.sharedCounter : counter.sharedCounter,
+    })
+  }
+
   
   useEffect(() => {
     const getUserInfo = async() => {
@@ -48,36 +60,35 @@ function App() {
       }
     }
     
-
-    const getDeletedFiles = async () => {
-      try {
-        const recycled = await fileService.getRecycleBin()
-        if (recycled) {
-          setRecycledFiles(recycled)
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log(error.message)
-        }
-        console.log(error)
-      }
-    }
-    
     if (token) {
       getUserInfo()
-      getDeletedFiles()
     }
   }, [token])
+
+  console.log('counter :', counter)
+  const hanldeUpdateRecycle = (action:'REMOVE' | 'RESTORE', id: number) => {
+    if (action === 'REMOVE') {
+      setRecycledFiles(recycledFiles.filter((file) => file.id !== id))
+      updateCounter({recycledCounter: counter.recycledCounter - 1})
+    } else if (action === 'RESTORE') {
+      setRecycledFiles(recycledFiles.filter((file) => file.id !== id))
+      updateCounter({recycledCounter: counter.recycledCounter - 1,
+        fileCounter: counter.fileCounter + 1
+      })
+    } else {
+      return
+    }
+  }
 
   return (
     <>
       <BrowserRouter>
-        <Header user={user} counter={counter} recycledFiles={recycledFiles} />
+        <Header user={user} counter={counter} />
         <Routes>
-          <Route path='/' element={user ? <UserPage setCounter={setCounter}  /> : <Login /> }/>
+          <Route path='/' element={user ? <UserPage counter={counter} updateCounter={updateCounter} /> : <Login /> }/>
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
-          <Route path='/recycled' element={user ? <ShowRecycledFiles recycledFiles={recycledFiles} /> : <Login /> } />
+          <Route path='/recycled' element={user ? <ShowRecycledFiles updateCounter={updateCounter} hanldeUpdateRecycle={hanldeUpdateRecycle} /> : <Login /> } />
         </Routes>
     </BrowserRouter>
     </>

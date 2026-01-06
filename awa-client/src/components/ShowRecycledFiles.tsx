@@ -1,5 +1,6 @@
+import { useState, useEffect } from 'react';
+
 import { Box, Button, Checkbox, Grid, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography } from '@mui/material';
-import { useState } from 'react';
 import 'react-quill-new/dist/quill.snow.css';
 
 import ArticleIcon from '@mui/icons-material/Article';
@@ -7,7 +8,7 @@ import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import RecyclingIcon from '@mui/icons-material/Recycling';
 
-import { IRecycledFiles } from '../types/folderTypes';
+import { IFileCounter, IRecycledFiles } from '../types/folderTypes';
 import { IAlert } from '../types/alertTypes';
 import fileService from '../services/fileService';
 import ShowAlert from './ShowAlert';
@@ -53,12 +54,14 @@ interface Data {
 }
 
 interface ShowRecycledFilesProps {
-  recycledFiles: IRecycledFiles[];
+  hanldeUpdateRecycle: (action:'REMOVE' | 'RESTORE', id:number) => void;
+  updateCounter: (counter: IFileCounter) => void;
 }
 
 
-const ShowFileContent = ({recycledFiles}: ShowRecycledFilesProps) => {
+const ShowFileContent = ({hanldeUpdateRecycle, updateCounter}: ShowRecycledFilesProps) => {
 
+  const [recycledFiles, setRecycledFiles] = useState<IRecycledFiles[]>([])
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selected, setSelected] = useState<number[]>([]);
@@ -67,6 +70,25 @@ const ShowFileContent = ({recycledFiles}: ShowRecycledFilesProps) => {
     message: '',
     showAlert: false
   });
+
+  useEffect(() => {
+ 
+    const getDeletedFiles = async () => {
+      try {
+        const recycled = await fileService.getRecycleBin()
+        if (recycled) {
+          setRecycledFiles(recycled)
+          updateCounter({recycledCounter: recycled.length})
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log(error.message)
+        }
+        console.log(error)
+      }
+    }
+    getDeletedFiles()
+  }, [])
   
   const handleChangePage = (_event: unknown, newPage: number) => {
     setPage(newPage);
@@ -82,7 +104,7 @@ const ShowFileContent = ({recycledFiles}: ShowRecycledFilesProps) => {
     rows.push({
       id: file.id,
       name: file.fileName,
-      folder: file.folder.folderName,
+      folder: file.folder?.folderName || 'Root',
       dateCreated: new Date(file.createdAt),
       dateModified: new Date(file.updatedAt),
       type: 'file',
@@ -103,7 +125,7 @@ const ShowFileContent = ({recycledFiles}: ShowRecycledFilesProps) => {
   const handleRemoveFile = async(id:number) => {
     try {
       const result = await fileService.removeFile([id]);
-      rows.filter((row) => row.id !== id)
+      hanldeUpdateRecycle('REMOVE', id)
       setAlertData({
         type: 'success',
         message: result.message,
@@ -124,7 +146,7 @@ const ShowFileContent = ({recycledFiles}: ShowRecycledFilesProps) => {
   const handleRestoreFile = async(id:number) => {
     try {
       const result = await fileService.restoreFile([id]);
-      rows.filter((row) => row.id !== id)
+      hanldeUpdateRecycle('RESTORE', id)
       setAlertData({
         type: 'success',
         message: result.message,

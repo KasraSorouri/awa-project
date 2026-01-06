@@ -139,13 +139,11 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
         await folderService.deleteFolder(id);
         handleDeleteUpdate('folder', id)
         setAlertData({type: 'success', message: 'Folder deleted successfully', showAlert: true});
-        rows.filter((row) => row.type === 'folder' && row.id !== id);
       } else {
         const result = await fileService.deleteFile(id);
         if (result) {
           handleDeleteUpdate('file', id)
           setAlertData({type: 'success', message: 'File deleted successfully',showAlert: true});
-          rows.filter((row) => row.type === 'file' && row.id !== id);
         }
       }
     } catch (error) {
