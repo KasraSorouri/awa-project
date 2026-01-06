@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 import UserFolder from './UserFolder';
 
-import { IFolderTree } from '../types/folderTypes';
+import { IFileCounter, IFolderTree } from '../types/folderTypes';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import ShowContent from './ShowContent';
 import ShowAlert from './ShowAlert';
@@ -10,9 +10,6 @@ import { IAlert } from '../types/alertTypes';
 import fileService from '../services/fileService';
 import folderService from '../services/folderService';
 
-interface IUserPageProps {
-  folders: IFolderTree[];
-}
 
 interface INewFolderData {
   folderName: string,
@@ -30,7 +27,38 @@ interface IUploadFileData extends INewFileData {
 }
 
 
-const UserPage = ({folders}: IUserPageProps) => {
+const countRepository = (folders: IFolderTree[]) => {
+
+  let fileCounter = 0;
+  let folderCounter = 0;
+  const sharedCounter = 0;
+
+  const countItems = (folders:IFolderTree[]) =>{
+    folders.forEach((folder: IFolderTree) => {
+      fileCounter = fileCounter + folder.files.length;
+      folderCounter = folderCounter + 1
+      countItems(folder.subFolders)
+    })
+    return {fileCounter, folderCounter}
+  }
+
+  ({fileCounter ,folderCounter} = countItems(folders))
+
+  return {fileCounter, folderCounter, sharedCounter}
+}
+
+interface IUserPageProps {
+  setCounter : (counters: IFileCounter) => void;
+}
+
+const UserPage = ({setCounter}: IUserPageProps) => {
+
+  const [folders, setFolders] = useState<IFolderTree[]>([])
+  //const [recycledFiles, setRecycledFiles] = useState<IRecycledFiles[]>([])
+
+  //console.log('recycled', recycledFiles)
+  console.log('folders', folders)
+
   const [activeFolder, setActiveFolder] = useState<number>(0)
   const [activeFile, setActiveFile] = useState<number | null>(null);
   const [editMode, setEditMode] = useState<boolean>(false)
@@ -39,8 +67,7 @@ const UserPage = ({folders}: IUserPageProps) => {
     message: '',
     showAlert: false
   });
-
-  
+    
   const [openAddFolder, setOpenAddFolder] = useState<boolean>(false)
   const [openAddFile, setOpenAddFile] = useState<boolean>(false)
   const [openUploadFile, setOpenUploadFile] = useState<boolean>(false)
@@ -49,6 +76,42 @@ const UserPage = ({folders}: IUserPageProps) => {
   const [newFile, setNewFile] = useState<string>('')
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [fileType, setFileType] = useState<string>('')
+
+
+  useEffect(() => {
+    const getUserFiles = async () => {
+      try {
+        const result = await folderService.getUserFolders()
+        if (result) {
+          setFolders([...result])
+          const counters = countRepository([...result])
+          setCounter(counters)
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log(error.message)
+        }
+        console.log(error)
+      }
+    }
+  /*
+    const getDeletedFiles = async () => {
+      try {
+        const recycled = await fileService.getRecycleBin()
+        if (recycled) {
+          setRecycledFiles(recycled)
+        }
+      } catch (error) {
+        if (error instanceof Error) {
+          console.log(error.message)
+        }
+        console.log(error)
+      }
+    }
+      */
+    getUserFiles()
+    //getDeletedFiles()
+  }, [])
 
   const handleAddFolder = () => {
     setOpenAddFolder(true)

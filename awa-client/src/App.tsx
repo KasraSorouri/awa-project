@@ -11,9 +11,9 @@ import { useToken } from './services/useToken'
 
 import userService from './services/userService'
 import UserPage from './components/UserPage'
-import folderService from './services/folderService'
+//import folderService from './services/folderService'
 
-import { IRecycledFiles, IFolderTree } from './types/folderTypes'
+import { IRecycledFiles } from './types/folderTypes'
 import fileService from './services/fileService'
 
 interface IUserData {
@@ -27,15 +27,19 @@ interface IUserData {
 
 function App() {
   const [user, setUser] = useState<IUserData | null>(null)
-  const [folders, setFolders] = useState<IFolderTree[]>([])
+  //const [folders, setFolders] = useState<IFolderTree[]>([])
   const [recycledFiles, setRecycledFiles] = useState<IRecycledFiles[]>([])
+  const [counter, setCounter] = useState({
+    fileCounter: 0,
+    folderCounter: 0,
+    sharedCounter: 0
+  })
 
   const {token} = useToken()
   console.log('app user : ', user)
-  console.log('app folders : ', folders)
-  console.log('recycled bin:', recycledFiles
-    
-  )
+  //console.log('app folders : ', folders)
+  //console.log('recycled bin:', recycledFiles)
+  
   useEffect(() => {
     const getUserInfo = async() => {
       try{
@@ -47,7 +51,7 @@ function App() {
         console.log(error)
       }
     }
-
+    /*
     const getUserFiles = async () => {
       try {
         const result = await folderService.getUserFolders()
@@ -61,7 +65,7 @@ function App() {
         console.log(error)
       }
     }
-
+*/
     const getDeletedFiles = async () => {
       try {
         const recycled = await fileService.getRecycleBin()
@@ -75,9 +79,10 @@ function App() {
         console.log(error)
       }
     }
+    
     if (token) {
       getUserInfo()
-      getUserFiles()
+      //getUserFiles()
       getDeletedFiles()
     }
   }, [token])
@@ -85,9 +90,9 @@ function App() {
   return (
     <>
       <BrowserRouter>
-        <Header user={user} folders={folders} recycledFiles={recycledFiles} />
+        <Header user={user} counter={counter} recycledFiles={recycledFiles} />
         <Routes>
-          <Route path='/' element={user ? <UserPage folders={folders} /> : <Login /> } />
+          <Route path='/' element={user ? <UserPage setCounter={setCounter}  /> : <Login /> }/>
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/recycled' element={user ? <ShowRecycledFiles recycledFiles={recycledFiles} /> : <Login /> } />

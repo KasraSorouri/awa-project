@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { styled, alpha } from '@mui/material/styles';
@@ -21,7 +21,7 @@ import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import DeleteIcon from '@mui/icons-material/Delete';
 
-import { IFile, IFolderTree } from '../types/folderTypes';
+import { IFile, IFileCounter } from '../types/folderTypes';
 
 interface IUserData {
   user_id: number;
@@ -33,7 +33,7 @@ interface IUserData {
 
 type THeaderProps = {
   user: IUserData | null;
-  folders: IFolderTree[];
+  counter: IFileCounter;
   recycledFiles: IFile[];
 }
 
@@ -78,27 +78,10 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 
-const countRepository = (folders: IFolderTree[]) => {
-  let countFolder = 0;
-  let countFile = 0;
-  const countShare = 0;
 
-  const countItems = (folders:IFolderTree[]) =>{
-    folders.forEach((folder: IFolderTree) => {
-      countFile = countFile + folder.files.length;
-      countFolder = countFolder + 1
-      countItems(folder.subFolders)
-    })
-    return {countFile, countFolder}
-  }
 
-  ({countFile ,countFolder} = countItems(folders))
-  return {countFile, countFolder, countShare}
+const Header = ({user, counter, recycledFiles}:THeaderProps) => {
 
-}
-
-const Header = ({user, folders, recycledFiles}:THeaderProps) => {
-  const {countFile, countFolder, countShare} = countRepository(folders);
   const navigate = useNavigate()
 
   const showUser = user ? 
@@ -107,9 +90,8 @@ const Header = ({user, folders, recycledFiles}:THeaderProps) => {
     (user.lastName) ? (user.lastName) :
     user.username : null;
 
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = 
-    React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -176,7 +158,7 @@ const Header = ({user, folders, recycledFiles}:THeaderProps) => {
     >
       <MenuItem>
         <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={countFile} color="error">
+          <Badge badgeContent={counter.folderCounter}color="error">
             <InventoryIcon />
           </Badge>
         </IconButton>
@@ -200,7 +182,7 @@ const Header = ({user, folders, recycledFiles}:THeaderProps) => {
           aria-label="show 17 new notifications"
           color="inherit"
         >
-          <Badge badgeContent={countShare} color="error">
+          <Badge badgeContent={counter.sharedCounter} color="error">
             <FolderSharedIcon />
           </Badge>
         </IconButton>
@@ -261,7 +243,7 @@ const Header = ({user, folders, recycledFiles}:THeaderProps) => {
               color="inherit"
               onClick={()=> navigate('/')}
             >
-              <Badge badgeContent={countFolder+countFile} color="error">
+              <Badge badgeContent={counter.fileCounter+counter.folderCounter} color="error">
                 <InventoryIcon />
               </Badge>
             </IconButton>
@@ -280,7 +262,7 @@ const Header = ({user, folders, recycledFiles}:THeaderProps) => {
               aria-label="show 17 new notifications"
               color="inherit"
             >
-              <Badge badgeContent={countShare} color="error">
+              <Badge badgeContent={counter.sharedCounter} color="error">
                 <FolderSharedIcon />
               </Badge>
             </IconButton>

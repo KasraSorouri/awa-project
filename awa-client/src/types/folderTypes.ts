@@ -50,3 +50,9 @@ interface ISimpleFolder {
 export interface IRecycledFiles extends IFile {
   folder: ISimpleFolder
 }
+
+export interface IFileCounter {
+  fileCounter: number;
+  folderCounter: number;
+  sharedCounter: number;
+}
