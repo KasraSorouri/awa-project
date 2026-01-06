@@ -18,6 +18,7 @@ interface IShowContentProps {
   handleAddFile: () => void;
   handleAddFolder: () => void;
   handleUploadFile: () => void;
+  handleDeleteUpdate: (item:'file'|'folder', id: number) => void;
 }
 
 const findCurrentFolder = (folders: IFolder[], activeFolder: number): IFolder | undefined => {
@@ -38,7 +39,7 @@ const findCurrentFolder = (folders: IFolder[], activeFolder: number): IFolder | 
 }
 
 
-const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setActiveFile, editMode, setEditMode, setAlertData, handleAddFile, handleAddFolder, handleUploadFile}: IShowContentProps) => {
+const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setActiveFile, editMode, setEditMode, setAlertData, handleAddFile, handleAddFolder, handleUploadFile, handleDeleteUpdate}: IShowContentProps) => {
 
   const folder: IFolder | undefined = findCurrentFolder(folders, activeFolder)
   const currentFolder: IFolder = folder ? folder : folders[0]
@@ -58,6 +59,7 @@ const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setAct
             handleAddFile={handleAddFile}
             handleAddFolder={handleAddFolder}
             handleUploadFile={handleUploadFile}
+            handleDeleteUpdate={handleDeleteUpdate}
            />
         : <ShowFileContent activeFile={activeFile} setActiveFile={setActiveFile} editMode={editMode} setEditMode={setEditMode} />
       }

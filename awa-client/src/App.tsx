@@ -11,7 +11,6 @@ import { useToken } from './services/useToken'
 
 import userService from './services/userService'
 import UserPage from './components/UserPage'
-//import folderService from './services/folderService'
 
 import { IRecycledFiles } from './types/folderTypes'
 import fileService from './services/fileService'
@@ -27,7 +26,6 @@ interface IUserData {
 
 function App() {
   const [user, setUser] = useState<IUserData | null>(null)
-  //const [folders, setFolders] = useState<IFolderTree[]>([])
   const [recycledFiles, setRecycledFiles] = useState<IRecycledFiles[]>([])
   const [counter, setCounter] = useState({
     fileCounter: 0,
@@ -37,8 +35,6 @@ function App() {
 
   const {token} = useToken()
   console.log('app user : ', user)
-  //console.log('app folders : ', folders)
-  //console.log('recycled bin:', recycledFiles)
   
   useEffect(() => {
     const getUserInfo = async() => {
@@ -51,21 +47,8 @@ function App() {
         console.log(error)
       }
     }
-    /*
-    const getUserFiles = async () => {
-      try {
-        const result = await folderService.getUserFolders()
-        if (result) {
-          setFolders([...result])
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log(error.message)
-        }
-        console.log(error)
-      }
-    }
-*/
+    
+
     const getDeletedFiles = async () => {
       try {
         const recycled = await fileService.getRecycleBin()
@@ -82,7 +65,6 @@ function App() {
     
     if (token) {
       getUserInfo()
-      //getUserFiles()
       getDeletedFiles()
     }
   }, [token])

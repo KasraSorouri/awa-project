@@ -14,8 +14,8 @@ router.post('/create', validateToken, validateFileData, async (req: Request, res
   const fileData = req.body;
   fileData.userId = req.user.id;
   try {
-    const folder = await fileServices.createFile(fileData);
-    return res.status(201).json(folder);
+    const result = await fileServices.createFile(fileData);
+    return res.status(201).json(result);
   } catch (error) {
     if (error instanceof Error) {
       return   res.status(400).json({ error: error.message });
@@ -37,8 +37,8 @@ router.post('/upload', validateToken, upload.single('file') , async (req: Reques
     return res.status(400).json({ error: 'No file uploaded' });
   }
   try {
-    const folder = await fileServices.uploadFile(fileData, file)
-    return res.status(201).json({message: 'File uploaded successfully',folder});
+    const result = await fileServices.uploadFile(fileData, file)
+    return res.status(201).json(result);
   } catch (error) {
     if (error instanceof Error) {
       return res.status(400).json({ error: error.message });

@@ -77,15 +77,11 @@ interface IShowFolderContentProps {
   handleAddFile: () => void;
   handleAddFolder: () => void;
   handleUploadFile: () => void;
+  handleDeleteUpdate: (item:'file'|'folder', id: number) => void;
 }
 
 
-const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile, setAlertData, handleAddFile, handleAddFolder, handleUploadFile}: IShowFolderContentProps) => {
-  console.log('ShowFolderContent * active folder', activeFolder)
-  console.log('ShowFolderContent * folders', folder)
-  
-
-
+const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile, setAlertData, handleAddFile, handleAddFolder, handleUploadFile, handleDeleteUpdate}: IShowFolderContentProps) => {
   console.log('ShowFolderContent * folder', activeFolder, '->' ,folder)
   const rows: Data[]= []
 
@@ -141,11 +137,13 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
     try {
       if (type === 'folder') {
         await folderService.deleteFolder(id);
+        handleDeleteUpdate('folder', id)
         setAlertData({type: 'success', message: 'Folder deleted successfully', showAlert: true});
         rows.filter((row) => row.type === 'folder' && row.id !== id);
       } else {
         const result = await fileService.deleteFile(id);
         if (result) {
+          handleDeleteUpdate('file', id)
           setAlertData({type: 'success', message: 'File deleted successfully',showAlert: true});
           rows.filter((row) => row.type === 'file' && row.id !== id);
         }

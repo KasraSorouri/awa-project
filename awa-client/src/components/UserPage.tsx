@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import UserFolder from './UserFolder';
 
-import { IFileCounter, IFolderTree } from '../types/folderTypes';
+import { IFile, IFileCounter, IFolderTree } from '../types/folderTypes';
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
 import ShowContent from './ShowContent';
 import ShowAlert from './ShowAlert';
@@ -26,6 +26,34 @@ interface IUploadFileData extends INewFileData {
   file: File
 }
 
+const updateAddFile = (folders: IFolderTree[], currentFolder:number, file: IFile ) => {
+  for (const folder of folders) {
+    if (folder.id === currentFolder) {
+      folder.files.push(file);
+      break
+    } else {
+      updateAddFile(folder.subFolders, currentFolder, file);
+    }
+  }
+  return folders
+
+}
+
+const updateDeleteItem = (folders: IFolderTree[], currentFolder:number, item: 'file'|'folder', id: number) => {
+  for (const folder of folders) {
+    if (folder.id === currentFolder) {
+      if (item === 'file') {
+        folder.files = folder.files.filter((file) => file.id !== id)
+      } else {
+        folder.subFolders = folder.subFolders.filter((subFolder) => subFolder.id !== id)
+      }
+      break
+    } else {
+      updateDeleteItem(folder.subFolders, currentFolder, item, id);
+    }
+  }
+  return folders
+}
 
 const countRepository = (folders: IFolderTree[]) => {
 
@@ -54,9 +82,7 @@ interface IUserPageProps {
 const UserPage = ({setCounter}: IUserPageProps) => {
 
   const [folders, setFolders] = useState<IFolderTree[]>([])
-  //const [recycledFiles, setRecycledFiles] = useState<IRecycledFiles[]>([])
 
-  //console.log('recycled', recycledFiles)
   console.log('folders', folders)
 
   const [activeFolder, setActiveFolder] = useState<number>(0)
@@ -94,24 +120,10 @@ const UserPage = ({setCounter}: IUserPageProps) => {
         console.log(error)
       }
     }
-  /*
-    const getDeletedFiles = async () => {
-      try {
-        const recycled = await fileService.getRecycleBin()
-        if (recycled) {
-          setRecycledFiles(recycled)
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          console.log(error.message)
-        }
-        console.log(error)
-      }
-    }
-      */
+
     getUserFiles()
-    //getDeletedFiles()
   }, [])
+
 
   const handleAddFolder = () => {
     setOpenAddFolder(true)
@@ -133,13 +145,17 @@ const UserPage = ({setCounter}: IUserPageProps) => {
       parentFolder: activeFolder?.toString()
     }
     try{
-      await folderService.createFolder(newFolderData)
+      const result = await folderService.createFolder(newFolderData)
+
       setAlertData(
         {
           type: 'success',
           message: 'Folder created successfully',
           showAlert: true
         })
+      setFolders(result)
+      const counters = countRepository([...result])
+      setCounter(counters)
       setNewFolder('')
     } catch (error) {
       if (error instanceof Error) {
@@ -165,6 +181,9 @@ const UserPage = ({setCounter}: IUserPageProps) => {
     }
     try{
       const result = await fileService.createFile(newFileData)
+      // update data
+      const updatedFolders : IFolderTree[] = updateAddFile(folders, activeFolder, result)
+      setFolders([...updatedFolders])
       setActiveFile(result.id)
       setEditMode(true)
       setNewFile('')
@@ -194,7 +213,10 @@ const UserPage = ({setCounter}: IUserPageProps) => {
       file: uploadedFile,
     }
     try{
-      await fileService.uploadFile(newFileData)
+      const result = await fileService.uploadFile(newFileData)
+      // Update Data
+      const updatedFolders : IFolderTree[] = updateAddFile(folders, activeFolder, result)
+      setFolders([...updatedFolders])
       setUploadedFile(null)
       setNewFile('')
     } catch (error) {
@@ -205,11 +227,12 @@ const UserPage = ({setCounter}: IUserPageProps) => {
     }
   }
 
-
-  
-
-
-
+  const handleDeleteUpdate = (item:'file'|'folder', id: number) => {
+    const result = updateDeleteItem(folders, activeFolder, item, id)
+    setFolders([...result])
+    const counters = countRepository([...result])
+    setCounter(counters)
+  }
 
   return (
     <>
@@ -242,6 +265,7 @@ const UserPage = ({setCounter}: IUserPageProps) => {
           handleAddFile={handleAddFile}
           handleAddFolder={handleAddFolder}
           handleUploadFile={handleUploadFile}
+          handleDeleteUpdate={handleDeleteUpdate}
         />
       </Grid>
     </Grid>
