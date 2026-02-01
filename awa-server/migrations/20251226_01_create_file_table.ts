@@ -87,8 +87,8 @@ export const up = async ({ context: queryInterface }: any) => {
       },
       role: {
         type: DataTypes.ENUM,
-        values: ['owner','edit','view'],
-        defaultValue: 'owner',
+        values: ['OWNER','EDITOR','VIEWER'],
+        defaultValue: 'OWNER',
         allowNull: false,
       },
       activated: {

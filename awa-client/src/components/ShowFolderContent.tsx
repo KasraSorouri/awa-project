@@ -78,10 +78,11 @@ interface IShowFolderContentProps {
   handleAddFolder: () => void;
   handleUploadFile: () => void;
   handleDeleteUpdate: (item:'file'|'folder', id: number) => void;
+  handleShare: (id:number, name:string) => void;
 }
 
 
-const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile, setAlertData, handleAddFile, handleAddFolder, handleUploadFile, handleDeleteUpdate}: IShowFolderContentProps) => {
+const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile, setAlertData, handleAddFile, handleAddFolder, handleUploadFile, handleDeleteUpdate, handleShare}: IShowFolderContentProps) => {
   console.log('ShowFolderContent * folder', activeFolder, '->' ,folder)
   const rows: Data[]= []
 
@@ -153,6 +154,11 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
       }
       console.error('Error deleting item:', error);
     }
+  }
+
+  const shareHandler = (fileId: number, fileName:string) => {
+    console.log('sharing file with id:', fileId)
+    handleShare(fileId,fileName)
   }
 
   if (!(folder.subFolders.length !== 0 || folder.files.length !== 0 )) {
@@ -295,6 +301,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                                 type='button'
                                 size='small'
                                 variant='contained'
+                                onClick={() => shareHandler(row.id, row.name)}
                                 sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
                               >
                                 <ShareIcon fontSize="small" sx={{color: "#ffffffff"}} />

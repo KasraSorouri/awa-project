@@ -4,6 +4,7 @@ import Jwt from 'jsonwebtoken';
 import { SECRET } from '../configs/config'; 
 import { User } from '../models';
 import { IUser } from '../types/userTypes';
+import { Op } from 'sequelize';
 
 
 const userQuery = {
@@ -106,13 +107,28 @@ const getUser = async (userId: number) => {
   }
 }
 
+// Get All Users
+const getAllUsers = async (userId: number) => {
+  try {
+    const users = await User.findAll({...userQuery, where: { id: { [Op.ne]: userId } }});
+    return users;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    console.error(error);
+    throw new Error('Error getting users');
+  }
+}
+
 
 
 
 export default {
   createUser,
   loginUser,
-  getUser
+  getUser,
+  getAllUsers
 }
 
 

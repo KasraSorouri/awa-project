@@ -274,10 +274,9 @@ const UserPage = ({counter, updateCounter}: IUserPageProps) => {
         />
       </Grid>
     </Grid>
-          <Dialog open={openAddFolder} onClose={()=>setOpenAddFolder(false)} >
+      <Dialog open={openAddFolder} onClose={()=>setOpenAddFolder(false)} >
         <DialogTitle>New Folder</DialogTitle>
         <DialogContent>
-
           <form  onSubmit={handleAddFolderSubmit} id="addFolder-form">
             <TextField
               autoFocus
@@ -380,7 +379,6 @@ const UserPage = ({counter, updateCounter}: IUserPageProps) => {
           </Button>
         </DialogActions>
       </Dialog>
-    
     </>
   )
 }

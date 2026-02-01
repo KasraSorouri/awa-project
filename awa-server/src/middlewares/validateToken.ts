@@ -24,3 +24,13 @@ export const validateToken = (req: CustomRequest, res: Response, next: NextFunct
         return res.status(401).json({ message: 'Invalid token' });
     }
 };
+
+export const validateLink = (link: string) => {
+    try {
+        const secretKey : string = process.env.SECRET  as string || 'secret*secret*secret';
+        const decodedLink: string = jwt.verify(link, process.env.SECRET as string) as string;
+        return decodedLink;
+    } catch (error) {
+        return false;
+    }    
+}

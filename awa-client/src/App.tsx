@@ -13,6 +13,8 @@ import userService from './services/userService'
 import UserPage from './components/UserPage'
 
 import { IFileCounter, IRecycledFiles } from './types/folderTypes'
+import ShowExternalShare from './components/ShowExternalShare'
+import ShowSharedFiles from './components/ShowSharedFiles'
 
 interface IUserData {
   user_id: number,
@@ -89,6 +91,8 @@ function App() {
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
           <Route path='/recycled' element={user ? <ShowRecycledFiles updateCounter={updateCounter} hanldeUpdateRecycle={hanldeUpdateRecycle} /> : <Login /> } />
+          <Route path='/sharedFiles' element={user ? <ShowSharedFiles /> : <Login /> } />
+          <Route path='/share/:link' element={<ShowExternalShare />} />
         </Routes>
     </BrowserRouter>
     </>

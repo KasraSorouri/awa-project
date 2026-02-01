@@ -260,6 +260,7 @@ const Header = ({user, counter}:THeaderProps) => {
               size="large"
               aria-label="show 17 new notifications"
               color="inherit"
+              onClick={()=> navigate('/sharedFiles')}
             >
               <Badge badgeContent={counter.sharedCounter} color="error">
                 <FolderSharedIcon />

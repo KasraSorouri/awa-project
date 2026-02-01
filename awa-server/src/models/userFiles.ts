@@ -53,8 +53,8 @@ UserFiles.init(
     },
     role: {
       type: DataTypes.ENUM,
-      values: ['owner','edit','view'],
-      defaultValue: 'owner',
+      values: ['OWNER','EDITOR','VIEWER'],
+      defaultValue: 'OWNER',
       allowNull: false,
     },
     activated: {

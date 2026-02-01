@@ -1,5 +1,4 @@
 
-import { stripTypeScriptTypes } from 'module';
 import { File, UserFiles, Folder, User } from '../models';
 import { IEditFileData, IFile, IFileData, IFileParam, IUserFile } from '../types/fileTypes';
 import storeFile from '../utils/storeFile';
@@ -331,6 +330,70 @@ const restoreFile = async (fileIds: number[], userId: number) => {
   }
 }
 
+// Share a file
+const shareFile = async (fileId: number, userId: number, users: number[], role: string) => {
+  try {
+    const file = await File.findByPk(fileId);
+    if (!file) {
+      throw new Error('File not found');
+    }
+    if (file.userId !== userId) {
+      throw new Error('User does not have permission to share this file');
+    }
+    
+    for (const user of users) {
+      const checkUser = await User.findByPk(user);
+      if (!checkUser) {
+        throw new Error('User not found');
+      }
+    }
+    for (const user of users) {
+      const userFileData: IUserFile= {
+        userId: user,
+        fileId: fileId,
+        role: role,
+      }
+      const newUserFile = new UserFiles(userFileData);
+      await newUserFile.save();
+    }
+    return {message: 'File shared successfully'};
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Error sharing file');
+  }
+}
+
+// Get shared Files
+const getSharedFiles = async (userId: number) => {
+  try {
+    const sharedfiles = await User.findByPk(userId, {
+      include: [{
+        model: File,
+        as: 'sharedFiles',
+        attributes: ['id', 'fileName', 'folderId', 'fileType', 'address', 'editable', 'deleted', 'activated'],
+        include: [{
+          model: User,
+          as: 'fileOwner',
+          attributes: ['id', 'username', 'firstName', 'lastName'],
+        }],
+        through: {
+          attributes: ['role'], 
+        }
+      }],
+      attributes:[]
+    });
+
+    return sharedfiles;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Error reading shared files');
+  }
+}
+
 export default {
   createFile,
   uploadFile,
@@ -339,5 +402,7 @@ export default {
   openFile,
   saveFile,
   getRecycledFiles,
-  restoreFile
+  restoreFile,
+  shareFile,
+  getSharedFiles
 }

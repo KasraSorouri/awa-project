@@ -145,5 +145,37 @@ router.post('/restore', validateToken, async (req: Request, res: Response) => {
   }
 })
 
+// Share a File
+router.post('/share/:id', validateToken, async (req: Request, res: Response) => {
+  const fileId = parseInt(req.params.id);
+  const { users, role } = req.body;
+  const userId = req.user.id;
+  try {
+    const result = await fileServices.shareFile(fileId, userId, users, role);
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+  }
+})
+
+// Read Shared Files
+router.get('/share', validateToken,  async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  try {
+    const files = await fileServices.getSharedFiles(userId);
+    return res.status(200).json(files);
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+  }
+})
+
 
 export default router;

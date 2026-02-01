@@ -69,4 +69,21 @@ router.get('/user', validateToken, async(req: Request, res: Response) => {
   }
 })
 
+router.get('/users', validateToken, async(req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+  try {
+    const result = await userService.getAllUsers(req.user.id)
+
+    return res.status(200).json(result)
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(404).json({ error: error.message })
+    }
+    console.error(error)
+    return res.status(500).json({ error: 'Error getting users' })
+  }
+})
+
 export default router

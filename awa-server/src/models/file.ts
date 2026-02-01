@@ -108,6 +108,7 @@ File.init(
     underscored: true,
     timestamps: true,
     modelName: 'file',
+    tableName: 'files',
   }
 );
 

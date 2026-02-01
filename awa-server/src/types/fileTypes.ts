@@ -38,3 +38,10 @@ export interface IEditFileData {
   fileContent: string
 }
 
+export interface IShare {
+  link: string;
+  fileId: number;
+  expires_at: Date;
+}
+
+
