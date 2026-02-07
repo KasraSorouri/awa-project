@@ -23,10 +23,11 @@ interface ShowFileContentProps {
   setActiveFile: (id: number | null) => void;
   editMode: boolean;
   setEditMode: (edit: boolean) => void;
-}
+  handleShare: (id:number, name:string) => void;
+  }
 
 
-const ShowFileContent = ({activeFile, setActiveFile, editMode, setEditMode}: ShowFileContentProps) => {
+const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, handleShare }: ShowFileContentProps) => {
   const [value, setValue] = useState<string>('');
   const [file, setFile] = useState<IFile|null>(null);
   const [fileName, setFileName] = useState<string>('');
@@ -58,6 +59,7 @@ const ShowFileContent = ({activeFile, setActiveFile, editMode, setEditMode}: Sho
     readFileContent();
   }, [activeFile]);
 
+  console.log('***** File content:', file);
 
   const handleSaveFile = async () => {
     try {
@@ -159,10 +161,10 @@ const ShowFileContent = ({activeFile, setActiveFile, editMode, setEditMode}: Sho
           <Tooltip title='Save'>
             <Button onClick={handleSaveFile} disabled={!editMode}>
               <SaveIcon />
-            </Button>
+            </Button >
           </Tooltip>
           <Tooltip title='Share'>
-            <Button>
+            <Button onClick={() => handleShare(activeFile, fileName)} disabled={editMode}>
               <ShareIcon />
             </Button>
           </Tooltip>

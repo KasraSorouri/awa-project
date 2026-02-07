@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 
 import { validateToken } from '../middlewares/validateToken';
-import { validateFolderData } from '../middlewares/fileDataValidator';
+import { validateEditFolderData, validateFolderData } from '../middlewares/fileDataValidator';
 
 import folderServices from '../services/folder';
 
@@ -48,6 +48,23 @@ router.delete('/delete/:id', validateToken, async (req: Request, res: Response) 
   try {
     await folderServices.deleteFolder(folderId, userId);
     res.status(200).json({ message: 'Folder deleted successfully' });
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+  }
+})
+
+// Edit a Folder
+router.put('/edit/:id', validateToken, validateEditFolderData, async (req: Request, res: Response) => {
+  const folderId = parseInt(req.params.id);
+  const userId = req.user.id;
+  const folderData = req.body;
+  try {
+    const folder = await folderServices.editFolder(folderId, userId, folderData);
+    res.status(200).json(folder);
   } catch (error) {
     if (error instanceof Error) {
       res.status(400).json({ error: error.message });

@@ -76,7 +76,6 @@ interface ISharedFile {
 }
 
 const ShowSharedFiles = () => {
-  //const rows: IData[]= []
   const [rows, setRows] = useState<IData[]>([]);
   const [activeFile, setActiveFile] = useState<number|null>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
@@ -86,8 +85,6 @@ const ShowSharedFiles = () => {
     const fetchSharedFiles = async () => {
       try {
         const result = await shareService.getSharedFilesToUser();
-        console.log('Shared Files:', result.sharedFiles);
-        // Process sharedFiles and add to rows
         const newRows: IData[] = [];
         result.sharedFiles.forEach((file: ISharedFile) => {
           newRows.push({
@@ -111,7 +108,6 @@ const ShowSharedFiles = () => {
     fetchSharedFiles();
   }, []); 
 
-//export default function StickyHeadTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -133,9 +129,13 @@ const ShowSharedFiles = () => {
     )
   }
 
+  const handleShare = async() => {
+    return null
+  }
+
   return (
     activeFile !== null ? (
-      <ShowFileContent activeFile={activeFile} setActiveFile={setActiveFile} editMode={editMode} setEditMode={setEditMode} />
+      <ShowFileContent activeFile={activeFile} setActiveFile={setActiveFile} editMode={editMode} setEditMode={setEditMode} handleShare={handleShare} />
     ) : (
       <Paper sx={{ width: '100%', overflow: 'hidden', minHeight: '60vh' }}>
         <Box 

@@ -22,5 +22,11 @@ const fileValidationRules : ValidationChain[] = [
     body('fileName').trim().escape().notEmpty().withMessage('File name should not be empty.'),
  ];
 
+
+const editFolderValidationRules : ValidationChain[] = [
+  body('folderName').optional().trim().escape().notEmpty().withMessage('Folder name should not be empty.'),
+];
+
 export const validateFolderData = validate(folderValidationRules);
 export const validateFileData = validate(fileValidationRules);
+export const validateEditFolderData = validate(editFolderValidationRules);

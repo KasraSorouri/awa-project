@@ -20,13 +20,14 @@ import DriveFolderUploadIcon from '@mui/icons-material/DriveFolderUpload';
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import EditIcon from '@mui/icons-material/Edit';
 
 import fileService from '../services/fileService';
 import folderService from '../services/folderService';
 
 
 import { IFolder } from '../types/folderTypes'
-import { Box, Button, Stack, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { IAlert } from '../types/alertTypes';
 
 interface Column {
@@ -86,6 +87,9 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
   console.log('ShowFolderContent * folder', activeFolder, '->' ,folder)
   const rows: Data[]= []
 
+  const [OpenRenameFolder, setOpenRenameFolder] = useState<boolean>(false)
+  const [newFolderData, setNewFolderData] = useState<{folderId: number, newName: string}>({folderId: 0, newName: ''})
+
   if (folder.subFolders.length>0) {
     rows.push(...folder.subFolders.map((folder) => { 
       return {
@@ -110,8 +114,6 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
     }
   }))
     
-
-//export default function StickyHeadTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -161,6 +163,30 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
     handleShare(fileId,fileName)
   }
 
+  const renameHandler = (id: number, name: string) => {
+    console.log('rename item with id:', id)
+    setNewFolderData({folderId: id, newName: name})
+    setOpenRenameFolder(true)
+  }
+
+  const handleRenameSubmit = async() => {
+    try {
+      const result = await folderService.renameFolder(newFolderData.folderId, newFolderData.newName)
+      if (!result) {
+        throw new Error('Renaming folder failed')
+      }
+      const index = rows.findIndex((row) => row.id === newFolderData.folderId && row.type ==='folder')
+      if (index !== -1) {
+        rows[index].name = newFolderData.newName
+      }
+      setAlertData({type: 'success', message: 'Folder renamed successfully', showAlert: true})
+      setOpenRenameFolder(false)
+    } catch (error) {
+      console.error('Error renaming folder:', error)
+      setAlertData({type: 'error', message: 'Error renaming folder', showAlert: true})
+    }
+  }
+
   if (!(folder.subFolders.length !== 0 || folder.files.length !== 0 )) {
     return(
       <Paper sx={{ width: '100%', overflow: 'hidden', minHeight: '60vh' }}>
@@ -173,7 +199,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
               sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
               onClick={() => setActiveFolder(folder.parent || 0)}
             >
-             <DriveFolderUploadIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
+             <DriveFolderUploadIcon fontSize='small' sx={{color: '#ffffffff', padding: '0px'}} />
             </Button>  
           </Tooltip>
           <Tooltip title='Add new Folder' >
@@ -186,7 +212,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
             <Button id='uploadFile'  variant='contained' size='small' sx={{ width: '10px'}} onClick={handleUploadFile} ><CloudUploadIcon /></Button>
           </Tooltip> 
         </Box>
-        <Typography variant="h6" component="h2" sx={{ padding: 2 }}>This folder is empty</Typography>
+        <Typography variant='h6' component='h2' sx={{ padding: 2 }}>This folder is empty</Typography>
       </Paper>
     )
   }
@@ -199,7 +225,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
           justifyContent: 'space-between', 
           alignItems: 'center', 
           padding: 2,
-          borderBottom: '1px solid #e0e0e0' // Optional divider
+          borderBottom: '1px solid #e0e0e0'
         }}
       >
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -211,28 +237,28 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
               sx={{ width: '50px', minWidth:'50px', padding: '5px' }}
               onClick={() => setActiveFolder(folder.parent || 0)}
             >
-             <DriveFolderUploadIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
+             <DriveFolderUploadIcon fontSize='small' sx={{color: '#ffffffff', padding: '0px'}} />
             </Button>  
           </Tooltip>
           <Tooltip title='Add new Folder' >
             <Button id='addFolder'  variant='contained' size='small' sx={{ width: '50px', minWidth:'50px', padding: '5px' }} onClick={handleAddFolder} >
-              <CreateNewFolderIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
+              <CreateNewFolderIcon fontSize='small' sx={{color: '#ffffffff', padding: '0px'}} />
             </Button>
           </Tooltip> 
           <Tooltip title='Add new File' >
             <Button id='addFile'  variant='contained' size='small' sx={{ width: '50px', minWidth:'50px', padding: '5px' }} onClick={handleAddFile} >
-              <NoteAddIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
+              <NoteAddIcon fontSize='small' sx={{color: '#ffffffff', padding: '0px'}} />
             </Button>
           </Tooltip>
           <Tooltip title='Upload a File' >
             <Button id='uploadFile'  variant='contained' size='small' sx={{ width: '50px', minWidth:'50px', padding: '5px' }} onClick={handleUploadFile} >
-              <CloudUploadIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
+              <CloudUploadIcon fontSize='small' sx={{color: '#ffffffff', padding: '0px'}} />
             </Button>
           </Tooltip> 
         </Box>
         <TablePagination
         rowsPerPageOptions={[5, 10, 50]}
-        component="div"
+        component='div'
         count={rows.length}
         rowsPerPage={rowsPerPage}
         page={page}
@@ -241,7 +267,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
       />
       </Box>
       <TableContainer sx={{ maxHeight: 440 }}>
-        <Table stickyHeader aria-label="sticky table">
+        <Table stickyHeader aria-label='sticky table'>
           <TableHead>
             <TableRow>
               {columns.map((column) => (
@@ -260,27 +286,27 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
               .map((row, index) => {
                 return (
-                  <TableRow hover role="checkbox" tabIndex={-1} key={index} >
+                  <TableRow hover role='checkbox' tabIndex={-1} key={index} >
                     <TableCell onClick ={() => setActiveItem(row.id, row.type)}> 
                       <Stack direction={'row'} spacing={1}>
                         {row.type === 'folder' ? 
-                          <FolderIcon fontSize="medium" sx={{color: "#fee634f4"}} />
+                          <FolderIcon fontSize='medium' sx={{color: '#fee634f4'}} />
                           : row.editable ?
-                            <ArticleIcon fontSize="medium" sx={{color: "#4D4D4D"}} />
-                          : <InsertDriveFileIcon fontSize="medium" sx={{color: "#4D4D4D"}} />
+                            <ArticleIcon fontSize='medium' sx={{color: '#4D4D4D'}} />
+                          : <InsertDriveFileIcon fontSize='medium' sx={{color: '#4D4D4D'}} />
                         }
-                        <Typography variant="body1" component="span" >
+                        <Typography variant='body1' component='span' >
                           {row.name}
                         </Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell align="right">{row.dateCreated.toLocaleString('En-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
+                    <TableCell align='right'>{row.dateCreated.toLocaleString('En-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
                       .replace('.', ':').replaceAll('/','.').replace(',','')}
                     </TableCell>
-                    <TableCell align="right">{row.dateModified.toLocaleString('EN-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
+                    <TableCell align='right'>{row.dateModified.toLocaleString('EN-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
                       .replace('.', ':').replaceAll('/','.').replace(',','')}
                     </TableCell>
-                    <TableCell align="right">
+                    <TableCell align='right'>
                       <Stack direction={'row'} spacing={1}>
                         <Tooltip title='Delete' >
                           <Button
@@ -291,12 +317,12 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                             disabled={row.contents > 0}
                             onClick={()=>deleteHandler(row.id, row.type)}
                           >
-                            <DeleteIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
+                            <DeleteIcon fontSize='small' sx={{color: '#ffffffff', padding: '0px'}} />
                           </Button>  
                         </Tooltip>
-                        {row.type !== 'folder' && (
+                        {row.type !== 'folder' ? (
                           <>
-                            <Tooltip title="Share">
+                            <Tooltip title='Share'>
                               <Button
                                 type='button'
                                 size='small'
@@ -304,39 +330,53 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                                 onClick={() => shareHandler(row.id, row.name)}
                                 sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
                               >
-                                <ShareIcon fontSize="small" sx={{color: "#ffffffff"}} />
+                                <ShareIcon fontSize='small' sx={{color: '#ffffffff'}} />
                               </Button>
                             </Tooltip>
-                            <Tooltip title="Download">
+                            <Tooltip title='Download'>
                               <Button
                                 type='button'
                                 size='small'
                                 variant='contained'
                                 sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
                               >
-                                <FileDownloadIcon fontSize="small" sx={{color: "#ffffffff"}} />
+                                <FileDownloadIcon fontSize='small' sx={{color: '#ffffffff'}} />
                               </Button>
                             </Tooltip>
-                            <Tooltip title="Copy">
+                            <Tooltip title='Copy'>
                               <Button
                                 type='button'
                                 size='small'
                                 variant='contained'
                                 sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
                               >
-                                <ContentCopyIcon fontSize="small" sx={{color: "#ffffffff"}} />
+                                <ContentCopyIcon fontSize='small' sx={{color: '#ffffffff'}} />
                               </Button>
                             </Tooltip>
                           </>
-                      )}
-                        <Tooltip title="Move">
+                        ) : (
+                          <>
+                            <Tooltip title='Rename'>
+                              <Button
+                                type='button'
+                                size='small'
+                                variant='contained'
+                                onClick={() => renameHandler(row.id, row.name)}
+                                sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
+                              >
+                                <EditIcon fontSize='small' sx={{color: '#ffffffff'}} />
+                              </Button>
+                            </Tooltip>
+                          </>
+                        )}
+                        <Tooltip title='Move'>
                           <Button
                             type='button'
                             size='small'
                             variant='contained'
                             sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
                           >
-                            <DriveFileMoveIcon fontSize="small" sx={{color: "#ffffffff"}} />
+                            <DriveFileMoveIcon fontSize='small' sx={{color: '#ffffffff'}} />
                           </Button>
                         </Tooltip>
                       </Stack>
@@ -347,6 +387,30 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
           </TableBody>
         </Table>
       </TableContainer>
+      <Dialog open={OpenRenameFolder} onClose={() => setOpenRenameFolder(false)} >
+        <DialogTitle>Rename Folder</DialogTitle>
+        <DialogContent>
+          <Grid container spacing={2} >
+              <TextField
+                autoFocus
+                margin='dense'
+                id='folderName'
+                label='Folder Name'
+                type='text'
+                fullWidth
+                variant='outlined'
+                value={newFolderData.newName}
+                onChange={(e) => setNewFolderData({...newFolderData, newName: e.target.value})}
+              />
+              <Button onClick={handleRenameSubmit} variant='contained' size='small' sx={{ height: 40 }} >
+                Rename Folder
+              </Button>
+            </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenRenameFolder(false)}>Cancel</Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 }

@@ -115,8 +115,32 @@ export const deleteFolder = async (folderId: number, userId: number) => {
   }
 };
 
+// Edit Folder
+const editFolder = async (folderId: number, userId: number, folderData: Partial<IFolder>) => {
+  try {
+    const folder = await Folder.findByPk(folderId);
+    if (!folder) {
+      throw new Error('Folder not found');
+    }
+
+    if (folder.userId !== userId) {
+      throw new Error('Unauthorized');
+    }
+
+    await folder.update(folderData);
+    return folder;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    console.log(error);
+    throw new Error('Error editing folder');
+  }
+};    
+
 export default {
   createFolder,
   getFolders,
   deleteFolder,
+  editFolder,
 }

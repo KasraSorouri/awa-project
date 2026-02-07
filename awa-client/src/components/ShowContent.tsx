@@ -51,11 +51,7 @@ interface IShareFile {
 const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setActiveFile, editMode, setEditMode, setAlertData, handleAddFile, handleAddFolder, handleUploadFile, handleDeleteUpdate}: IShowContentProps) => {
 
   const [openShareFile, setOpenShareFile] = useState<boolean>(false)
-  //const [sharedUser, setSharedUser] = useState<string>('')
   const [sharedFile, setSharedFile] = useState<IShareFile|null>(null)
-  //const [expires_at, setExpires_at] = useState<Dayjs|null>(null)
-  //const [shareLink, setShareLink] = useState<string>('')
-  //const [tooltipTitle, setTooltipTitle] = useState('Copy to Clipboard');
 
   const folder: IFolder | undefined = findCurrentFolder(folders, activeFolder)
   const currentFolder: IFolder = folder ? folder : folders[0]
@@ -96,7 +92,7 @@ const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setAct
             handleDeleteUpdate={handleDeleteUpdate}
             handleShare = {handleShareFile}
            />
-        : <ShowFileContent activeFile={activeFile} setActiveFile={setActiveFile} editMode={editMode} setEditMode={setEditMode} />
+        : <ShowFileContent activeFile={activeFile} setActiveFile={setActiveFile} editMode={editMode} setEditMode={setEditMode} handleShare={handleShareFile} />
       }
       <Dialog open={openShareFile} onClose={()=>setOpenShareFile(false)} >
           <ShareForm sharedFile={sharedFile} setAlertData={setAlertData} setOpenShareFile={setOpenShareFile} />
