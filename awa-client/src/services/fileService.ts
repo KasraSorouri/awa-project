@@ -189,6 +189,26 @@ const restoreFile = async (fileIds: number[]) => {
   }
 }
 
+const moveFile = async (fileId: number, targetFolderId: number|null) => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+    }
+  try {
+    const response = await axios.put(`${api_url}/files/move`, { fileId, targetFolderId }, config);
+    if (response.status === 200) {
+      return response.data;
+    }
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
+
 export default {
   createFile,
   uploadFile,
@@ -197,5 +217,6 @@ export default {
   saveFile,
   getRecycleBin,
   removeFile,
-  restoreFile
+  restoreFile,
+  moveFile
 }

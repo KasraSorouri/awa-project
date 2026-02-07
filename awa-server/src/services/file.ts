@@ -129,17 +129,13 @@ const uploadFile = async (fileData: IFileData, file: Express.Multer.File) => {
 // Delete a file
 const deleteFile = async (fileId: number, userId: number) => {
   try {
-    const userFile = await UserFiles.findOne({ where: { fileId, userId } });
-    if (!userFile) {
-      throw new Error('File not found');
-    }
-    if (userFile.role !== 'owner') {
-      throw new Error('User does not have permission to delete this file');
-    }
     const file = await File.findOne({ where: { id: fileId } });
     
     if (!file) {
       throw new Error('File not found');
+    }
+    if (file.userId !== userId) {
+      throw new Error('User does not have permission to delete this file');
     }
 
     file.deleted = true;
@@ -394,6 +390,29 @@ const getSharedFiles = async (userId: number) => {
   }
 }
 
+// Move a file
+const moveFile = async (id: number, targetFolderId: number|null, userId: number) => {
+  try {
+    const file = await File.findByPk(id);
+    if (!file) {
+      throw new Error('File not found');
+    }
+
+    if (file.userId !== file.userId) {
+      throw new Error('User does not have permission to move this file');
+    }
+
+    file.folderId = targetFolderId;
+    await file.save();
+    return file;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Error moving file');
+  }
+}
+
 export default {
   createFile,
   uploadFile,
@@ -404,5 +423,6 @@ export default {
   getRecycledFiles,
   restoreFile,
   shareFile,
-  getSharedFiles
+  getSharedFiles,
+  moveFile
 }

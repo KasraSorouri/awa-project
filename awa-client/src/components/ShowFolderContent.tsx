@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Paper from '@mui/material/Paper';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -29,6 +29,7 @@ import folderService from '../services/folderService';
 import { IFolder } from '../types/folderTypes'
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { IAlert } from '../types/alertTypes';
+import MoveForm from './MoveForm';
 
 interface Column {
   id: 'name' | 'dateCreated' | 'dateModified' | 'type' ;
@@ -80,40 +81,47 @@ interface IShowFolderContentProps {
   handleUploadFile: () => void;
   handleDeleteUpdate: (item:'file'|'folder', id: number) => void;
   handleShare: (id:number, name:string) => void;
+  updateFolderList: () => void;
 }
 
 
-const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile, setAlertData, handleAddFile, handleAddFolder, handleUploadFile, handleDeleteUpdate, handleShare}: IShowFolderContentProps) => {
+const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile, setAlertData, handleAddFile, handleAddFolder, handleUploadFile, handleDeleteUpdate, handleShare, updateFolderList}: IShowFolderContentProps) => {
   console.log('ShowFolderContent * folder', activeFolder, '->' ,folder)
-  const rows: Data[]= []
-
+  const [rows, setRows] = useState<Data[]>([])
   const [OpenRenameFolder, setOpenRenameFolder] = useState<boolean>(false)
   const [newFolderData, setNewFolderData] = useState<{folderId: number, newName: string}>({folderId: 0, newName: ''})
+  const [openMoveForm, setOpenMoveForm] = useState<boolean>(false)
+  const [moveItem, setMoveItem] = useState<{itemId: number,type: 'folder'|'file'}|null>(null)
 
-  if (folder.subFolders.length>0) {
-    rows.push(...folder.subFolders.map((folder) => { 
-      return {
-        id: folder.id,
-        name: folder.folderName,
-        dateCreated: new Date(folder.createdAt || 0),
-        dateModified: new Date(folder.updatedAt || 0),
-        type: 'folder',
-        contents: folder.subFolders.length + folder.files.length
-      }    
-    }))
-  }
-  rows.push(...folder.files.map((file) => {
-    return {
-      id: file.id,
-      name: file.fileName,
-      dateCreated: new Date(file.createdAt),
-      dateModified: new Date(file.updatedAt),
-      type: 'file',
-      contents: 0,
-      editable: file.editable
-    }
-  }))
-    
+  useEffect(() => {
+    const initialRows: Data[] = []
+    if (folder.subFolders.length>0) {
+        initialRows.push(...folder.subFolders.map((folder) => { 
+          return {
+            id: folder.id,
+            name: folder.folderName,
+            dateCreated: new Date(folder.createdAt || 0),
+            dateModified: new Date(folder.updatedAt || 0),
+            type: 'folder',
+            contents: folder.subFolders.length + folder.files.length
+          }    
+        }))
+      }
+      initialRows.push(...folder.files.map((file) => {
+        return {
+          id: file.id,
+          name: file.fileName,
+          dateCreated: new Date(file.createdAt),
+          dateModified: new Date(file.updatedAt),
+          type: 'file',
+          contents: 0,
+          editable: file.editable
+        }
+      }))
+
+    setRows(initialRows)
+  }, [folder])
+
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
@@ -142,11 +150,13 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
         await folderService.deleteFolder(id);
         handleDeleteUpdate('folder', id)
         setAlertData({type: 'success', message: 'Folder deleted successfully', showAlert: true});
+        setRows((prevRows) => prevRows.filter((row) => row.id !== id || row.type !== 'folder'));
       } else {
         const result = await fileService.deleteFile(id);
         if (result) {
           handleDeleteUpdate('file', id)
           setAlertData({type: 'success', message: 'File deleted successfully',showAlert: true});
+          setRows((prevRows) => prevRows.filter((row) => row.id !== id || row.type !== 'file'));
         }
       }
     } catch (error) {
@@ -168,6 +178,34 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
     setNewFolderData({folderId: id, newName: name})
     setOpenRenameFolder(true)
   }
+
+  const moveHandler = (id: number, type: string) => {
+    console.log('move item with id:', id, 'type:', type)
+    setMoveItem({itemId: id, type: type as 'folder'|'file'})
+    setOpenMoveForm(true)
+  }
+
+    const handleMoveSubmit = async(selectedFolder: number) => {
+      if (!moveItem) {
+        console.error('No item selected for moving')
+        return
+      }
+      try {
+        if (moveItem.type === 'file') {
+          await fileService.moveFile(moveItem.itemId, selectedFolder !== 0 ? selectedFolder : null)
+          updateFolderList()
+          setAlertData({type: 'success', message: 'File moved successfully', showAlert: true})
+        } else {
+          await folderService.moveFolder(moveItem.itemId, selectedFolder !== 0 ? selectedFolder : null)
+          updateFolderList()
+          setAlertData({type: 'success', message: 'Folder moved successfully', showAlert: true})
+        }
+        setOpenMoveForm(false)
+      } catch (error) {
+        console.error('Error moving item:', error)
+        setAlertData({type: 'error', message: 'Error moving item', showAlert: true})
+      }
+    }
 
   const handleRenameSubmit = async() => {
     try {
@@ -374,6 +412,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                             type='button'
                             size='small'
                             variant='contained'
+                            onClick={() => moveHandler(row.id, row.type)}
                             sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
                           >
                             <DriveFileMoveIcon fontSize='small' sx={{color: '#ffffffff'}} />
@@ -410,6 +449,9 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
         <DialogActions>
           <Button onClick={() => setOpenRenameFolder(false)}>Cancel</Button>
         </DialogActions>
+      </Dialog>
+      <Dialog open={openMoveForm} onClose={() => setOpenMoveForm(false)} >
+        <MoveForm moveItem={moveItem} activeFolderId={activeFolder} setOpenMoveForm={setOpenMoveForm} setAlertData={setAlertData} handleMoveSubmit={handleMoveSubmit} />
       </Dialog>
     </Paper>
   );

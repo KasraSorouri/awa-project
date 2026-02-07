@@ -175,6 +175,22 @@ router.get('/share', validateToken,  async (req: Request, res: Response) => {
       return res.status(500).json({ error: 'An unexpected error occurred' });
     }
   }
+})  
+
+// Move a File
+router.put('/move', validateToken, async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const { fileId, targetFolderId } = req.body; 
+  try {
+    const result = await fileServices.moveFile(fileId, targetFolderId, userId);
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+  }
 })
 
 

@@ -23,6 +23,7 @@ interface IShowContentProps {
   handleAddFolder: () => void;
   handleUploadFile: () => void;
   handleDeleteUpdate: (item:'file'|'folder', id: number) => void;
+  updateFolderList: () => void;
 }
 
 const findCurrentFolder = (folders: IFolder[], activeFolder: number): IFolder | undefined => {
@@ -48,7 +49,7 @@ interface IShareFile {
 }
 
 
-const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setActiveFile, editMode, setEditMode, setAlertData, handleAddFile, handleAddFolder, handleUploadFile, handleDeleteUpdate}: IShowContentProps) => {
+const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setActiveFile, editMode, setEditMode, setAlertData, handleAddFile, handleAddFolder, handleUploadFile, handleDeleteUpdate, updateFolderList}: IShowContentProps) => {
 
   const [openShareFile, setOpenShareFile] = useState<boolean>(false)
   const [sharedFile, setSharedFile] = useState<IShareFile|null>(null)
@@ -62,18 +63,7 @@ const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setAct
     setOpenShareFile(true)
     console.log('*** share file ->',fileId)
   }
-/*
-  const handleShareSubmit = async() => {
-    if (!sharedFile) {
-      console.error('No file selected for sharing')
-      return
-    }
-    const result = await shareService.shareFileExternal(sharedFile.fileId,expires_at?.toISOString() || null)
-    setShareLink(result.link)
-    console.log('*** share result ->',result)
-    setAlertData({type: 'success', message: `File shared with ${sharedUser}`, showAlert: true})
-  }
-*/
+
   if (folders.length === 0) {
     return <div>Loading...</div>
   }
@@ -91,6 +81,7 @@ const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setAct
             handleUploadFile={handleUploadFile}
             handleDeleteUpdate={handleDeleteUpdate}
             handleShare = {handleShareFile}
+            updateFolderList={updateFolderList}
            />
         : <ShowFileContent activeFile={activeFile} setActiveFile={setActiveFile} editMode={editMode} setEditMode={setEditMode} handleShare={handleShareFile} />
       }

@@ -103,7 +103,7 @@ const UserPage = ({counter, updateCounter}: IUserPageProps) => {
   console.log('*** active folder ->', activeFolder)
 
   useEffect(() => {
-    const getUserFiles = async () => {
+    const getUserFolders = async () => {
       try {
         const result = await folderService.getUserFolders()
         if (result) {
@@ -119,8 +119,24 @@ const UserPage = ({counter, updateCounter}: IUserPageProps) => {
       }
     }
 
-    getUserFiles()
+    getUserFolders()
   }, [])
+
+  const updateFolderList = async() => {
+    try {
+      const result = await folderService.getUserFolders()
+      if (result) {
+        setFolders([...result])
+        const counters = countRepository([...result])
+        updateCounter(counters)
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log(error.message)
+      }
+      console.log(error)
+    }
+  }
 
 
   const handleAddFolder = () => {
@@ -271,6 +287,7 @@ const UserPage = ({counter, updateCounter}: IUserPageProps) => {
           handleAddFolder={handleAddFolder}
           handleUploadFile={handleUploadFile}
           handleDeleteUpdate={handleDeleteUpdate}
+          updateFolderList={updateFolderList}
         />
       </Grid>
     </Grid>

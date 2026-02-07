@@ -74,4 +74,19 @@ router.put('/edit/:id', validateToken, validateEditFolderData, async (req: Reque
   }
 })
 
+// get all Folder and subfolder for a user
+router.get('/getAllFolders', validateToken, async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  try {
+    const folders = await folderServices.getAllFolders(userId);
+    res.status(200).json(folders);
+  } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    } else {
+      res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+  }
+})
+
 export default router;

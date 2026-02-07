@@ -6,7 +6,7 @@ interface IFileAttributes {
   id: number;
   fileName: string;
   userId: number;
-  folderId: number;
+  folderId: number | null;
   fileType: string;
   address: string;
   editable: boolean;
@@ -29,7 +29,7 @@ interface IFileCreationAttributes extends Optional<IFileAttributes, 'id' | 'crea
 class File extends Model<IFileAttributes, IFileCreationAttributes> implements IFileAttributes {
   declare id: number;
   declare fileName: string;
-  declare folderId: number;
+  declare folderId: number | null;
   declare userId: number;
   declare fileType: string;
   declare address: string;

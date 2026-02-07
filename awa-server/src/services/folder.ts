@@ -1,9 +1,10 @@
 
 import { IFolder } from '../types/folderTypes';
 import { Folder, User, File } from '../models';
-import { Op, where } from 'sequelize';
+import { Op } from 'sequelize';
 
 import outputMaker from '../utils/outputMaker';
+import { get } from 'http';
 
 
 const folderQuery = {
@@ -136,11 +137,27 @@ const editFolder = async (folderId: number, userId: number, folderData: Partial<
     console.log(error);
     throw new Error('Error editing folder');
   }
-};    
+};
+
+
+// get all Folder and subfolder for a user
+const getAllFolders = async (userId: number) => {
+  try {
+    const folders = await Folder.findAll({ where: { 'userId' : userId }, ...folderQuery });
+    return folders;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    console.log(error);
+    throw new Error('Error getting folders');
+  }
+}
 
 export default {
   createFolder,
   getFolders,
   deleteFolder,
   editFolder,
+  getAllFolders
 }

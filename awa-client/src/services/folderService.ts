@@ -90,9 +90,51 @@ const renameFolder = async (id: number, newName: string) => {
   }
 }
 
+const moveFolder = async (id: number, parentFolder: number|null) => {
+  console.log('*** folder service * move * folder id :' ,id,'new parrent :', parentFolder)
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+    }
+  try {
+    const response = await axios.put(`${api_url}/folders/edit/${id}`, { parentFolder }, config);
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
+
+// Get All Folders and subfolders for a user
+const getUserFolderList = async () => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+    }
+  try {
+    const response = await axios.get(`${api_url}/folders/getAllFolders`, config);
+    if (response.status === 200) {
+      return response.data;
+    }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
+
 export default {
   getUserFolders,
   createFolder,
   deleteFolder,
-  renameFolder
+  renameFolder,
+  moveFolder,
+  getUserFolderList
 }
