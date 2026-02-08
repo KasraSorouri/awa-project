@@ -31,6 +31,7 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
   const [value, setValue] = useState<string>('');
   const [file, setFile] = useState<IFile|null>(null);
   const [fileName, setFileName] = useState<string>('');
+  const [role, setRole] = useState<string>('');
   const [confirm, setConfirm] = useState<IConfirmation>({
     askConfirm: false,
     title: '',
@@ -48,6 +49,7 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
         setValue(result.fileContent);
         setFile(result.file);
         setFileName(result.file.fileName);
+        setRole(result.role);
       } catch (error) {
         if (error instanceof Error) {
           console.error('Error reading file:', error.message);
@@ -84,6 +86,14 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
   const handleEditFile = () => {
     setEditMode(true);
   }; 
+
+  const handleCloseFile = () => {
+    if (editMode) {
+      handleCancelEdit();
+      return;
+    }
+    setActiveFile(null);
+  };
   
   const handleCancelEdit = () => {
     setConfirm({
@@ -154,7 +164,7 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
           </Stack>
           <Stack direction={'row'} justifyContent={'right'} spacing={1} sx={{padding: 1}}>
           <Tooltip title='Edit'>
-            <Button onClick={handleEditFile} disabled={editMode}>
+            <Button onClick={handleEditFile} disabled={editMode || role !== 'OWNER' && role !== 'EDITOR'}>
               <EditIcon />
             </Button>
           </Tooltip>
@@ -174,7 +184,7 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
             </Button>
           </Tooltip>
           <Tooltip title='Close'>
-            <Button onClick={handleCancelEdit} disabled={!editMode}>
+            <Button onClick={handleCloseFile}>
               <CloseIcon />
             </Button>
           </Tooltip> 

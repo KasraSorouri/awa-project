@@ -75,6 +75,7 @@ interface ISharedFile {
   };
 }
 
+
 const ShowSharedFiles = () => {
   const [rows, setRows] = useState<IData[]>([]);
   const [activeFile, setActiveFile] = useState<number|null>(null);
@@ -180,7 +181,7 @@ const ShowSharedFiles = () => {
                 .map((row, index) => {
                   return (
                     <TableRow hover role='checkbox' tabIndex={-1} key={index} >
-                      <TableCell onClick ={() => {setActiveFile(row.id); setEditMode(row.editable)}} > 
+                      <TableCell onClick ={() => {setActiveFile(row.id)}} > 
                         <Stack direction={'row'} spacing={1}>
                           {row.editable ?
                               <ArticleIcon fontSize='medium' sx={{color: '#4D4D4D'}} />

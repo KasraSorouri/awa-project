@@ -204,15 +204,12 @@ const openFile = async (fileId: number, userId: number) => {
     if (!file.editable) {
       throw new Error('File is not editable');
     }
-    /*
-    if(file.activated) {
-      throw new Error('File is opened by another user');
-    }
-    */
+
     file.activated = true;
     const fileContent = await storeFile.openFile(file.address);
     const result = {
       file,
+      role: userFile.role,
       fileContent
     }
     return result
@@ -231,7 +228,7 @@ const saveFile = async (fileId: number, fileData: IEditFileData, userId: number)
     if (!userFile) {
       throw new Error('File not found');
     }
-    if (!(userFile.role === 'owner' || userFile.role === 'edit')) {
+    if (!(userFile.role === 'OWNER' || userFile.role === 'EDITOR')) {
       throw new Error('User does not have permission to save this file');
     }
     const file = await File.findOne({ where: { id: fileId } });
