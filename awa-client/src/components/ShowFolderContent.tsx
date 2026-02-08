@@ -185,27 +185,27 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
     setOpenMoveForm(true)
   }
 
-    const handleMoveSubmit = async(selectedFolder: number) => {
-      if (!moveItem) {
-        console.error('No item selected for moving')
-        return
-      }
-      try {
-        if (moveItem.type === 'file') {
-          await fileService.moveFile(moveItem.itemId, selectedFolder !== 0 ? selectedFolder : null)
-          updateFolderList()
-          setAlertData({type: 'success', message: 'File moved successfully', showAlert: true})
-        } else {
-          await folderService.moveFolder(moveItem.itemId, selectedFolder !== 0 ? selectedFolder : null)
-          updateFolderList()
-          setAlertData({type: 'success', message: 'Folder moved successfully', showAlert: true})
-        }
-        setOpenMoveForm(false)
-      } catch (error) {
-        console.error('Error moving item:', error)
-        setAlertData({type: 'error', message: 'Error moving item', showAlert: true})
-      }
+  const handleMoveSubmit = async(selectedFolder: number) => {
+    if (!moveItem) {
+      console.error('No item selected for moving')
+      return
     }
+    try {
+      if (moveItem.type === 'file') {
+        await fileService.moveFile(moveItem.itemId, selectedFolder !== 0 ? selectedFolder : null)
+        updateFolderList()
+        setAlertData({type: 'success', message: 'File moved successfully', showAlert: true})
+      } else {
+        await folderService.moveFolder(moveItem.itemId, selectedFolder !== 0 ? selectedFolder : null)
+        updateFolderList()
+        setAlertData({type: 'success', message: 'Folder moved successfully', showAlert: true})
+      }
+      setOpenMoveForm(false)
+    } catch (error) {
+      console.error('Error moving item:', error)
+      setAlertData({type: 'error', message: 'Error moving item', showAlert: true})
+    }
+  }
 
   const handleRenameSubmit = async() => {
     try {

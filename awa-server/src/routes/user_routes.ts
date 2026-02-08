@@ -3,6 +3,9 @@ import { Router, Request, Response } from 'express'
 import { validateRegisterData, validateLoginData } from '../middlewares/userValidator'
 import { validateToken } from '../middlewares/validateToken'
 import userService from '../services/user'
+import upload from '../middlewares/multerMiddleware'
+import path from 'path'
+import { col } from 'sequelize'
 
 declare global {
   namespace Express {
@@ -86,4 +89,68 @@ router.get('/users', validateToken, async(req: Request, res: Response) => {
   }
 })
 
+router.put('/update', validateToken, async(req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+  try {
+    const result = await userService.updateUser(req.user.id, req.body)
+
+    return res.status(200).json(result)
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message })
+    }
+    console.error(error)
+    return res.status(500).json({ error: 'Error updating user' })
+  }
+})
+
+router.post('/upload-picture', validateToken, upload.single('file'), async(req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+  const file: Express.Multer.File | undefined = req.file
+  console.log('** route * upload-profile-picture req.file : ', file);
+  if (!file) {
+    return res.status(400).json({ error: 'No file uploaded' })
+  }
+  try {
+    const result = await userService.uploadProfilePicture(req.user.id, file)
+
+    return res.status(200).json(result)
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message })
+    }
+    console.error(error)
+    return res.status(500).json({ error: 'Error uploading profile picture' })
+  }
+})
+
+router.get('/profile-picture', validateToken, async(req: Request, res: Response) => {
+  if (!req.user) {
+    return res.status(401).json({ error: 'Unauthorized' })
+  }
+  const userId = req.user.id
+  const picture = req.params.pic
+  try {
+    const picAddress = await userService.getProfilePicture(userId)
+
+    const picPath = path.join(__dirname, '../../../', picAddress);
+    console.log('** route * get-profile-picture picPath : ', picPath);
+    return res.sendFile(picPath, (err) => {
+      if (err) {
+        res.status(404).json({ error: "File not found on disk" });
+      }
+    });
+
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message })
+    }
+    console.error(error)
+    return res.status(500).json({ error: 'Error getting profile picture' })
+  }
+})
 export default router

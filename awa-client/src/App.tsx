@@ -15,13 +15,15 @@ import UserPage from './components/UserPage'
 import { IFileCounter, IRecycledFiles } from './types/folderTypes'
 import ShowExternalShare from './components/ShowExternalShare'
 import ShowSharedFiles from './components/ShowSharedFiles'
+import UserProfile from './components/UserProfile'
 
 interface IUserData {
   user_id: number,
   username: string,
-  firstName: string,
-  lastName: string,
-  email: string,
+  firstName?: string,
+  lastName?: string,
+  email?: string,
+  picture?: string
 }
 
 
@@ -49,7 +51,10 @@ function App() {
     })
   }
 
-  
+  const updateUserData= async (userData: IUserData) => {
+    setUser(userData)
+  }
+
   useEffect(() => {
     const getUserInfo = async() => {
       try{
@@ -93,6 +98,7 @@ function App() {
           <Route path='/recycled' element={user ? <ShowRecycledFiles updateCounter={updateCounter} hanldeUpdateRecycle={hanldeUpdateRecycle} /> : <Login /> } />
           <Route path='/sharedFiles' element={user ? <ShowSharedFiles /> : <Login /> } />
           <Route path='/share/:link' element={<ShowExternalShare />} />
+          <Route path='/userProfile' element={user ? <UserProfile userData={user} setUser={updateUserData} /> : <Login /> } />
         </Routes>
     </BrowserRouter>
     </>

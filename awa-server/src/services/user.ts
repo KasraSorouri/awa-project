@@ -3,12 +3,14 @@ import Jwt from 'jsonwebtoken';
 
 import { SECRET } from '../configs/config'; 
 import { User } from '../models';
-import { IUser } from '../types/userTypes';
+import { IUser, IUserUpdateData } from '../types/userTypes';
 import { Op } from 'sequelize';
+import { IFileParam } from '../types/fileTypes';
+import storeFile from '../utils/storeFile';
 
 
 const userQuery = {
-  attributes: ['id', 'username', 'firstName', 'lastName', 'email'],
+  attributes: ['id', 'username', 'firstName', 'lastName', 'email', 'picture'],
 }
 // Register a user
 const createUser  = async( userData: IUser) => {
@@ -122,13 +124,91 @@ const getAllUsers = async (userId: number) => {
 }
 
 
+// Edit User Info
+const updateUser = async (userId: number, userData: IUserUpdateData) => {
+  const { firstName, lastName, email, picture } = userData;
 
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const updatedUser = await user.update({
+      firstName,
+      lastName,
+      email: email?.toLocaleLowerCase(),
+      picture
+    });
+
+    return updatedUser;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    console.error(error);
+    throw new Error('Error updating user');
+  }
+}
+
+const uploadProfilePicture = async (userId: number, picture:  Express.Multer.File) => {
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const fileParams: IFileParam = {
+      creationMethod: 'upload',
+      userId: userId,
+      fileType: 'picture',
+      file: picture
+    }
+    
+    const { fullPath } = await storeFile.saveFile(fileParams);
+
+    const updatedUser = await user.update({
+      picture: fullPath
+    });
+
+    return updatedUser;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    console.error(error);
+    throw new Error('Error uploading profile picture');
+  }
+}
+
+// get profile picture
+const getProfilePicture = async (userId: number) => {
+  try {
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const picturePath = user.picture;
+
+    return picturePath;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    console.error(error);
+    throw new Error('Error getting profile picture');
+  }
+} 
 
 export default {
   createUser,
   loginUser,
   getUser,
-  getAllUsers
+  getAllUsers,
+  updateUser,
+  uploadProfilePicture,
+  getProfilePicture
 }
 
 

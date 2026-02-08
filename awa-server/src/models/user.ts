@@ -9,6 +9,7 @@ interface IUserAttributes {
   firstName?: string;
   lastName?: string;
   email?: string;
+  picture?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -26,6 +27,7 @@ class User extends Model<IUserAttributes, IUserCreationAttributes> implements IU
   declare firstName: string;
   declare lastName: string;
   declare email: string;
+  declare picture: string;
   declare createdAt: Date;
   declare updatedAt: Date;
 }
@@ -54,6 +56,10 @@ User.init(
       allowNull: true,
     },
     email: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    picture: {
       type: DataTypes.STRING,
       allowNull: true,
     },

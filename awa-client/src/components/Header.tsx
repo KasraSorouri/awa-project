@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { styled, alpha } from '@mui/material/styles';
@@ -15,13 +15,14 @@ import Menu from '@mui/material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
-import { Button } from '@mui/material';
+import { Avatar, Button } from '@mui/material';
 
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 import { IFileCounter } from '../types/folderTypes';
+import userService from '../services/userService';
 
 interface IUserData {
   user_id: number;
@@ -29,6 +30,7 @@ interface IUserData {
   firstName?: string;
   lastName?: string;
   email?: string;
+  picture?: string;
 }
 
 type THeaderProps = {
@@ -92,6 +94,30 @@ const Header = ({user, counter}:THeaderProps) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
 
+  const [pictureUrl, setPictureUrl] = useState<string | null>(null);
+  
+  useEffect(() => {
+    const getProfilePicture = async () => {
+      if (user?.picture) {
+        try {
+          const profilePic = await userService.getProfilePicture();
+          const url = URL.createObjectURL(profilePic);
+          setPictureUrl(url);
+        } catch (error) {
+          console.log('Error fetching profile picture:', error);
+        }
+      }
+    };
+    getProfilePicture();
+    return () => {
+      if (pictureUrl) {
+        URL.revokeObjectURL(pictureUrl);
+      }
+    };
+  }, [user]);
+
+
+
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
 
@@ -134,7 +160,7 @@ const Header = ({user, counter}:THeaderProps) => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
+      <MenuItem onClick={() => navigate('/userProfile')}>Profile</MenuItem>
     </Menu>
   );
 
@@ -278,7 +304,8 @@ const Header = ({user, counter}:THeaderProps) => {
               onClick={handleProfileMenuOpen}
               color="inherit"
             >
-              <AccountCircle />
+              
+              {pictureUrl ? <Avatar alt="Profile Picture" src={pictureUrl} sx={{ width: 56, height: 56, marginLeft: '0.5rem' }} /> : <AccountCircle />}
             </IconButton>
             <Button variant='contained' sx={{ margin: '0 1rem' }} onClick={handleLogout} >Logout</Button>
           </Box>
