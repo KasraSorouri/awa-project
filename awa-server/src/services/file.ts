@@ -1,6 +1,7 @@
 
 import { File, UserFiles, Folder, User } from '../models';
 import { IEditFileData, IFile, IFileData, IFileParam, IUserFile } from '../types/fileTypes';
+import convertToPDF from '../utils/fileConvert';
 import storeFile from '../utils/storeFile';
 
 const fileQuery = {
@@ -390,13 +391,20 @@ const getSharedFiles = async (userId: number) => {
 // Move a file
 const moveFile = async (id: number, targetFolderId: number|null, userId: number) => {
   try {
-    const file = await File.findByPk(id);
+    const file = await File.findByPk(id, fileQuery);
     if (!file) {
       throw new Error('File not found');
     }
 
-    if (file.userId !== file.userId) {
+    if (file.userId !== userId) { 
       throw new Error('User does not have permission to move this file');
+    }
+
+    if (targetFolderId) {
+      const targetFolder = await Folder.findByPk(targetFolderId);
+      if (!targetFolder) {
+        throw new Error('Target folder not found');
+      }
     }
 
     file.folderId = targetFolderId;
@@ -407,6 +415,29 @@ const moveFile = async (id: number, targetFolderId: number|null, userId: number)
       throw new Error(error.message);
     }
     throw new Error('Error moving file');
+  }
+}
+
+
+// Download a file
+const downloadFile = async (fileId: number, userId: number) => {
+  try {
+
+    const file = await File.findByPk(fileId);
+    if (!file) {
+      throw new Error('File not found');
+    }
+
+    const fileContent = await storeFile.openFile(file.address);
+    const pdfBuffer = await convertToPDF(fileContent);
+
+    return { fileName: file.fileName, buffer: pdfBuffer };
+
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Error downloading file');
   }
 }
 
@@ -421,5 +452,6 @@ export default {
   restoreFile,
   shareFile,
   getSharedFiles,
-  moveFile
+  moveFile,
+  downloadFile
 }

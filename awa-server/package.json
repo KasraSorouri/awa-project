@@ -33,6 +33,7 @@
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.0.2",
     "pg": "^8.16.3",
+    "puppeteer": "^24.37.3",
     "sequelize": "^6.37.7",
     "umzug": "^3.8.2",
     "uuid": "^13.0.0"

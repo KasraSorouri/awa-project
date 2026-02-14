@@ -51,7 +51,6 @@ const openFile = async(fullPath: string) => {
   }
   try {
     const fileContent = await fs.readFile(fullPath,'utf8');
-    console.log('** storage ** read file * content ', fileContent)
     return fileContent;
 
   } catch(error) {

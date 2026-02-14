@@ -68,6 +68,8 @@ const uploadFile = async (fileData: IUploadFileData) => {
   }
 }
 
+
+// Delete a File
 const deleteFile = async (id: number) => {
   const authorization: string = authService()
   const config = {
@@ -88,6 +90,8 @@ const deleteFile = async (id: number) => {
   }
 }
 
+
+// Get a File Content
 const readFile = async (id: number) => {
   const authorization: string = authService()
   const config = {
@@ -108,6 +112,8 @@ const readFile = async (id: number) => {
   }
 }
 
+
+// Save a File
 const saveFile = async (fileData: IEditFileData) => {
   const authorization: string = authService()
   const config = {
@@ -149,6 +155,8 @@ const getRecycleBin = async () => {
   }
 }
 
+
+// Remove a File from Recyle Bin
 const removeFile = async (fileIds: number[]) => {
   const authorization: string = authService()
   const config = {
@@ -189,6 +197,8 @@ const restoreFile = async (fileIds: number[]) => {
   }
 }
 
+
+// Move a File to another Folder
 const moveFile = async (fileId: number, targetFolderId: number|null) => {
   const authorization: string = authService()
   const config = {
@@ -209,6 +219,29 @@ const moveFile = async (fileId: number, targetFolderId: number|null) => {
   }
 }
 
+
+// Download a File
+const downloadFile = async (fileId: number) => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+      responseType: 'blob' as const
+    }
+  try {
+    const response = await axios.get(`${api_url}/files/download/${fileId}`, config);
+    if (response.status === 200) {
+      return response;
+    }
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
+
 export default {
   createFile,
   uploadFile,
@@ -218,5 +251,6 @@ export default {
   getRecycleBin,
   removeFile,
   restoreFile,
-  moveFile
+  moveFile,
+  downloadFile
 }

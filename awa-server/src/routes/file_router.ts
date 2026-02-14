@@ -193,5 +193,25 @@ router.put('/move', validateToken, async (req: Request, res: Response) => {
   }
 })
 
+// Download a File
+router.get('/download/:id', validateToken, async (req: Request, res: Response) => {
+  const fileId = parseInt(req.params.id);
+  const userId = req.user.id;
+  try {
+    const result = await fileServices.downloadFile(fileId, userId);
+    console.log('File buffer length:', result);
+    res.setHeader('Content-Disposition', `attachment; filename="${result.fileName}"`);
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Length', result.buffer.length);
+    return res.status(200).send(result.buffer);
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+  }
+})
+
 
 export default router;
