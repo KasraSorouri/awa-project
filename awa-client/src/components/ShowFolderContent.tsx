@@ -82,10 +82,11 @@ interface IShowFolderContentProps {
   handleDeleteUpdate: (item:'file'|'folder', id: number) => void;
   handleShare: (id:number, name:string) => void;
   updateFolderList: () => void;
+  downloadFile: (id: number, fileName: string, fileType: string) => void
 }
 
 
-const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile, setAlertData, handleAddFile, handleAddFolder, handleUploadFile, handleDeleteUpdate, handleShare, updateFolderList}: IShowFolderContentProps) => {
+const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile, setAlertData, handleAddFile, handleAddFolder, handleUploadFile, handleDeleteUpdate, handleShare, updateFolderList, downloadFile}: IShowFolderContentProps) => {
   console.log('ShowFolderContent * folder', activeFolder, '->' ,folder)
   const [rows, setRows] = useState<Data[]>([])
   const [OpenRenameFolder, setOpenRenameFolder] = useState<boolean>(false)
@@ -376,6 +377,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                                 type='button'
                                 size='small'
                                 variant='contained'
+                                onClick={() => downloadFile(row.id, row.name, row.editable ? 'document' : 'row')}
                                 sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
                               >
                                 <FileDownloadIcon fontSize='small' sx={{color: '#ffffffff'}} />

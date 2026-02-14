@@ -8,6 +8,7 @@ import ShareForm from './ShareForm';
 
 import { IFolder } from '../types/folderTypes'
 import { IAlert } from '../types/alertTypes';
+import fileService from '../services/fileService';
 
 
 interface IShowContentProps {
@@ -64,6 +65,53 @@ const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setAct
     console.log('*** share file ->',fileId)
   }
 
+  const handleDownloadFile = async (fileId: number, fileName:string, fileType: string) => {
+
+    console.log('**** Download file -> fileId', fileId, ' *  fileName: ' , fileName, ' * File type: ', fileType)
+    if (fileId) {
+      if (fileType === 'document') {
+        try {
+          const result = await fileService.downloadPdfFile(fileId);
+          if (!result) {
+            alert('Error downloading file');
+            return;
+          }
+          const blob : Blob = new Blob([result.data], { type: 'application/pdf' });
+          const url : string = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } catch (err: unknown) {
+          console.log('Download Failed!', err)
+        }
+      } else {
+        try {
+          const result = await fileService.downloadFile(fileId)
+          if (!result) {
+            alert('Error downloading file');
+            return;
+          }
+          const blob : Blob = new Blob([result.data], { type: result.data.type });
+          const url : string = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } catch (err: unknown) {
+          console.log('Download Failed!', err)
+        }
+      }
+    }
+
+  }
+
   if (folders.length === 0) {
     return <div>Loading...</div>
   }
@@ -82,8 +130,16 @@ const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setAct
             handleDeleteUpdate={handleDeleteUpdate}
             handleShare = {handleShareFile}
             updateFolderList={updateFolderList}
+            downloadFile={handleDownloadFile}
            />
-        : <ShowFileContent activeFile={activeFile} setActiveFile={setActiveFile} editMode={editMode} setEditMode={setEditMode} handleShare={handleShareFile} />
+        : <ShowFileContent 
+            activeFile={activeFile}
+            setActiveFile={setActiveFile}
+            editMode={editMode}
+            setEditMode={setEditMode}
+            handleShare={handleShareFile}
+            downloadFile={handleDownloadFile}
+          />
       }
       <Dialog open={openShareFile} onClose={()=>setOpenShareFile(false)} >
           <ShareForm sharedFile={sharedFile} setAlertData={setAlertData} setOpenShareFile={setOpenShareFile} />

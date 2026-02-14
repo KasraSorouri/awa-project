@@ -220,7 +220,30 @@ const moveFile = async (fileId: number, targetFolderId: number|null) => {
 }
 
 
-// Download a File
+// Download a Text File as PDF
+const downloadPdfFile = async (fileId: number) => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+      responseType: 'blob' as const
+    }
+  try {
+    const response = await axios.get(`${api_url}/files/download_pdf/${fileId}`, config);
+    if (response.status === 200) {
+      return response;
+    }
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
+
+
+// Download an Uploaded File
 const downloadFile = async (fileId: number) => {
   const authorization: string = authService()
   const config = {
@@ -230,6 +253,7 @@ const downloadFile = async (fileId: number) => {
   try {
     const response = await axios.get(`${api_url}/files/download/${fileId}`, config);
     if (response.status === 200) {
+      console.log('downlod fiel service * response:' , response)
       return response;
     }
 
@@ -252,5 +276,6 @@ export default {
   removeFile,
   restoreFile,
   moveFile,
+  downloadPdfFile,
   downloadFile
 }

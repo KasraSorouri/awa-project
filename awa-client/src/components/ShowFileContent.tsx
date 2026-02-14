@@ -24,10 +24,11 @@ interface ShowFileContentProps {
   editMode: boolean;
   setEditMode: (edit: boolean) => void;
   handleShare: (id:number, name:string) => void;
+  downloadFile: (id: number, fileName: string, fileType: string) => void
   }
 
 
-const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, handleShare }: ShowFileContentProps) => {
+const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, handleShare, downloadFile }: ShowFileContentProps) => {
   const [value, setValue] = useState<string>('');
   const [file, setFile] = useState<IFile|null>(null);
   const [fileName, setFileName] = useState<string>('');
@@ -112,25 +113,6 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
     });
   };
 
-  const handleDownloadFile = async () => {
-    if (file) {
-      const result = await fileService.downloadFile(file.id);
-      if (!result) {
-        alert('Error downloading file');
-        return;
-      }
-      const blob : Blob = new Blob([result.data], { type: 'application/pdf' });
-      const url : string = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = file.fileName;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-    }
-  }
-
   return(
     <div className="show-content">
       <Paper elevation={3}
@@ -198,7 +180,7 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
             </Button>
           </Tooltip>
           <Tooltip title='Download'>
-            <Button onClick={handleDownloadFile} disabled={editMode}>
+            <Button onClick={() => downloadFile(activeFile, fileName, 'document')} disabled={editMode}>
               <FileDownloadIcon />
             </Button>
           </Tooltip>

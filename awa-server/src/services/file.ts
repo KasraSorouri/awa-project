@@ -420,7 +420,7 @@ const moveFile = async (id: number, targetFolderId: number|null, userId: number)
 
 
 // Download a file
-const downloadFile = async (fileId: number, userId: number) => {
+const downloadPdfFile = async (fileId: number, userId: number) => {
   try {
 
     const file = await File.findByPk(fileId);
@@ -441,6 +441,26 @@ const downloadFile = async (fileId: number, userId: number) => {
   }
 }
 
+// Download an Uploaded File
+const downloadFile = async (fileId: number, userId: number) => {
+  try {
+
+    const file = await File.findByPk(fileId);
+    if (!file) {
+      throw new Error('File not found');
+    }
+
+    const filePath = file.address
+
+    return filePath
+
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Error downloading file');
+  }
+}
 export default {
   createFile,
   uploadFile,
@@ -453,5 +473,6 @@ export default {
   shareFile,
   getSharedFiles,
   moveFile,
+  downloadPdfFile,
   downloadFile
 }
