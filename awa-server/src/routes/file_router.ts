@@ -230,4 +230,21 @@ router.get('/download/:id', validateToken, async(req: Request, res: Response) =>
   }
 })
 
+// Copy a File
+router.post('/copy/:id', validateToken, async(req: Request, res: Response) => {
+  const userId = req.user.id;
+  const fileId = parseInt(req.params.id);
+  const destFolder = req.body.destFolder
+  try {
+    const result = await fileServices.copyFile(fileId, userId,destFolder);
+    return res.status(201).json(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+  }
+})
+
 export default router;

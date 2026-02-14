@@ -30,6 +30,7 @@ import { IFolder } from '../types/folderTypes'
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Stack, TextField, Tooltip, Typography } from '@mui/material';
 import { IAlert } from '../types/alertTypes';
 import MoveForm from './MoveForm';
+import CopyForm from './CopyForm';
 
 interface Column {
   id: 'name' | 'dateCreated' | 'dateModified' | 'type' ;
@@ -93,6 +94,9 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
   const [newFolderData, setNewFolderData] = useState<{folderId: number, newName: string}>({folderId: 0, newName: ''})
   const [openMoveForm, setOpenMoveForm] = useState<boolean>(false)
   const [moveItem, setMoveItem] = useState<{itemId: number,type: 'folder'|'file'}|null>(null)
+  
+  const [openCopyForm, setOpenCopyForm] = useState<boolean>(false)
+  const [copyItem, setCopyItem] = useState<number|null>(null)
 
   useEffect(() => {
     const initialRows: Data[] = []
@@ -180,6 +184,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
     setOpenRenameFolder(true)
   }
 
+  // Move File or Folder
   const moveHandler = (id: number, type: string) => {
     console.log('move item with id:', id, 'type:', type)
     setMoveItem({itemId: id, type: type as 'folder'|'file'})
@@ -208,6 +213,36 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
     }
   }
 
+
+  // Copy a File 
+  const copyHandler = (id: number) => {
+    console.log('move item with id:', id)
+    setCopyItem(id)
+    setOpenCopyForm(true)
+  }
+
+    const handleCopySubmit = async(selectedFolder: number) => {
+    if (!copyItem) {
+      console.error('No item selected for copying')
+      return
+    }
+    try {
+      await fileService.copyFile(copyItem, selectedFolder !== 0 ? selectedFolder : null)
+      updateFolderList()
+      setAlertData({type: 'success', message: 'File moved successfully', showAlert: true})
+
+      setOpenCopyForm(false)
+    } catch (error) {
+      console.error('Error copying item:', error)
+      setAlertData({type: 'error', message: 'Error copying item', showAlert: true})
+    }
+  }
+
+
+
+
+
+  //
   const handleRenameSubmit = async() => {
     try {
       const result = await folderService.renameFolder(newFolderData.folderId, newFolderData.newName)
@@ -388,6 +423,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                                 type='button'
                                 size='small'
                                 variant='contained'
+                                onClick={() => copyHandler(row.id)}
                                 sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
                               >
                                 <ContentCopyIcon fontSize='small' sx={{color: '#ffffffff'}} />
@@ -454,6 +490,9 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
       </Dialog>
       <Dialog open={openMoveForm} onClose={() => setOpenMoveForm(false)} >
         <MoveForm moveItem={moveItem} activeFolderId={activeFolder} setOpenMoveForm={setOpenMoveForm} setAlertData={setAlertData} handleMoveSubmit={handleMoveSubmit} />
+      </Dialog>
+      <Dialog open={openCopyForm} onClose={() => setOpenCopyForm(false)} >
+        <CopyForm copyItem={copyItem} activeFolderId={activeFolder} setOpenCopyForm={setOpenCopyForm} setAlertData={setAlertData} handleCopySubmit={handleCopySubmit} />
       </Dialog>
     </Paper>
   );

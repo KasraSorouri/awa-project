@@ -72,10 +72,32 @@ const writeToFile = async (fullPath: string, fileContent: string) => {
   }
 }
 
+// Copy a File
+const copyFile = async(filePath: string, userId: number) =>{
+  if (!existsSync(filePath)) {
+    throw new Error('File not found');
+  }
+  try {
+    const fileExtension = filePath.split('.')[1];
+    const fileName = `${uuidv4()}.${fileExtension}`;
+    const folder = `./${STORAGE_DIR}/u_${userId}`
+
+    const fullPath = path.join(folder, fileName)
+
+    const result =  await fs.copyFile(filePath,fullPath);
+    console.log('\n******** save file*\n',result)
+    return {fullPath, fileName};
+  } catch(error) {
+    console.log(error)
+    throw new Error('Error saving file');
+  }
+}
+
 
 export default { 
   saveFile,
   removeFile,
   openFile,
-  writeToFile
+  writeToFile,
+  copyFile
 };

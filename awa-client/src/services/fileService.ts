@@ -253,7 +253,6 @@ const downloadFile = async (fileId: number) => {
   try {
     const response = await axios.get(`${api_url}/files/download/${fileId}`, config);
     if (response.status === 200) {
-      console.log('downlod fiel service * response:' , response)
       return response;
     }
 
@@ -266,6 +265,28 @@ const downloadFile = async (fileId: number) => {
   }
 }
 
+// Copy a File
+const copyFile = async (fileId: number, destFolder: number|null) => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+    }
+  try {
+    const response = await axios.post(`${api_url}/files/copy/${fileId}`, {destFolder}, config);
+    if (response.status === 200) {
+      return response;
+    }
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
+
+
 export default {
   createFile,
   uploadFile,
@@ -277,5 +298,6 @@ export default {
   restoreFile,
   moveFile,
   downloadPdfFile,
-  downloadFile
+  downloadFile,
+  copyFile
 }

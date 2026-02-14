@@ -432,7 +432,7 @@ const downloadPdfFile = async (fileId: number, userId: number) => {
     if (!user){
       throw new Error('Permission error: user does not have access to this file!')
     }
-    
+
     const fileContent = await storeFile.openFile(file.address);
     const pdfBuffer = await convertToPDF(fileContent);
 
@@ -470,6 +470,63 @@ const downloadFile = async (fileId: number, userId: number) => {
     throw new Error('Error downloading file');
   }
 }
+
+
+// Copy a file
+ const copyFile = async (fileId: number, userId: number, folderId: number) => {
+  try {
+    const file = await File.findByPk(fileId);
+    if (!file) {
+      throw new Error('File not found');
+    }
+
+    const user = await UserFiles.findOne({where: {fileId, userId}})
+    if (!user){
+      throw new Error('Permission error: user does not have access to this file!')
+    }
+
+    const folder = await Folder.findByPk(folderId)
+    if (!folder) {
+      throw new Error('Destination Folder not found !')
+    }
+
+    // Make a copy on the storage
+    const newFile = await storeFile.copyFile(file.address, userId)
+
+    const newFileData = new File({
+      fileName: `${file.fileName}(2)`,
+      userId: userId,
+      folderId: folderId,
+      fileType: file.fileType,
+      address: newFile.fullPath,
+      editable: file.editable,
+      deleted: false,
+      activated: false,
+    });
+
+    const fileData = await newFileData.save();
+
+    const userFileData: IUserFile= {
+      userId: newFileData.userId,
+      fileId: newFileData.id,
+      role: 'OWNER',
+    }
+
+    const userFile = new UserFiles(userFileData);
+    await userFile.save();
+
+    return fileData;
+
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Error Copying file');
+  }
+}
+
+
+
 export default {
   createFile,
   uploadFile,
@@ -483,5 +540,6 @@ export default {
   getSharedFiles,
   moveFile,
   downloadPdfFile,
-  downloadFile
+  downloadFile,
+  copyFile
 }
