@@ -65,7 +65,7 @@ const createFile = async (fileData: IFileData) => {
     const userFileData: IUserFile= {
       userId: fileData.userId,
       fileId: file.id,
-      role: 'owner',
+      role: 'OWNER',
       activated: true
     }
     const userFile = new UserFiles(userFileData);
@@ -111,7 +111,7 @@ const uploadFile = async (fileData: IFileData, file: Express.Multer.File) => {
     const userFileData: IUserFile= {
       userId: fileData.userId,
       fileId: file.id,
-      role: 'owner',
+      role: 'OWNER',
     }
 
     const userFile = new UserFiles(userFileData);
@@ -428,6 +428,11 @@ const downloadPdfFile = async (fileId: number, userId: number) => {
       throw new Error('File not found');
     }
 
+    const user = await UserFiles.findOne({where: {fileId, userId}})
+    if (!user){
+      throw new Error('Permission error: user does not have access to this file!')
+    }
+    
     const fileContent = await storeFile.openFile(file.address);
     const pdfBuffer = await convertToPDF(fileContent);
 
@@ -444,10 +449,14 @@ const downloadPdfFile = async (fileId: number, userId: number) => {
 // Download an Uploaded File
 const downloadFile = async (fileId: number, userId: number) => {
   try {
-
     const file = await File.findByPk(fileId);
     if (!file) {
       throw new Error('File not found');
+    }
+
+    const user = await UserFiles.findOne({where: {fileId, userId}})
+    if (!user){
+      throw new Error('Permission error: user does not have access to this file!')
     }
 
     const filePath = file.address
