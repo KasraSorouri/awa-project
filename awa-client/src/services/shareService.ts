@@ -4,7 +4,7 @@ import { api_url } from '../configs/config';
 import authService from './authService';
 
 
-
+// Share a File with Other User
 const shareFileWithUser = async (id: number, users: number[]  , role: string) => {
   
   const authorization: string = authService()
@@ -26,6 +26,8 @@ const shareFileWithUser = async (id: number, users: number[]  , role: string) =>
   }
 }
 
+
+// Share File by a Link
 const shareFileExternal = async (id: number, expireDate: string | null ) => {
   const authorization: string = authService()
   const config = {

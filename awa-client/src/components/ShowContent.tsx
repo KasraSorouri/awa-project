@@ -139,6 +139,7 @@ const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setAct
             setEditMode={setEditMode}
             handleShare={handleShareFile}
             downloadFile={handleDownloadFile}
+            setAlertData={setAlertData}
           />
       }
       <Dialog open={openShareFile} onClose={()=>setOpenShareFile(false)} >

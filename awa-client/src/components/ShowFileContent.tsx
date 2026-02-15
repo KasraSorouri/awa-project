@@ -14,7 +14,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ConfirmationDialog from './ConfirmationDialog';
 
 import { IEditFileData, IFile } from '../types/folderTypes';
-import { IConfirmation } from '../types/alertTypes';
+import { IAlert, IConfirmation } from '../types/alertTypes';
 
 
 
@@ -24,11 +24,12 @@ interface ShowFileContentProps {
   editMode: boolean;
   setEditMode: (edit: boolean) => void;
   handleShare: (id:number, name:string) => void;
-  downloadFile: (id: number, fileName: string, fileType: string) => void
+  downloadFile: (id: number, fileName: string, fileType: string) => void;
+  setAlertData: (alert: IAlert) => void;
   }
 
 
-const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, handleShare, downloadFile }: ShowFileContentProps) => {
+const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, handleShare, downloadFile, setAlertData }: ShowFileContentProps) => {
   const [value, setValue] = useState<string>('');
   const [file, setFile] = useState<IFile|null>(null);
   const [fileName, setFileName] = useState<string>('');
@@ -53,8 +54,14 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
         setRole(result.role);
       } catch (error) {
         if (error instanceof Error) {
-          console.error('Error reading file:', error.message);
+
+          if (error.message.startsWith('The file is opened by')) {
+            setAlertData({type: 'error', message: error.message, showAlert: true});
+          } else {
+            console.error('Error reading file:', error.message);
+          }
         }
+        setActiveFile(null)
         console.error('Unknown error reading file');
       }
     };
@@ -88,10 +95,16 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
     setEditMode(true);
   }; 
 
-  const handleCloseFile = () => {
+  const handleCloseFile = async () => {
     if (editMode) {
       handleCancelEdit();
       return;
+    }
+    try { 
+      console.log('close file')
+      await fileService.closeFile(activeFile)
+    } catch(err: unknown) {
+      console.log(err)
     }
     setActiveFile(null);
   };

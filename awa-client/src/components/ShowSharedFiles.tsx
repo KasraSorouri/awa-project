@@ -16,6 +16,8 @@ import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { Box, Button, Stack, Tooltip, Typography } from '@mui/material';
 import shareService from '../services/shareService';
 import ShowFileContent from './ShowFileContent';
+import fileService from '../services/fileService';
+import { IAlert } from '../types/alertTypes';
 
 interface Column {
   id: 'name' | 'role' | 'owner' | 'type' ;
@@ -81,13 +83,17 @@ const ShowSharedFiles = () => {
   const [activeFile, setActiveFile] = useState<number|null>(null);
   const [editMode, setEditMode] = useState<boolean>(false);
   
+  const setAlertData = (alert:IAlert) =>{
+    console.log(alert)
+  }
+
   useEffect(() => {
     // Get Shared Files
     const fetchSharedFiles = async () => {
       try {
         const result = await shareService.getSharedFilesToUser();
         const newRows: IData[] = [];
-        result.sharedFiles.forEach((file: ISharedFile) => {
+        result.forEach((file: ISharedFile) => {
           newRows.push({
             id: file.id,
             name: file.fileName,
@@ -125,7 +131,7 @@ const ShowSharedFiles = () => {
   if (rows.length === 0) {
     return(
       <Paper sx={{ width: '100%', overflow: 'hidden', minHeight: '60vh' }}>
-        <Typography variant='h6' component='h2' sx={{ padding: 2 }}>No files have been shared wioth you.</Typography>
+        <Typography variant='h6' component='h2' sx={{ padding: 2 }}>No files have been shared with you.</Typography>
       </Paper>
     )
   }
@@ -134,9 +140,56 @@ const ShowSharedFiles = () => {
     return null
   }
 
+    const handleDownloadFile = async (fileId: number, fileName:string, fileType: string) => {
+  
+      console.log('**** Download file -> fileId', fileId, ' *  fileName: ' , fileName, ' * File type: ', fileType)
+      if (fileId) {
+        if (fileType === 'document') {
+          try {
+            const result = await fileService.downloadPdfFile(fileId);
+            if (!result) {
+              alert('Error downloading file');
+              return;
+            }
+            const blob : Blob = new Blob([result.data], { type: 'application/pdf' });
+            const url : string = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          } catch (err: unknown) {
+            console.log('Download Failed!', err)
+          }
+        } else {
+          try {
+            const result = await fileService.downloadFile(fileId)
+            if (!result) {
+              alert('Error downloading file');
+              return;
+            }
+            const blob : Blob = new Blob([result.data], { type: result.data.type });
+            const url : string = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          } catch (err: unknown) {
+            console.log('Download Failed!', err)
+          }
+        }
+      }
+  
+    }
+
   return (
     activeFile !== null ? (
-      <ShowFileContent activeFile={activeFile} setActiveFile={setActiveFile} editMode={editMode} setEditMode={setEditMode} handleShare={handleShare} />
+      <ShowFileContent activeFile={activeFile} setActiveFile={setActiveFile} editMode={editMode} setEditMode={setEditMode} handleShare={handleShare} downloadFile={handleDownloadFile} setAlertData={setAlertData} />
     ) : (
       <Paper sx={{ width: '100%', overflow: 'hidden', minHeight: '60vh' }}>
         <Box 

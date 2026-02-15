@@ -238,10 +238,6 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
     }
   }
 
-
-
-
-
   //
   const handleRenameSubmit = async() => {
     try {

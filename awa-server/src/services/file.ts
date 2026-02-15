@@ -7,17 +7,18 @@ import storeFile from '../utils/storeFile';
 const fileQuery = {
   include: [
     {
-      model: UserFiles,
-      as: 'userFiles',
-      attributes: ['userId', 'role'],
-    },
-    {
       model: Folder,
       as: 'folder',
       attributes: ['id', 'folderName'],
+    },
+    {
+      model: User,
+      as: 'activeUser',
+      attributes: ['id', 'username', 'firstName', 'lastName']
+
     }
   ],
-  attributes: ['id', 'fileName', 'folderId', 'fileType', 'address', 'editable', 'deleted', 'activated'],
+  attributes: ['id', 'fileName', 'folderId', 'fileType', 'address', 'editable', 'deleted', 'activated', 'currentUser'],
 }
 
 const RecycleQuery = {
@@ -55,6 +56,7 @@ const createFile = async (fileData: IFileData) => {
     fileType: fileData.fileType,
     editable: true,
     activated: true,
+    currentUser: fileData.userId,
     address: fullPath
   }
 
@@ -196,10 +198,17 @@ const openFile = async (fileId: number, userId: number) => {
     if (!userFile) {
       throw new Error('File not found');
     }
-    const file = await File.findOne({ where: { id: fileId } });
+    const file = await File.findOne({ where: { id: fileId }, ...fileQuery });
 
     if (!file) {
       throw new Error('File not found');
+    }
+ 
+    if (file.activated && file.currentUser != userId) {
+      console.log('file is open. * Current user', file.currentUser , ' * user:', userId )
+      const user = file.activeUser;
+      const name = `${user?.firstName} ${user?.lastName}`
+      throw new Error(`The file is opened by ${name.length >1 ? name : user?.username} `)
     }
 
     if (!file.editable) {
@@ -207,6 +216,8 @@ const openFile = async (fileId: number, userId: number) => {
     }
 
     file.activated = true;
+    file.currentUser = userId;
+    await file.save()
     const fileContent = await storeFile.openFile(file.address);
     const result = {
       file,
@@ -241,6 +252,8 @@ const saveFile = async (fileId: number, fileData: IEditFileData, userId: number)
 
     file.fileName = fileData.fileName;
     file.activated = false;
+    file.currentUser = null;
+
     await file.save();
 
     userFile.activated = false;
@@ -362,7 +375,7 @@ const shareFile = async (fileId: number, userId: number, users: number[], role: 
 // Get shared Files
 const getSharedFiles = async (userId: number) => {
   try {
-    const sharedfiles = await User.findByPk(userId, {
+    const userAllFile = await User.findByPk(userId, {
       include: [{
         model: File,
         as: 'sharedFiles',
@@ -379,7 +392,15 @@ const getSharedFiles = async (userId: number) => {
       attributes:[]
     });
 
-    return sharedfiles;
+    const userOwnFiles = await File.findAll({where: { userId : userId}})
+
+    if (!userAllFile){
+      return []
+    }
+    const sharedFiles = userAllFile.sharedFiles?.filter(file => !userOwnFiles.some(ownFile => ownFile.id === file.id))
+
+
+    return sharedFiles;
   } catch (error) {
     if (error instanceof Error) {
       throw new Error(error.message);
@@ -485,10 +506,13 @@ const downloadFile = async (fileId: number, userId: number) => {
       throw new Error('Permission error: user does not have access to this file!')
     }
 
-    const folder = await Folder.findByPk(folderId)
-    if (!folder) {
-      throw new Error('Destination Folder not found !')
+    if (folderId) {
+      const folder = await Folder.findByPk(folderId)
+      if (!folder) {
+        throw new Error('Destination Folder not found !')
+      }
     }
+ 
 
     // Make a copy on the storage
     const newFile = await storeFile.copyFile(file.address, userId)
@@ -526,6 +550,29 @@ const downloadFile = async (fileId: number, userId: number) => {
 }
 
 
+// Close an open File
+const closeFile = async (fileId: number, userId: number) => {
+  try {
+    const file = await File.findByPk(fileId);
+    if (!file) {
+      throw new Error('File not found');
+    }
+
+    if (file.currentUser === userId){
+      file.activated = false;
+      file.currentUser = null;
+      await file.save();
+    }
+
+    return file
+
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Error Copying file');
+  }
+}
 
 export default {
   createFile,
@@ -541,5 +588,6 @@ export default {
   moveFile,
   downloadPdfFile,
   downloadFile,
-  copyFile
+  copyFile,
+  closeFile
 }

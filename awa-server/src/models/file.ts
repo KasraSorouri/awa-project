@@ -12,7 +12,7 @@ interface IFileAttributes {
   editable: boolean;
   deleted: boolean;
   activated: boolean;
-  currentUser: number;
+  currentUser: number | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -36,9 +36,15 @@ class File extends Model<IFileAttributes, IFileCreationAttributes> implements IF
   declare editable: boolean;
   declare deleted: boolean;
   declare activated: boolean;
-  declare currentUser: number;
+  declare currentUser: number | null;
   declare createdAt: Date;
   declare updatedAt: Date;
+  declare activeUser?: {
+    userId: number;
+    username: string;
+    firstName: string;
+    lastName: string;
+  }
 }
 
 File.init(

@@ -286,6 +286,27 @@ const copyFile = async (fileId: number, destFolder: number|null) => {
   }
 }
 
+// Close File
+const closeFile  = async (fileId: number) => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+    }
+  try {
+    const response = await axios.get(`${api_url}/files/close/${fileId}`, config);
+    if (response.status === 200) {
+      return response;
+    }
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
+
 
 export default {
   createFile,
@@ -299,5 +320,6 @@ export default {
   moveFile,
   downloadPdfFile,
   downloadFile,
-  copyFile
+  copyFile,
+  closeFile
 }

@@ -85,7 +85,6 @@ const copyFile = async(filePath: string, userId: number) =>{
     const fullPath = path.join(folder, fileName)
 
     const result =  await fs.copyFile(filePath,fullPath);
-    console.log('\n******** save file*\n',result)
     return {fullPath, fileName};
   } catch(error) {
     console.log(error)

@@ -8,6 +8,7 @@ export interface IFile {
   editable: boolean;
   deleted?: boolean;
   activated?: boolean;
+  currentUser?: number;
 }
 
 export interface IUserFile {

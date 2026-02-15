@@ -247,4 +247,20 @@ router.post('/copy/:id', validateToken, async(req: Request, res: Response) => {
   }
 })
 
+// close a file 
+router.get('/close/:id', validateToken, async(req: Request, res: Response) => {
+  const userId = req.user.id;
+  const fileId = parseInt(req.params.id);
+  try {
+    const result = await fileServices.closeFile(fileId, userId);
+    return res.status(201).json(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+  }
+})
+
 export default router;

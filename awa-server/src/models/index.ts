@@ -22,8 +22,6 @@ Folder.hasMany(Folder, { foreignKey: 'parentFolder', as: 'subFolders' });
 User.hasMany(Folder, { foreignKey: 'userId', as: 'folders' });
 Folder.belongsTo(User, { foreignKey: 'userId', as: 'folderOwner' });
 
-//Share.belongsTo(File, { foreignKey: 'fileId', as: 'file' });
-//File.hasMany(Share, { foreignKey: 'fileId', as: 'share' })
 
 export {
   User,

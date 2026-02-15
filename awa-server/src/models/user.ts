@@ -30,6 +30,16 @@ class User extends Model<IUserAttributes, IUserCreationAttributes> implements IU
   declare picture: string;
   declare createdAt: Date;
   declare updatedAt: Date;
+  declare sharedFiles?: {
+    id: number;
+    fileName: string;
+    folderId: number | null;
+    fileType: string;
+    address: string;
+    editable: boolean;
+    deleted: boolean;
+    activated: boolean;
+  }[]
 }
 
 User.init(
