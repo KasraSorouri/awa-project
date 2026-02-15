@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { styled, alpha } from '@mui/material/styles';
+import { styled, alpha, useTheme } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
@@ -14,8 +14,7 @@ import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
-import MoreIcon from '@mui/icons-material/MoreVert';
-import { Avatar, Button } from '@mui/material';
+import { Avatar, Button, useMediaQuery } from '@mui/material';
 
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import InventoryIcon from '@mui/icons-material/Inventory';
@@ -47,7 +46,7 @@ const Search = styled('div')(({ theme }) => ({
   },
   marginRight: theme.spacing(2),
   marginLeft: 0,
-  width: '100%',
+  width: '50%',
   [theme.breakpoints.up('sm')]: {
     marginLeft: theme.spacing(3),
     width: 'auto',
@@ -79,12 +78,8 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
 }));
 
 
-
-
 const Header = ({user, counter}:THeaderProps) => {
-
   const navigate = useNavigate()
-
   const showUser = user ? 
     (user.firstName && user.lastName) ? (user.firstName + ' ' + user.lastName) :
     (user.firstName) ? (user.firstName) :
@@ -95,6 +90,11 @@ const Header = ({user, counter}:THeaderProps) => {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
 
   const [pictureUrl, setPictureUrl] = useState<string | null>(null);
+
+    
+  // Check Screen Size
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   
   useEffect(() => {
     const getProfilePicture = async () => {
@@ -115,8 +115,6 @@ const Header = ({user, counter}:THeaderProps) => {
       }
     };
   }, [user]);
-
-
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -148,7 +146,7 @@ const Header = ({user, counter}:THeaderProps) => {
     <Menu
       anchorEl={anchorEl}
       anchorOrigin={{
-        vertical: 'top',
+        vertical: 'bottom',
         horizontal: 'right',
       }}
       id={menuId}
@@ -160,7 +158,7 @@ const Header = ({user, counter}:THeaderProps) => {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={() => navigate('/userProfile')}>Profile</MenuItem>
+      <MenuItem onClick={() => navigate('/userProfile')} sx={{ height: 20,  padding: '10px',}}>Profile</MenuItem>
     </Menu>
   );
 
@@ -192,7 +190,7 @@ const Header = ({user, counter}:THeaderProps) => {
             <InventoryIcon />
           </Badge>
         </IconButton>
-        <p>My Files</p>
+        <p>My Drive</p>
       </MenuItem>
       <MenuItem>
         <IconButton
@@ -220,18 +218,7 @@ const Header = ({user, counter}:THeaderProps) => {
             </IconButton>
         <p>Shared Files</p>
       </MenuItem>
-      <MenuItem onClick={handleProfileMenuOpen}>
-        <IconButton
-          size="large"
-          aria-label="account of current user"
-          aria-controls="primary-search-account-menu"
-          aria-haspopup="true"
-          color="inherit"
-        >
-          <AccountCircle />
-        </IconButton>
-        <p>Profile</p>
-      </MenuItem>
+
     </Menu>
   );
 
@@ -239,15 +226,16 @@ const Header = ({user, counter}:THeaderProps) => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          {/*<IconButton
+          <IconButton
             size="large"
             edge="start"
             color="inherit"
             aria-label="open drawer"
-            sx={{ mr: 2 }}
+            onClick={handleMobileMenuOpen}
+            sx={{ mr: 2, display: isMobile ? 'true' : 'none' }}
           >
             <MenuIcon />
-          </IconButton> */}
+          </IconButton> 
           <Typography
             variant="h6"
             noWrap
@@ -268,7 +256,7 @@ const Header = ({user, counter}:THeaderProps) => {
               />
             </Search>
           <Box sx={{ flexGrow: 1 }} />
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{ display: { xs: 'none', md: 'flex' } , alignItems: 'center'}}>
             <IconButton 
               size="large"
               aria-label="My Drive"
@@ -314,32 +302,33 @@ const Header = ({user, counter}:THeaderProps) => {
               
               {pictureUrl ? <Avatar alt="Profile Picture" src={pictureUrl} sx={{ width: 56, height: 56, marginLeft: '0.5rem' }} /> : <AccountCircle />}
             </IconButton>
-            <Button variant='contained' sx={{ margin: '0 1rem' }} onClick={handleLogout} >Logout</Button>
+              <Button variant='contained'  sx={{ height:30, margin: '0 1rem' }} onClick={handleLogout} >Logout</Button>
           </Box>
           </> :
           <>
           <Box sx={{ flexGrow: 1 }} />
           <Box sx={{ display: { xs: 'none', md: 'flex' } }} />
           <Button variant='contained' sx={{ margin: '0 1rem' }} onClick={() => navigate('/login')} >Login</Button>
-          <Button variant='contained' sx={{}} onClick={() => navigate('/register')} >Sign Up</Button>
+          <Button variant='contained' sx={{ margin: '0 1rem' }} onClick={() => navigate('/register')} >Sign Up</Button>
           
           </>
           }
           { user &&
-            <>
-          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
+            <Box sx={{ display: { xs: 'flex', md: 'none' } , alignItems: 'center'}}>
             <IconButton
-              size="large"
-              aria-label="show more"
-              aria-controls={mobileMenuId}
+              size="medium"
+              edge="end"
+              aria-label="account of current user"
+              aria-controls={menuId}
               aria-haspopup="true"
-              onClick={handleMobileMenuOpen}
+              onClick={handleProfileMenuOpen}
               color="inherit"
             >
-              <MoreIcon />
+              
+              {pictureUrl ? <Avatar alt="Profile Picture" src={pictureUrl} sx={{ width: 56, height: 56, marginLeft: '0.5rem' }} /> : <AccountCircle />}
             </IconButton>
-          </Box>
-          </>}
+            </Box>}
+
         </Toolbar>
       </AppBar>
       { user ? (

@@ -13,7 +13,6 @@ const getUserFolders = async () => {
   try {
     const response = await axios.get(`${api_url}/folders/getFolders`,config);
     if (response.status === 200) {
-      console.log(`** get foder data -> \n`,response.data)
       return response.data;
     }
 
@@ -29,7 +28,6 @@ const getUserFolders = async () => {
 
 
 const createFolder = async (folderData: INewFolderData) => {
-  console.log('*** folder service * create ' ,folderData)
   const authorization: string = authService()
   const config = {
       headers: { Authorization: authorization},
@@ -71,7 +69,6 @@ const deleteFolder = async (id: number) => {
 }
 
 const renameFolder = async (id: number, newName: string) => {
-  console.log('*** folder service * rename ' ,id, newName)
   const authorization: string = authService()
   const config = {
       headers: { Authorization: authorization},
@@ -91,7 +88,6 @@ const renameFolder = async (id: number, newName: string) => {
 }
 
 const moveFolder = async (id: number, parentFolder: number|null) => {
-  console.log('*** folder service * move * folder id :' ,id,'new parrent :', parentFolder)
   const authorization: string = authService()
   const config = {
       headers: { Authorization: authorization},

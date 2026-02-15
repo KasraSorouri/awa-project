@@ -66,7 +66,6 @@ interface IShowFolderContentProps {
 
 
 const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile, setAlertData, handleAddFile, handleAddFolder, handleUploadFile, handleDeleteUpdate, handleShare, updateFolderList, downloadFile}: IShowFolderContentProps) => {
-  console.log('ShowFolderContent * folder', activeFolder, '->' ,folder)
   const [rows, setRows] = useState<Data[]>([])
   const [OpenRenameFolder, setOpenRenameFolder] = useState<boolean>(false)
   const [newFolderData, setNewFolderData] = useState<{folderId: number, newName: string}>({folderId: 0, newName: ''})
@@ -191,14 +190,13 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
 
   // Move File or Folder
   const moveHandler = (id: number, type: string) => {
-    console.log('move item with id:', id, 'type:', type)
     setMoveItem({itemId: id, type: type as 'folder'|'file'})
     setOpenMoveForm(true)
   }
 
   const handleMoveSubmit = async(selectedFolder: number) => {
     if (!moveItem) {
-      console.error('No item selected for moving')
+        setAlertData({type: 'error', message: 'No item selected for moving', showAlert: true})
       return
     }
     try {
@@ -221,14 +219,13 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
 
   // Copy a File 
   const copyHandler = (id: number) => {
-    console.log('move item with id:', id)
     setCopyItem(id)
     setOpenCopyForm(true)
   }
 
   const handleCopySubmit = async(selectedFolder: number) => {
     if (!copyItem) {
-      console.error('No item selected for copying')
+      setAlertData({type: 'error', message: 'No item selected for copying', showAlert: true})
       return
     }
     try {
@@ -390,16 +387,18 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                     <TableCell align='right'>
                       <Stack direction={'row'} spacing={1}>
                         <Tooltip title='Delete' >
-                          <Button
-                            type='button'
-                            size='small'
-                            variant='contained'
-                            sx={{width: isMobile? '20px' :'50px', minWidth: isMobile? '20px': '50px', padding: '5px', background: '#000000' }}
-                            disabled={row.contents > 0}
-                            onClick={()=>deleteHandler(row.id, row.type)}
-                          >
-                            <DeleteIcon fontSize='small' sx={{color: '#ffffffff', padding: '0px'}} />
-                          </Button>  
+                          <span style={{ display: 'inline-block' }}>
+                            <Button
+                              type='button'
+                              size='small'
+                              variant='contained'
+                              sx={{width: isMobile? '20px' :'50px', minWidth: isMobile? '20px': '50px', padding: '5px', background: '#000000' }}
+                              disabled={row.contents > 0}
+                              onClick={()=>deleteHandler(row.id, row.type)}
+                            >
+                              <DeleteIcon fontSize='small' sx={{color: '#ffffffff', padding: '0px'}} />
+                            </Button>  
+                          </span>
                         </Tooltip>
                         {row.type !== 'folder' ? (
                           <>

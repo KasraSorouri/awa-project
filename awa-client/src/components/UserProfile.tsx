@@ -95,6 +95,11 @@ const UserProfile = ({userData, setUser}: IUserProfileProps) => {
     }));
   };
 
+  const handleClose = () => {
+    setOpen(false);
+    navigate('/')
+  }
+
   return (
     <Dialog open={open}
       aria-labelledby="alert-dialog-title"
@@ -167,7 +172,7 @@ const UserProfile = ({userData, setUser}: IUserProfileProps) => {
             <Button variant="contained" color="primary" style={{ marginTop: '16px' }} onClick={() => updateUserData()}> 
               Save Changes
             </Button>
-            <Button variant="contained" color="primary" style={{ marginTop: '16px', marginLeft: '5px' }} onClick={() => setOpen(false)}> 
+            <Button variant="contained" color="primary" style={{ marginTop: '16px', marginLeft: '5px' }} onClick={handleClose}>
               Cancel
             </Button>
           </form>

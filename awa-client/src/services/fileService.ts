@@ -38,7 +38,6 @@ const createFile = async (fileData: INewFileData) => {
 
 // Upload a File 
 const uploadFile = async (fileData: IUploadFileData) => {
-  console.log('*** file service * upload ' ,fileData)
   const authorization: string = authService()
   const formData = new FormData();
   formData.append('file', fileData.file);
@@ -48,7 +47,6 @@ const uploadFile = async (fileData: IUploadFileData) => {
     formData.append('folderId', fileData.folderId.toString());
   }
 
-  console.log('*** file service * upload ', formData)
   const config = {
       headers: { Authorization: authorization},
       'content-type': 'multipart/form-data'     

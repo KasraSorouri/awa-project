@@ -15,7 +15,6 @@ const registerService = async (userData: IUserData) => {
     const response = await axios.post(`${api_url}/users/register`, userData);
 
     if (response.status === 201) {
-      console.log('service ',response.data);
       return response.data;
     }
 

@@ -79,9 +79,6 @@ interface IUserPageProps {
 const UserPage = ({counter, updateCounter}: IUserPageProps) => {
 
   const [folders, setFolders] = useState<IFolderTree[]>([])
-
-  console.log('folders', folders)
-
   const [activeFolder, setActiveFolder] = useState<number>(0)
   const [activeFile, setActiveFile] = useState<number | null>(null);
   const [editMode, setEditMode] = useState<boolean>(false)
@@ -103,10 +100,6 @@ const UserPage = ({counter, updateCounter}: IUserPageProps) => {
   // Check Screen Size
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-
-
-
-  console.log('*** active folder ->', activeFolder)
 
   useEffect(() => {
     const getUserFolders = async () => {

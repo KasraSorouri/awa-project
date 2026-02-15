@@ -73,7 +73,6 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
     readFileContent();
   }, [activeFile]);
 
-  console.log('***** File content:', file);
 
   const handleSaveFile = async () => {
     try {
@@ -85,7 +84,7 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
         }
         await fileService.saveFile(fileData);
         setEditMode(false);
-        console.log('File content saved successfully');
+        setAlertData({type: 'success', message: 'File content saved successfully', showAlert: true});
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -105,7 +104,6 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
       return;
     }
     try { 
-      console.log('close file')
       await fileService.closeFile(activeFile)
     } catch(err: unknown) {
       console.log(err)
@@ -193,24 +191,32 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
             </Box>
           <Stack direction={'row'} justifyContent={isMobile ? 'flex-start' : 'flex-end'} spacing={ isMobile? 0 : 1} sx={{padding: 1}}>
           <Tooltip title='Edit'>
-            <Button onClick={handleEditFile} disabled={editMode || role !== 'OWNER' && role !== 'EDITOR'}>
-              <EditIcon />
-            </Button>
+            <span style={{ display: 'inline-block' }}>
+              <Button onClick={handleEditFile} disabled={editMode || role !== 'OWNER' && role !== 'EDITOR'}>
+                <EditIcon />
+              </Button>
+            </span>
           </Tooltip>
           <Tooltip title='Save'>
-            <Button onClick={handleSaveFile} disabled={!editMode}>
-              <SaveIcon />
-            </Button >
+            <span style={{ display: 'inline-block' }}>
+              <Button onClick={handleSaveFile} disabled={!editMode}>
+                <SaveIcon />
+              </Button >
+            </span>
           </Tooltip>
           <Tooltip title='Share'>
-            <Button onClick={() => handleShare(activeFile, fileName)} disabled={editMode}>
-              <ShareIcon />
-            </Button>
+            <span style={{ display: 'inline-block' }}>
+              <Button onClick={() => handleShare(activeFile, fileName)} disabled={editMode}>
+                <ShareIcon />
+              </Button>
+            </span>
           </Tooltip>
           <Tooltip title='Download'>
-            <Button onClick={() => downloadFile(activeFile, fileName, 'document')} disabled={editMode}>
-              <FileDownloadIcon />
-            </Button>
+            <span style={{ display: 'inline-block' }}>
+              <Button onClick={() => downloadFile(activeFile, fileName, 'document')} disabled={editMode}>
+                <FileDownloadIcon />
+              </Button>
+            </span>
           </Tooltip>
           <Tooltip title='Close'>
             <Button onClick={handleCloseFile}>

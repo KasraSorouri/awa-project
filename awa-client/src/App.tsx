@@ -38,9 +38,6 @@ function App() {
   })
 
   const {token} = useToken()
-  console.log('app user : ', user)
-  console.log('recycledFiles : ', recycledFiles)
-  console.log('**** Counter : ', counter)
 
   const updateCounter = (newCounters: IFileCounter) => {
     setCounter({
