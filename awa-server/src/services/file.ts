@@ -412,7 +412,7 @@ const getSharedFiles = async (userId: number) => {
 // Move a file
 const moveFile = async (id: number, targetFolderId: number|null, userId: number) => {
   try {
-    const file = await File.findByPk(id, fileQuery);
+    const file = await File.findByPk(id);
     if (!file) {
       throw new Error('File not found');
     }

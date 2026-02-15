@@ -167,6 +167,9 @@ const UserProfile = ({userData, setUser}: IUserProfileProps) => {
             <Button variant="contained" color="primary" style={{ marginTop: '16px' }} onClick={() => updateUserData()}> 
               Save Changes
             </Button>
+            <Button variant="contained" color="primary" style={{ marginTop: '16px', marginLeft: '5px' }} onClick={() => setOpen(false)}> 
+              Cancel
+            </Button>
           </form>
         </DialogContentText>
       </DialogContent>

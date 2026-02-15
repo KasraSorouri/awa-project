@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-
+import { useMediaQuery, useTheme } from '@mui/material';
 import { Box, Button, Checkbox, Grid, Paper, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tooltip, Typography } from '@mui/material';
 import 'react-quill-new/dist/quill.snow.css';
 
@@ -20,28 +20,7 @@ interface Column {
   align?: 'right' | 'left' | 'center';
 }
 
-const columns: readonly Column[] = [
-  { id: 'name', label: 'Name', minWidth: 150 },
-  { id: 'folder', label: 'Folder', minWidth: 100 },
-  { 
-    id: 'dateCreated',
-    label: 'Date Created',
-    minWidth: 80,
-    align: 'left',
-  } ,
-  {
-    id: 'dateModified',
-    label: 'Date Deleted',
-    minWidth: 80,
-    align: 'left',
-  },
-  {
-    id: 'type',
-    label: '',
-    minWidth: 100,
-    align: 'right',
-  },
-];
+
 
 interface Data {
   id: number;
@@ -70,6 +49,31 @@ const ShowFileContent = ({hanldeUpdateRecycle, updateCounter}: ShowRecycledFiles
     message: '',
     showAlert: false
   });
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const columns: readonly Column[] = [
+    { id: 'name', label: 'Name', minWidth: isMobile ? 110 : 150 },
+    { id: 'folder', label: 'Folder', minWidth: isMobile ? 70 : 100 },
+    { 
+      id: 'dateCreated',
+      label:  isMobile ?  '' : 'Date Created',
+      minWidth:  isMobile ? 0 : 80,
+      align: 'left',
+    } ,
+    {
+      id: 'dateModified',
+      label:   isMobile ?  '' : 'Date Deleted',
+      minWidth:  isMobile ? 0 : 80,
+      align: 'left',
+    },
+    {
+      id: 'type',
+      label: '',
+      minWidth: isMobile ? 0 : 100,
+      align: 'right',
+    },
+  ];
 
   useEffect(() => {
  
@@ -126,6 +130,7 @@ const ShowFileContent = ({hanldeUpdateRecycle, updateCounter}: ShowRecycledFiles
     try {
       const result = await fileService.removeFile([id]);
       hanldeUpdateRecycle('REMOVE', id)
+      setRecycledFiles(recycledFiles.filter(rf => rf.id !== id))
       setAlertData({
         type: 'success',
         message: result.message,
@@ -147,6 +152,7 @@ const ShowFileContent = ({hanldeUpdateRecycle, updateCounter}: ShowRecycledFiles
     try {
       const result = await fileService.restoreFile([id]);
       hanldeUpdateRecycle('RESTORE', id)
+      setRecycledFiles(recycledFiles.filter(rf => rf.id !== id))
       setAlertData({
         type: 'success',
         message: result.message,
@@ -207,15 +213,16 @@ const ShowFileContent = ({hanldeUpdateRecycle, updateCounter}: ShowRecycledFiles
   };
 
 return(
-  <Grid size={{ xs: 9, lg: 12 }} border={'solid'} borderColor={'#4d4d4d'} borderRadius={5} padding={3} margin={{ xs: 1, lg: 5}}>
+  <Grid size={{ xs: 9, lg: 12 }} border={isMobile? 'none': 'solid'} borderColor={'#4d4d4d'} borderRadius={5} padding={isMobile? 0 : 1} margin={{ xs: 1, lg: 5}}>
     <Paper sx={{ width: '100%', overflow: 'hidden' }}>
       <Box 
         sx={{ 
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center', 
-          padding: 2,
-          borderBottom: '1px solid #e0e0e0' // Optional divider
+          borderRadius: 5,
+          padding:  isMobile ? 1 :2,
+          borderBottom: '1px solid #e0e0e0'
         }}
       >
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -245,6 +252,7 @@ return(
             </Button>
           </Tooltip>
         </Box>
+        { !isMobile &&
         <TablePagination
         rowsPerPageOptions={[5, 10, 50]}
         component="div"
@@ -253,7 +261,7 @@ return(
         page={page}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+      />}
       </Box>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label="sticky table">
@@ -271,7 +279,7 @@ return(
                     setSelected([]);
                   }
                 }}
-                sx={{ width: '20px', height: '20px', padding: '20px', margin: '0px' }}
+                sx={{ width: '20px', height: '20px', padding: isMobile ? '1px' : '20px', margin: '0px' }}
               />
               </TableCell>
               {columns.map((column) => (
@@ -295,28 +303,33 @@ return(
                       <Checkbox
                       color="primary"
                       checked={selected.includes(row.id)}
-                      sx={{ width: '20px', height: '20px', padding: '20px', margin: '0px' }}
-
+                      sx={{ width: '20px', height: '20px', padding: isMobile ? '3px' : '20px', margin: '0px' }}
                     />
                     </TableCell>
                     <TableCell> 
-                      <Stack direction={'row'} spacing={1}>
+                      <Stack direction={'row'} spacing={isMobile ? 0 : 1}>
                         {row.editable ?
                             <ArticleIcon fontSize="medium" sx={{color: "#4D4D4D"}} />
                           : <InsertDriveFileIcon fontSize="medium" sx={{color: "#4D4D4D"}} />
                           }
-                        <Typography variant="body1" component="span" >
+                        <Typography variant="body1" component="span" sx={{ fontSize: isMobile ? 'small' : 'medium', padding: 0}} >
                           {row.name}
                         </Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell>{row.folder}</TableCell>
-                    <TableCell align="left">{row.dateCreated.toLocaleString('En-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
+                    <TableCell sx={{ fontSize: isMobile ? 'small' : 'medium'}}>{row.folder}</TableCell>
+                    {!isMobile && 
+                    <>
+                    <TableCell align="left" sx={{ fontSize: isMobile ? 'small' : 'medium'}}>
+                      {row.dateCreated.toLocaleString('En-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
                       .replace('.', ':').replaceAll('/','.').replace(',','')}
                     </TableCell>
-                    <TableCell align="left">{row.dateModified.toLocaleString('EN-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
+                    <TableCell align="left" sx={{ fontSize: isMobile ? 'small' : 'medium'}}>
+                      {row.dateModified.toLocaleString('EN-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
                       .replace('.', ':').replaceAll('/','.').replace(',','')}
                     </TableCell>
+                    </>
+                    }
                     <TableCell align="right">
                       <Stack direction={'row'} spacing={1}>
                         <Tooltip title='Delete forever' >
@@ -324,7 +337,7 @@ return(
                             type='button'
                             size='small'
                             variant='contained'
-                            sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
+                              sx={{ width: isMobile? '20px' :'50px', minWidth: isMobile? '20px': '50px', padding: isMobile ? '1px':'5px', background: '#000000' }}
                             onClick={()=>{handleRemoveFile(row.id)}}
                           >
                             <DeleteForeverIcon fontSize="small" sx={{color: "#ffffffff", padding: '0px'}} />
@@ -335,7 +348,7 @@ return(
                             type='button'
                             size='small'
                             variant='contained'
-                            sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
+                              sx={{ width: isMobile? '20px' :'50px', minWidth: isMobile? '20px': '50px', padding: isMobile ? '1px':'5px', background: '#000000' }}
                             onClick={()=>{handleRestoreFile(row.id)}}
                           >
                             <RecyclingIcon fontSize="small" sx={{color: "#ffffffff"}} />
@@ -348,6 +361,16 @@ return(
               })}
           </TableBody>
         </Table>
+        { isMobile &&
+          <TablePagination
+          rowsPerPageOptions={[5, 10, 50]}
+          component="div"
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />}
       </TableContainer>
     </Paper>
     <ShowAlert type={alertData.type} message={alertData.message} showAlert={alertData.showAlert} setAlertData={setAlertData} />

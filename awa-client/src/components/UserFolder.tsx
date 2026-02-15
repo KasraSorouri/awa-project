@@ -8,9 +8,7 @@ import {
 import CreateNewFolderIcon from '@mui/icons-material/CreateNewFolder';
 import NoteAddIcon from '@mui/icons-material/NoteAdd';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-
 import ShowFolder from './ShowFolder';
-
 import { IFolderTree } from '../types/folderTypes';
 import { IAlert } from "../types/alertTypes";
 
@@ -28,12 +26,7 @@ interface FolderProps {
 
 }
 
-
-
-
-
 const UserFolder = ({folders, activeFolder, setActiveFolder, setActiveFile, handleAddFile, handleAddFolder, handleUploadFile}: FolderProps) => {
-
 
   return (
     <Box 
@@ -56,7 +49,6 @@ const UserFolder = ({folders, activeFolder, setActiveFolder, setActiveFile, hand
         </Tooltip> 
       </Stack>
       <ShowFolder folders={folders} activeFolder={activeFolder} setActiveFolder={setActiveFolder} setActiveFile={setActiveFile} />
-
     </Box>
   )
 }

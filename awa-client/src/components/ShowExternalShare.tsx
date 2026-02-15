@@ -13,7 +13,6 @@ const ShowExternalShare = () => {
   const [file, setFile] = useState<IFile|null>(null);
   const [fileName, setFileName] = useState<string>('');
   const link = useLocation().pathname.split('/')[2];
-  console.log('link:', link);
   console.log('file:', file);
 
   useEffect(() => {
@@ -42,7 +41,7 @@ const ShowExternalShare = () => {
           marginTop: 0,
           backgroundColor: colors.grey[100],
           '& .ql-toolbar': {
-            //display:  editMode? 'block' : 'none',
+            display: 'none',
             backgroundColor: '#f0f0f0', 
             borderTopLeftRadius: '4px',
             borderTopRightRadius: '4px',
@@ -74,34 +73,7 @@ const ShowExternalShare = () => {
         <Box display='flex' justifyContent='space-between' alignItems='center' borderBottom={`1px solid ${colors.grey[300]}`}>
           <Stack direction={'row'} alignItems='center' spacing={1} sx={{padding: 1}}>
             <Typography variant="h6" sx={{padding: 1}}>{fileName}</Typography>
-          </Stack>{/*
-          <Stack direction={'row'} justifyContent={'right'} spacing={1} sx={{padding: 1}}>
-          <Tooltip title='Edit'>
-            <Button onClick={handleEditFile} disabled={editMode}>
-              <EditIcon />
-            </Button>
-          </Tooltip>
-          <Tooltip title='Save'>
-            <Button onClick={handleSaveFile} disabled={!editMode}>
-              <SaveIcon />
-            </Button>
-          </Tooltip>
-          <Tooltip title='Share'>
-            <Button>
-              <ShareIcon />
-            </Button>
-          </Tooltip>
-          <Tooltip title='Download'>
-            <Button>
-              <FileDownloadIcon />
-            </Button>
-          </Tooltip>*
-          <Tooltip title='Close'>
-            <Button onClick={handleCancelEdit} disabled={!editMode}>
-              <CloseIcon />
-            </Button>
-          </Tooltip> 
-          </Stack>  */}   
+          </Stack> 
         </Box>
         <ReactQuill theme='snow' value={value} onChange={setValue} readOnly={true} />
       </Paper>

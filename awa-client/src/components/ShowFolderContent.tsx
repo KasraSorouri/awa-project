@@ -27,7 +27,7 @@ import folderService from '../services/folderService';
 
 
 import { IFolder } from '../types/folderTypes'
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, Stack, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { IAlert } from '../types/alertTypes';
 import MoveForm from './MoveForm';
 import CopyForm from './CopyForm';
@@ -38,28 +38,6 @@ interface Column {
   minWidth?: number;
   align?: 'right';
 }
-
-const columns: readonly Column[] = [
-  { id: 'name', label: 'Name', minWidth: 120 },
-  { 
-    id: 'dateCreated',
-    label: 'Date Created',
-    minWidth: 170,
-    align: 'right',
-  } ,
-  {
-    id: 'dateModified',
-    label: 'Date Modified',
-    minWidth: 150,
-    align: 'right',
-  },
-  {
-    id: 'type',
-    label: '',
-    minWidth: 170,
-    align: 'right',
-  },
-];
 
 interface Data {
   id: number;
@@ -97,6 +75,33 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
   
   const [openCopyForm, setOpenCopyForm] = useState<boolean>(false)
   const [copyItem, setCopyItem] = useState<number|null>(null)
+
+  // Check Screen Size
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const columns: readonly Column[] = [
+    { id: 'name', label: 'Name', minWidth: 120 },
+    { 
+      id: 'dateCreated',
+      label: isMobile ? '' :'Date Created',
+      minWidth: isMobile ? 0 : 150,
+      align: 'right',
+    } ,
+    {
+      id: 'dateModified',
+      label: isMobile ? '' :'Date Modified',
+      minWidth:  isMobile ? 0 : 150,
+      align: 'right',
+    },
+    {
+      id: 'type',
+      label: '',
+      minWidth: isMobile ? 0 :170,
+      align: 'right',
+    },
+  ];
+
 
   useEffect(() => {
     const initialRows: Data[] = []
@@ -221,7 +226,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
     setOpenCopyForm(true)
   }
 
-    const handleCopySubmit = async(selectedFolder: number) => {
+  const handleCopySubmit = async(selectedFolder: number) => {
     if (!copyItem) {
       console.error('No item selected for copying')
       return
@@ -238,7 +243,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
     }
   }
 
-  //
+
   const handleRenameSubmit = async() => {
     try {
       const result = await folderService.renameFolder(newFolderData.folderId, newFolderData.newName)
@@ -294,8 +299,8 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
           display: 'flex', 
           justifyContent: 'space-between', 
           alignItems: 'center', 
-          padding: 2,
-          borderBottom: '1px solid #e0e0e0'
+          padding:1 ,
+          borderBottom: isMobile? 'none' : '1px solid #e0e0e0'
         }}
       >
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
@@ -326,15 +331,17 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
             </Button>
           </Tooltip> 
         </Box>
-        <TablePagination
-        rowsPerPageOptions={[5, 10, 50]}
-        component='div'
-        count={rows.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
+        {!isMobile &&
+          <TablePagination
+          rowsPerPageOptions={[5, 10, 20]}
+          component='div'
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+        }
       </Box>
       <TableContainer sx={{ maxHeight: 440 }}>
         <Table stickyHeader aria-label='sticky table'>
@@ -370,12 +377,16 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                         </Typography>
                       </Stack>
                     </TableCell>
-                    <TableCell align='right'>{row.dateCreated.toLocaleString('En-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
-                      .replace('.', ':').replaceAll('/','.').replace(',','')}
-                    </TableCell>
-                    <TableCell align='right'>{row.dateModified.toLocaleString('EN-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
-                      .replace('.', ':').replaceAll('/','.').replace(',','')}
-                    </TableCell>
+                    {!isMobile && 
+                      <>
+                        <TableCell align='right'>{row.dateCreated.toLocaleString('En-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
+                          .replace('.', ':').replaceAll('/','.').replace(',','')}
+                        </TableCell>
+                        <TableCell align='right'>{row.dateModified.toLocaleString('EN-FI', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false })
+                          .replace('.', ':').replaceAll('/','.').replace(',','')}
+                        </TableCell>
+                      </>
+                    }
                     <TableCell align='right'>
                       <Stack direction={'row'} spacing={1}>
                         <Tooltip title='Delete' >
@@ -383,7 +394,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                             type='button'
                             size='small'
                             variant='contained'
-                            sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
+                            sx={{width: isMobile? '20px' :'50px', minWidth: isMobile? '20px': '50px', padding: '5px', background: '#000000' }}
                             disabled={row.contents > 0}
                             onClick={()=>deleteHandler(row.id, row.type)}
                           >
@@ -398,7 +409,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                                 size='small'
                                 variant='contained'
                                 onClick={() => shareHandler(row.id, row.name)}
-                                sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
+                                sx={{ width: isMobile? '20px' :'50px', minWidth: isMobile? '20px': '50px', padding: '5px', background: '#000000' }}
                               >
                                 <ShareIcon fontSize='small' sx={{color: '#ffffffff'}} />
                               </Button>
@@ -409,7 +420,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                                 size='small'
                                 variant='contained'
                                 onClick={() => downloadFile(row.id, row.name, row.editable ? 'document' : 'row')}
-                                sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
+                                sx={{ width: isMobile? '20px' :'50px', minWidth: isMobile? '20px': '50px', padding: '5px', background: '#000000' }}
                               >
                                 <FileDownloadIcon fontSize='small' sx={{color: '#ffffffff'}} />
                               </Button>
@@ -420,7 +431,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                                 size='small'
                                 variant='contained'
                                 onClick={() => copyHandler(row.id)}
-                                sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
+                                sx={{ width: isMobile? '20px' :'50px', minWidth: isMobile? '20px': '50px', padding: '5px', background: '#000000' }}
                               >
                                 <ContentCopyIcon fontSize='small' sx={{color: '#ffffffff'}} />
                               </Button>
@@ -434,7 +445,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                                 size='small'
                                 variant='contained'
                                 onClick={() => renameHandler(row.id, row.name)}
-                                sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
+                                sx={{width: isMobile? '20px' :'50px', minWidth: isMobile? '20px': '50px', padding: '5px', background: '#000000' }}
                               >
                                 <EditIcon fontSize='small' sx={{color: '#ffffffff'}} />
                               </Button>
@@ -447,7 +458,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
                             size='small'
                             variant='contained'
                             onClick={() => moveHandler(row.id, row.type)}
-                            sx={{ width: '50px', minWidth:'50px', padding: '5px', background: '#000000' }}
+                            sx={{ width: isMobile? '20px' :'50px', minWidth: isMobile? '20px': '50px', padding: '5px', background: '#000000' }}
                           >
                             <DriveFileMoveIcon fontSize='small' sx={{color: '#ffffffff'}} />
                           </Button>
@@ -459,6 +470,17 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
               })}
           </TableBody>
         </Table>
+        {isMobile &&
+          <TablePagination
+          rowsPerPageOptions={[5, 10, 20]}
+          component='div'
+          count={rows.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+        }
       </TableContainer>
       <Dialog open={OpenRenameFolder} onClose={() => setOpenRenameFolder(false)} >
         <DialogTitle>Rename Folder</DialogTitle>

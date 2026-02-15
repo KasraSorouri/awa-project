@@ -41,7 +41,7 @@ const Login = () => {
     <FormControl>
       <Box  
         component='form' 
-        marginTop={5}
+        margin={5}
         gap={2}
         display={'flex'} 
         justifyContent={'center'}

@@ -9,7 +9,8 @@ import {
   Select,
   SelectChangeEvent,
   FormControl,
-  InputLabel
+  InputLabel,
+  Box
 } from "@mui/material"
 
 import folderService from "../services/folderService"
@@ -67,22 +68,25 @@ const CopyForm = ({copyItem, activeFolderId, setAlertData, setOpenCopyForm, hand
     <>
       <DialogTitle>Copy File</DialogTitle>
       <DialogContent>
-        <FormControl fullWidth>
-          <InputLabel id="select-folder-label">Select Folder</InputLabel>
-          <Select
-            labelId="select-folder-label"
-            id="select-folder"
-            value={selectedFolder}
-            label="Select Folder"
-            onChange={handleFolderChange}
-          >
-            {folderList.map((folder) => (
-              <MenuItem key={folder.id} value={folder.id}>
-                {folder.folderName}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <Box sx={{ width: 'auto', margin: 2, padding: 2 }}>
+          <FormControl fullWidth>
+            <InputLabel id="select-folder-label">Select Folder</InputLabel>
+            <Select
+              labelId="select-folder-label"
+              id="select-folder"
+              value={selectedFolder}
+              label="Select Folder"
+              fullWidth
+              onChange={handleFolderChange}
+            >
+              {folderList.map((folder) => (
+                <MenuItem key={folder.id} value={folder.id}>
+                  {folder.folderName}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={() => handleCopySubmit(Number(selectedFolder))}>Copy</Button>

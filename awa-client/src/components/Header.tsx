@@ -11,7 +11,7 @@ import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
-//import MenuIcon from '@mui/icons-material/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MoreIcon from '@mui/icons-material/MoreVert';
@@ -182,8 +182,13 @@ const Header = ({user, counter}:THeaderProps) => {
       onClose={handleMobileMenuClose}
     >
       <MenuItem>
-        <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-          <Badge badgeContent={counter.folderCounter}color="error">
+        <IconButton 
+          size="large"
+          aria-label="My Drive"
+          color="inherit"
+          onClick={()=> navigate('/')}
+        >
+          <Badge badgeContent={(counter.fileCounter|| 0)+ (counter.folderCounter||0)} color="error">
             <InventoryIcon />
           </Badge>
         </IconButton>
@@ -194,6 +199,7 @@ const Header = ({user, counter}:THeaderProps) => {
           size="large"
           aria-label="show 17 new notifications"
           color="inherit"
+          onClick={()=> navigate('/recycled')}
         >
           <Badge badgeContent={counter.recycledCounter} color="error">
             <DeleteIcon />
@@ -202,15 +208,16 @@ const Header = ({user, counter}:THeaderProps) => {
         <p>Deleted Files</p>
       </MenuItem>
       <MenuItem>
-        <IconButton
-          size="large"
-          aria-label="show 17 new notifications"
-          color="inherit"
-        >
-          <Badge badgeContent={counter.sharedCounter} color="error">
-            <FolderSharedIcon />
-          </Badge>
-        </IconButton>
+            <IconButton
+              size="large"
+              aria-label="Shared Files"
+              color="inherit"
+              onClick={()=> navigate('/sharedFiles')}
+            >
+              <Badge badgeContent={counter.sharedCounter} color="error">
+                <FolderSharedIcon />
+              </Badge>
+            </IconButton>
         <p>Shared Files</p>
       </MenuItem>
       <MenuItem onClick={handleProfileMenuOpen}>
@@ -284,7 +291,7 @@ const Header = ({user, counter}:THeaderProps) => {
             </IconButton>
             <IconButton
               size="large"
-              aria-label="show 17 new notifications"
+              aria-label="shared Files"
               color="inherit"
               onClick={()=> navigate('/sharedFiles')}
             >

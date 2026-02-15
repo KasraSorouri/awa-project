@@ -43,7 +43,7 @@ const Register = () => {
     <FormControl>
       <Box  
         component='form' 
-        marginTop={5}
+        margin={3}
         gap={2}
         display={'flex'} 
         justifyContent={'center'}

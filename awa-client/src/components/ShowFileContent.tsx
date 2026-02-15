@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { Box, Button, colors, Paper, Stack, TextField, Tooltip, Typography } from '@mui/material';
+import { Box, Button, colors, Paper, Stack, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { useState } from 'react';
 import ReactQuill from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
@@ -43,8 +43,12 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
   });
 
 
-  useEffect(() => {
+  // Check Screen Size
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
+
+  useEffect(() => {
     const readFileContent = async () => {
       try {
         const result = await fileService.readFile(activeFile);
@@ -138,7 +142,17 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
             backgroundColor: '#f0f0f0', 
             borderTopLeftRadius: '4px',
             borderTopRightRadius: '4px',
+            padding: isMobile ? '2px' : '8px', 
+            flexWrap: isMobile ? 'nowrap' : 'wrap',
+            overflowX: isMobile ? '0' : 'unset',
           },
+          '& .ql-toolbar button': {
+      padding: isMobile ? '3px' : '3px',
+      width: isMobile ? '24px !important' : '28px',
+          },
+          '& .ql-toolbar .ql-picker': {
+      marginRight: isMobile ? '2px !important' : '4px',
+    },
           '& .ql-container': {
             borderBottomLeftRadius: '4px', 
             borderBottomRightRadius: '4px',
@@ -163,8 +177,9 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
           },
         }}
       >  
-        <Box display='flex' justifyContent='space-between' alignItems='center' borderBottom={`1px solid ${colors.grey[300]}`}>
-          <Stack direction={'row'} alignItems='center' spacing={1} sx={{padding: 1}}>
+        <Box display='flex' alignItems='center' borderBottom={`1px solid ${colors.grey[300]}`}>
+          <Stack direction={ isMobile ? 'column' : 'row'} alignItems={ isMobile ? 'flex-start' : 'center' } spacing={1} sx={{padding: 1, width: '100%'}} >
+            <Box sx={{ flexGrow: 1, width: isMobile ? '100%' : 'auto' }}>
             {editMode ?
               <TextField
                 value={fileName}
@@ -173,10 +188,10 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
                 size='small'
                 sx={{ backgroundColor: 'white'}}
               />
-              : <Typography variant="h6" sx={{padding: 1}}>{fileName}</Typography>
+              : <Typography variant="h6" sx={{padding: 1, textAlign: isMobile ? 'center' : 'left'}}>{fileName}</Typography>
             }
-          </Stack>
-          <Stack direction={'row'} justifyContent={'right'} spacing={1} sx={{padding: 1}}>
+            </Box>
+          <Stack direction={'row'} justifyContent={isMobile ? 'flex-start' : 'flex-end'} spacing={ isMobile? 0 : 1} sx={{padding: 1}}>
           <Tooltip title='Edit'>
             <Button onClick={handleEditFile} disabled={editMode || role !== 'OWNER' && role !== 'EDITOR'}>
               <EditIcon />
@@ -202,7 +217,8 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
               <CloseIcon />
             </Button>
           </Tooltip> 
-          </Stack>     
+          </Stack> 
+          </Stack>    
         </Box>
         <ReactQuill theme='snow' value={value} onChange={setValue} readOnly={!editMode} />
       </Paper>

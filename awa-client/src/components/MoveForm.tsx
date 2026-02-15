@@ -9,7 +9,8 @@ import {
   Select,
   SelectChangeEvent,
   FormControl,
-  InputLabel
+  InputLabel,
+  Box
 } from "@mui/material"
 
 import folderService from "../services/folderService"
@@ -58,10 +59,6 @@ const MoveForm = ({moveItem, activeFolderId, setAlertData, setOpenMoveForm, hand
     fetchFolders()
   }, [])
 
-  console.log('** MoveForm - moveItem:', moveItem)
-  console.log('*** MoveForm - folderList:', folderList)
-  console.log('*** MoveForm - active folder:', activeFolderId)
-
   const handleFolderChange = (event: SelectChangeEvent<number>) => {
     setSelectedFolder(event.target.value)
   };
@@ -70,6 +67,7 @@ const MoveForm = ({moveItem, activeFolderId, setAlertData, setOpenMoveForm, hand
     <>
       <DialogTitle>Move {moveItem?.type === 'file' ? 'File' : 'Folder'}</DialogTitle>
       <DialogContent>
+        <Box sx={{ width: 'auto', margin: 2, padding: 2 }}>
         <FormControl fullWidth>
           <InputLabel id="select-folder-label">Select Folder</InputLabel>
           <Select
@@ -78,6 +76,7 @@ const MoveForm = ({moveItem, activeFolderId, setAlertData, setOpenMoveForm, hand
             value={selectedFolder}
             label="Select Folder"
             onChange={handleFolderChange}
+            fullWidth
           >
             {folderList.map((folder) => (
               <MenuItem key={folder.id} value={folder.id}>
@@ -86,6 +85,7 @@ const MoveForm = ({moveItem, activeFolderId, setAlertData, setOpenMoveForm, hand
             ))}
           </Select>
         </FormControl>
+        </Box>
       </DialogContent>
       <DialogActions>
         <Button onClick={() => handleMoveSubmit(Number(selectedFolder))}>Move</Button>

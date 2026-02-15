@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import UserFolder from './UserFolder';
 
 import { IFile, IFileCounter, IFolderTree, INewFolderData } from '../types/folderTypes';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, TextField } from '@mui/material';
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, TextField, useMediaQuery, useTheme } from '@mui/material';
 import ShowContent from './ShowContent';
 import ShowAlert from './ShowAlert';
 import { IAlert } from '../types/alertTypes';
@@ -99,6 +99,12 @@ const UserPage = ({counter, updateCounter}: IUserPageProps) => {
   const [newFile, setNewFile] = useState<string>('')
   const [uploadedFile, setUploadedFile] = useState<File | null>(null)
   const [fileType, setFileType] = useState<string>('')
+
+  // Check Screen Size
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+
 
   console.log('*** active folder ->', activeFolder)
 
@@ -258,8 +264,7 @@ const UserPage = ({counter, updateCounter}: IUserPageProps) => {
   return (
     <>
     <ShowAlert type={alertData.type} message={alertData.message} showAlert={alertData.showAlert} setAlertData={setAlertData} />
-    <h1>UserPage</h1>
-    <Grid container spacing={1} margin={1} >
+    <Grid container spacing={1}  sx={{ margin:1, width:'calc(100% - 16px)' ,maxWidth: '100%', boxSizing: 'border-box',  overflowX: 'hidden'}}>
       <Grid size={{  sm: 0, md: 0, lg: 3  }} display={{ xs: 'none', sm: 'none', md: 'none', lg: editMode ? 'none' : 'block' }} border={'solid'} borderColor={'#4d4d4d'} borderRadius={5} padding={3}>
         <UserFolder 
           folders={folders}
@@ -273,7 +278,7 @@ const UserPage = ({counter, updateCounter}: IUserPageProps) => {
           handleUploadFile={handleUploadFile}
          />
       </Grid>
-      <Grid size={{ sm: 12, md: 12, lg: editMode ? 12 : 9 }} border={'solid'} borderColor={'#4d4d4d'} borderRadius={5} padding={3}>
+      <Grid size={{ sm: 12, md: 12, lg: editMode ? 12 : 8.9 }} border={ isMobile ? 'none' : 'solid'} borderColor={'#4d4d4d'} borderRadius={5} padding={ isMobile ? 0 : 3}>
         <ShowContent 
           folders={folders}
           activeFolder={activeFolder}

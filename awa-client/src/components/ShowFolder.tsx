@@ -1,14 +1,10 @@
 import { useState } from 'react'
 import { Box, Typography } from "@mui/material"
-
 import HomeIcon from '@mui/icons-material/Home';
 import FolderIcon from '@mui/icons-material/Folder';
 import ArticleIcon from '@mui/icons-material/Article';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-
 import { IFolder } from '../types/folderTypes';
-
-
 
 interface IShowFolderProps {
   folders: IFolder[];
@@ -60,7 +56,6 @@ const ShowFolder = ({folders, activeFolder, setActiveFolder, setActiveFile}:ISho
                         setActiveFile(file.id)
                       }}
                     >
-
                       {file.editable ?
                         <ArticleIcon fontSize="large" sx={{color: "#4D4D4D", marginRight:'3px'}} />
                         : <InsertDriveFileIcon fontSize="large" sx={{color: "#4D4D4D", marginRight:'3px'}} />
@@ -71,7 +66,6 @@ const ShowFolder = ({folders, activeFolder, setActiveFolder, setActiveFile}:ISho
             </>}
           </div>)
       })}
-
     </>
   )
 }
