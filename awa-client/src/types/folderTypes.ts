@@ -63,3 +63,9 @@ export interface IFileCounter {
   recycledCounter?: number;
   sharedCounter?: number;
 }
+
+export interface IStats {
+  ownedFiles: number,
+  sharedFiles: number,
+  DeletedFiles: number
+}

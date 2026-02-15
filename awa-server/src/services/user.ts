@@ -2,7 +2,7 @@ import bcryptjs from 'bcryptjs';
 import Jwt from 'jsonwebtoken';
 
 import { SECRET } from '../configs/config'; 
-import { User } from '../models';
+import { User, File } from '../models';
 import { IUser, IUserUpdateData } from '../types/userTypes';
 import { Op } from 'sequelize';
 import { IFileParam } from '../types/fileTypes';
@@ -201,6 +201,45 @@ const getProfilePicture = async (userId: number) => {
   }
 } 
 
+// get Stats
+const getStats = async(userId: number) => {
+  try {
+    const userFiles = await User.findByPk(userId, {
+      include: [
+       { model: File,
+          as: 'ownedFiles',
+          attributes: ['id', 'fileName', 'folderId', 'fileType', 'address', 'editable', 'deleted', 'activated'],
+       },
+        {
+        model: File,
+        as: 'sharedFiles',
+        attributes: ['id', 'fileName', 'folderId', 'fileType', 'address', 'editable', 'deleted', 'activated'],
+      }],
+      attributes:[]
+    });
+
+    const userDeletedFile = userFiles?.ownedFiles?.filter(file => file.deleted === true).length
+
+    const userOwnedFile = userFiles?.ownedFiles ? userFiles?.ownedFiles?.length : 0 
+    const userSharedfile = (userFiles?.sharedFiles ? userFiles?.sharedFiles.length : 0) - userOwnedFile
+    console.log(` user ownedfile : ${userOwnedFile} , user shared file: ${userSharedfile} , user deleted files : ${userDeletedFile}`)
+
+    const result ={
+       ownedFiles : userOwnedFile,
+       sharedFiles : userSharedfile,
+       DeletedFiles : userDeletedFile
+    }
+   return result
+
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    console.error(error);
+    throw new Error('Error getting profile picture');
+  }
+}
+
 export default {
   createUser,
   loginUser,
@@ -208,7 +247,8 @@ export default {
   getAllUsers,
   updateUser,
   uploadProfilePicture,
-  getProfilePicture
+  getProfilePicture,
+  getStats
 }
 
 

@@ -118,11 +118,33 @@ const getProfilePicture = async () => {
   }
 }
 
+// Get User Stats 
+const getStats = async() => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+    }
+  try {
+    const response = await axios.get(`${api_url}/users/stats`,config);
+    if (response.status === 200) {
+      return response.data;
+    }
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+}
+
 
 export default {
   getUser,
   getAllUsers,
   updateUserData,
   uploadProfilePicture,
-  getProfilePicture
+  getProfilePicture,
+  getStats
 };

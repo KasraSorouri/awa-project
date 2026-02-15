@@ -12,7 +12,7 @@ import { useToken } from './services/useToken'
 import userService from './services/userService'
 import UserPage from './components/UserPage'
 
-import { IFileCounter, IRecycledFiles } from './types/folderTypes'
+import { IFileCounter, IRecycledFiles, IStats } from './types/folderTypes'
 import ShowExternalShare from './components/ShowExternalShare'
 import ShowSharedFiles from './components/ShowSharedFiles'
 import UserProfile from './components/UserProfile'
@@ -59,6 +59,14 @@ function App() {
         if (result) {
           setUser(result)
         }
+        const counter : IStats  = await userService.getStats()
+        console.log( 'stats : ', counter)
+        setCounter({
+          fileCounter: counter.ownedFiles,
+          sharedCounter: counter.sharedFiles,
+          recycledCounter: counter.DeletedFiles,
+          folderCounter: 0
+        })
       } catch (error) {
         console.log(error)
       }
@@ -68,6 +76,7 @@ function App() {
       getUserInfo()
     }
   }, [token])
+
 
   console.log('counter :', counter)
   const hanldeUpdateRecycle = (action:'REMOVE' | 'RESTORE', id: number) => {

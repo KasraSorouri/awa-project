@@ -5,7 +5,6 @@ import { validateToken } from '../middlewares/validateToken'
 import userService from '../services/user'
 import upload from '../middlewares/multerMiddleware'
 import path from 'path'
-import { col } from 'sequelize'
 
 declare global {
   namespace Express {
@@ -111,7 +110,6 @@ router.post('/upload-picture', validateToken, upload.single('file'), async(req: 
     return res.status(401).json({ error: 'Unauthorized' })
   }
   const file: Express.Multer.File | undefined = req.file
-  console.log('** route * upload-profile-picture req.file : ', file);
   if (!file) {
     return res.status(400).json({ error: 'No file uploaded' })
   }
@@ -138,7 +136,6 @@ router.get('/profile-picture', validateToken, async(req: Request, res: Response)
     const picAddress = await userService.getProfilePicture(userId)
 
     const picPath = path.join(__dirname, '../../../', picAddress);
-    console.log('** route * get-profile-picture picPath : ', picPath);
     return res.sendFile(picPath, (err) => {
       if (err) {
         res.status(404).json({ error: "File not found on disk" });
@@ -151,6 +148,22 @@ router.get('/profile-picture', validateToken, async(req: Request, res: Response)
     }
     console.error(error)
     return res.status(500).json({ error: 'Error getting profile picture' })
+  }
+})
+
+router.get('/stats',validateToken,  async(req: Request, res: Response) => {
+  const userId = req.user.id
+  try {
+    const stats = await userService.getStats(userId)
+
+    return res.status(200).json(stats)
+ 
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message })
+    }
+    console.error(error)
+    return res.status(500).json({ error: 'Error getting Stats' })
   }
 })
 

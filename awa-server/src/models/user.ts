@@ -39,7 +39,17 @@ class User extends Model<IUserAttributes, IUserCreationAttributes> implements IU
     editable: boolean;
     deleted: boolean;
     activated: boolean;
-  }[]
+  }[];
+  declare ownedFiles?: {
+    id: number;
+    fileName: string;
+    folderId: number | null;
+    fileType: string;
+    address: string;
+    editable: boolean;
+    deleted: boolean;
+    activated: boolean;
+  }[];
 }
 
 User.init(
