@@ -126,7 +126,7 @@ For proofreading, spell‑checking, and grammar improvements of this document, C
 ## **Pictures of the App:**
 
 Folder View:  
-![][image1]
+![(https://github.com/KasraSorouri/public_images/blob/main/Screenshot%202026-02-21%20113315.png)][image1]
 
 File View:  
 ![][image2]
