@@ -582,7 +582,7 @@ const search = async (searchParam: string, userId: number) => {
   try {
 
     const Files = await File.findAll({
-      where: { fileName:{ [Op.iLike]: `%${searchParam}%` }},
+      where: { fileName:{ [Op.iLike]: `%${searchParam}%` }, deleted : false},
       include: [
         {
           model: User,
