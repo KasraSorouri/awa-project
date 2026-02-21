@@ -305,6 +305,27 @@ const closeFile  = async (fileId: number) => {
   }
 }
 
+// search
+ const search = async(searchParam: string) => {
+  const authorization: string = authService()
+  const config = {
+      headers: { Authorization: authorization},
+    }
+  try {
+    const response = await axios.get(`${api_url}/files/search/${searchParam}`, config);
+    if (response.status === 200) {
+      return response.data;
+    }
+
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      console.log(error.response?.data);
+      throw new Error(error.response?.data.error);
+    }
+    console.log(error);
+  }
+ }
+
 
 export default {
   createFile,
@@ -319,5 +340,6 @@ export default {
   downloadPdfFile,
   downloadFile,
   copyFile,
-  closeFile
+  closeFile,
+  search
 }

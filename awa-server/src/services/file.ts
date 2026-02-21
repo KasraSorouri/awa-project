@@ -1,4 +1,5 @@
 
+import { Op } from 'sequelize';
 import { File, UserFiles, Folder, User } from '../models';
 import { IEditFileData, IFile, IFileData, IFileParam, IUserFile } from '../types/fileTypes';
 import convertToPDF from '../utils/fileConvert';
@@ -574,6 +575,35 @@ const closeFile = async (fileId: number, userId: number) => {
   }
 }
 
+// Search files
+const search = async (searchParam: string, userId: number) => {
+
+  console.log(userId, searchParam)
+  try {
+
+    const Files = await File.findAll({
+      where: { fileName:{ [Op.iLike]: `%${searchParam}%` }},
+      include: [
+        {
+          model: User,
+          where: { id: userId }
+        },
+        {
+          model: Folder,
+          as: 'folder',
+          attributes: ['id', 'folderName'],
+        }
+      ]
+    })
+    return Files;
+  } catch (error) {
+    if (error instanceof Error) {
+      throw new Error(error.message);
+    }
+    throw new Error('Error reading recycle bin files');
+  }
+};
+
 export default {
   createFile,
   uploadFile,
@@ -589,5 +619,6 @@ export default {
   downloadPdfFile,
   downloadFile,
   copyFile,
-  closeFile
+  closeFile,
+  search
 }

@@ -90,6 +90,7 @@ const Header = ({user, counter}:THeaderProps) => {
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = useState<null | HTMLElement>(null);
 
   const [pictureUrl, setPictureUrl] = useState<string | null>(null);
+  const [searchParam, setSearchParam ] = useState<string>('')
 
     
   // Check Screen Size
@@ -140,6 +141,11 @@ const Header = ({user, counter}:THeaderProps) => {
     localStorage.removeItem('awa-token');
     window.location.reload();    
   }
+
+  const handleSearch = () => {
+    navigate(`/search/${searchParam}`)
+  }
+    
 
   const menuId = 'primary-search-account-menu';
   const renderMenu = (
@@ -253,6 +259,13 @@ const Header = ({user, counter}:THeaderProps) => {
               <StyledInputBase
                 placeholder="Search…"
                 inputProps={{ 'aria-label': 'search' }}
+                value={searchParam}
+                onChange={(e) => setSearchParam(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch()
+                  }
+                }}
               />
             </Search>
           <Box sx={{ flexGrow: 1 }} />

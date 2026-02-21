@@ -16,6 +16,7 @@ import { IFileCounter, IRecycledFiles, IStats } from './types/folderTypes'
 import ShowExternalShare from './components/ShowExternalShare'
 import ShowSharedFiles from './components/ShowSharedFiles'
 import UserProfile from './components/UserProfile'
+import SearchPage from './components/SearchPage'
 
 interface IUserData {
   user_id: number,
@@ -60,7 +61,6 @@ function App() {
           setUser(result)
         }
         const counter : IStats  = await userService.getStats()
-        console.log( 'stats : ', counter)
         setCounter({
           fileCounter: counter.ownedFiles,
           sharedCounter: counter.sharedFiles,
@@ -77,8 +77,6 @@ function App() {
     }
   }, [token])
 
-
-  console.log('counter :', counter)
   const hanldeUpdateRecycle = (action:'REMOVE' | 'RESTORE', id: number) => {
     if (action === 'REMOVE') {
       setRecycledFiles(recycledFiles.filter((file) => file.id !== id))
@@ -105,6 +103,7 @@ function App() {
           <Route path='/sharedFiles' element={user ? <ShowSharedFiles /> : <Login /> } />
           <Route path='/share/:link' element={<ShowExternalShare />} />
           <Route path='/userProfile' element={user ? <UserProfile userData={user} setUser={updateUserData} /> : <Login /> } />
+          <Route path='/search/:searchParam' element={<SearchPage />} />
         </Routes>
     </BrowserRouter>
     </>

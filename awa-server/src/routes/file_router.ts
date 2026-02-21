@@ -263,4 +263,20 @@ router.get('/close/:id', validateToken, async(req: Request, res: Response) => {
   }
 })
 
+// Search a file 
+router.get('/search/:searchParam', validateToken, async (req: Request, res: Response) => {
+  const userId = req.user.id;
+  const { searchParam } = req.params; 
+  try {
+    const result = await fileServices.search(searchParam, userId);
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      return res.status(400).json({ error: error.message });
+    } else {
+      return res.status(500).json({ error: 'An unexpected error occurred' });
+    }
+  }
+})
+
 export default router;

@@ -112,6 +112,7 @@ npm run dev:all
 | Users can clone an existing document | 1 |
 | Users can upload any file to their drive | 2 |
 | Pagination implemented | 2 |
+| Users can search for the filename | 2 |
 | Users can view the number of their files, number of files in the recycle bin, and number of files shared with the | 1 |
 
 ## **Use of AI:**
