@@ -124,3 +124,6 @@ GitHub Copilot was used occasionally while writing the code.
 For proofreading, spell‑checking, and grammar improvements of this document, Copilot was used.
 
 ## **Pictures of the App:**
+
+**Folder View **
+![folder view](https://raw.githubusercontent.com/KasraSorouri/public_images/main/Screenshot%202026-02-21%20113315.png)
