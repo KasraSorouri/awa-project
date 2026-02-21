@@ -125,5 +125,14 @@ For proofreading, spell‑checking, and grammar improvements of this document, C
 
 ## **Pictures of the App:**
 
-**Folder View **
+## **Folder View **
 ![folder view](https://raw.githubusercontent.com/KasraSorouri/public_images/main/Screenshot%202026-02-21%20113315.png)
+
+## ** File View **
+![File View](https://raw.githubusercontent.com/KasraSorouri/public_images/main/Screenshot%202026-02-21%20113358.png)
+
+## ** Share Form **
+![Share Form](ttps://raw.githubusercontent.com/KasraSorouri/public_images/main/Screenshot%202026-02-21%20113540.png)
+
+## ** Recyclebin **
+![Recyclebin](https://raw.githubusercontent.com/KasraSorouri/public_images/main/Screenshot%202026-02-21%20113449.png)
