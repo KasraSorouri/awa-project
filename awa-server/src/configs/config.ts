@@ -5,7 +5,7 @@ dotenv.config();
 
 const PORT: string  = process.env.PORT || '3000';
 
-const DATABASE_URL: string = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/';
+const DATABASE_URL: string = process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432';
 
 const DATABASE_NAME: string = process.env.DATABASE_NAME || 'awa';
 

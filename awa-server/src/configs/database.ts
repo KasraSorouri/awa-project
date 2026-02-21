@@ -2,29 +2,34 @@ import { Sequelize } from 'sequelize';
 import { DATABASE_URL, DATABASE_NAME } from './config';
 import { Umzug, SequelizeStorage, MigrationParams } from 'umzug';
 
-if (!DATABASE_URL) {
+if (!DATABASE_URL || !DATABASE_NAME) {
   throw new Error('DATABASE_URL is not defined');
 }
 
-const sequelize : Sequelize = new Sequelize(DATABASE_URL, {
+const sequelize : Sequelize = new Sequelize(`${DATABASE_URL}/${DATABASE_NAME}`, {
   logging: false,
 });
 
-const checkDatabaseExists = async() => {
 
+const checkDatabaseExists = async() => {
+  const sequelizeRoot = new Sequelize(`${DATABASE_URL}/postgres`, {
+    logging: false,
+  });
   // Check the Database Exists
   try {
-    sequelize.authenticate();
-    const [result] = await sequelize.query(
-      `SELECT 1 FROM pg_database WHERE datname = ${DATABASE_NAME}`
+    await sequelizeRoot.authenticate();
+    const [result] = await sequelizeRoot.query(
+      `SELECT 1 FROM pg_database WHERE datname = '${DATABASE_NAME}'`
     )
     if (result.length === 0) {
       console.log(`Database not found. Creating ${DATABASE_NAME} ...`)
-      await sequelize.query(`CREATE DATABASE ${DATABASE_NAME}`)
+      await sequelizeRoot.query(`CREATE DATABASE ${DATABASE_NAME}`)
       console.log(`Databse "${DATABASE_NAME}" created.`)
     }
   } catch (error) {
     console.error('Creating Database Error:', error)
+  } finally {
+    sequelizeRoot.close()
   }
 }
 
@@ -61,7 +66,7 @@ const rollbackMigration = async () => {
 
 const connectToDatabase = async () => {
   try {
-    checkDatabaseExists()
+    await checkDatabaseExists()
     await sequelize.authenticate();
     await runMigrations();
     console.log('database connected');
