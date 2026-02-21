@@ -2,13 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Grid from "@mui/material/Grid";
 import TextField from "@mui/material/TextField";
-import Typography from "@mui/material/Typography";
 import { Avatar, Button } from "@mui/material";
 import userService from "../services/userService";
 
@@ -54,10 +51,7 @@ const UserProfile = ({userData, setUser}: IUserProfileProps) => {
   }, [userDataState.picture]);
 
   
-  console.log('UserProfile userDataState : ', userDataState)
-
   const uploadpicture = async(pictureFile: File) => {
-    console.log('Uploading picture file : ', pictureFile);
     try {
       if (pictureFile) {
         const response = await userService.uploadProfilePicture({ pictureFile });
@@ -106,12 +100,9 @@ const UserProfile = ({userData, setUser}: IUserProfileProps) => {
       aria-describedby="alert-dialog-description"
     >
       <DialogTitle id="alert-dialog-title">
-        <Typography variant="h6" component="h2">
           User Profile
-        </Typography>
       </DialogTitle>
       <DialogContent>
-        <DialogContentText id="alert-dialog-description">
           <form>
             <Grid container spacing={2} alignItems="center">
               <Grid size={{ xs: 12 }} container direction="row" alignItems="center" spacing={2} justifyContent="center">
@@ -148,7 +139,7 @@ const UserProfile = ({userData, setUser}: IUserProfileProps) => {
                   id="username"
                   name="username"
                   label="Username"
-                  value={userDataState.username}
+                  value={userDataState.username || ''}
                   onChange={(e) => handleInputChange('username', e.target.value)}
                   required />
                 <TextField
@@ -158,13 +149,13 @@ const UserProfile = ({userData, setUser}: IUserProfileProps) => {
                 />
                 <TextField
                   label="Last Name"
-                  value={userDataState.lastName}
+                  value={userDataState.lastName || ''}
                   onChange={(e) => handleInputChange('lastName', e.target.value)}
                 />
                 <TextField
                   fullWidth
                   label="Email"
-                  value={userDataState.email}
+                  value={userDataState.email || ''}
                   onChange={(e) => handleInputChange('email', e.target.value)}
                 />
               </Grid>
@@ -176,12 +167,8 @@ const UserProfile = ({userData, setUser}: IUserProfileProps) => {
               Cancel
             </Button>
           </form>
-        </DialogContentText>
       </DialogContent>
-      <DialogActions>
-      </DialogActions>
     </Dialog> 
-
   );
 };
 
