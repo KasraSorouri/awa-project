@@ -116,7 +116,7 @@ const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setAct
     return <div>Loading...</div>
   }
   return (
-    <div className='show-content'>
+    <>
       {activeFile === null 
         ? <ShowFolderContent 
             folder={currentFolder}
@@ -140,12 +140,13 @@ const ShowContent = ({folders, activeFolder, setActiveFolder, activeFile, setAct
             handleShare={handleShareFile}
             downloadFile={handleDownloadFile}
             setAlertData={setAlertData}
+            updateFolderList={updateFolderList}
           />
       }
       <Dialog open={openShareFile} onClose={()=>setOpenShareFile(false)} >
           <ShareForm sharedFile={sharedFile} setAlertData={setAlertData} setOpenShareFile={setOpenShareFile} />
       </Dialog>
-   </div>
+   </>
   ) 
 }
 

@@ -247,10 +247,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
       if (!result) {
         throw new Error('Renaming folder failed')
       }
-      const index = rows.findIndex((row) => row.id === newFolderData.folderId && row.type ==='folder')
-      if (index !== -1) {
-        rows[index].name = newFolderData.newName
-      }
+      updateFolderList()
       setAlertData({type: 'success', message: 'Folder renamed successfully', showAlert: true})
       setOpenRenameFolder(false)
     } catch (error) {
@@ -261,7 +258,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
 
   if (!(folder.subFolders.length !== 0 || folder.files.length !== 0 )) {
     return(
-      <Paper sx={{ width: '100%', overflow: 'hidden', minHeight: '60vh' }}>
+      <Paper sx={{ width: '100%', overflow: 'hidden', minHeight: '80vh' }}>
         <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', padding: 2, borderBottom: '1px solid #e0e0e0' }}>
           <Tooltip title='Up Folder' >
             <Button
@@ -290,7 +287,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
   }
 
   return (
-    <Paper sx={{ width: '100%', overflow: 'hidden', minHeight: '60vh' }}>
+    <Paper sx={{ width: '100%', overflow: 'hidden', minHeight: '80vh' }}>
       <Box 
         sx={{ 
           display: 'flex', 
@@ -340,7 +337,7 @@ const ShowFolderContent = ({folder, activeFolder, setActiveFolder, setActiveFile
         />
         }
       </Box>
-      <TableContainer sx={{ maxHeight: 440 }}>
+      <TableContainer sx={{ maxHeight: 800 }}>
         <Table stickyHeader aria-label='sticky table'>
           <TableHead>
             <TableRow>

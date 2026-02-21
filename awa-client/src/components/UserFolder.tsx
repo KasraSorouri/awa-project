@@ -33,7 +33,8 @@ const UserFolder = ({folders, activeFolder, setActiveFolder, setActiveFile, hand
       sx={{
         display: 'flex',
         flexDirection: 'column',
-        height: '100vh',
+        height: 'auto',
+        alignSelf: 'start',
         width: '100vw',
       }}
       >

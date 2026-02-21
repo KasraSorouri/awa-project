@@ -27,7 +27,9 @@ body {
   /*display: flex;*/
   /*place-items: center; */
   /*min-width: 320px;*/
-  min-height: 100vh;
+  overflow-x: hidden;
+  min-height: 100%;
+  height: auto;
 }
 
 h1 {

@@ -226,11 +226,10 @@ const UserPage = ({counter, updateCounter}: IUserPageProps) => {
       file: uploadedFile,
     }
     try{
-      const result = await fileService.uploadFile(newFileData)
+      //const result = await fileService.uploadFile(newFileData)
+      await fileService.uploadFile(newFileData)
       // Update Data
-      const updatedFolders : IFolderTree[] = updateAddFile(folders, activeFolder, result)
-      setFolders([...updatedFolders])
-      updateCounter({fileCounter:(counter.fileCounter || 0) +1 })
+      updateFolderList()
       setUploadedFile(null)
       setNewFile('')
     } catch (error) {
@@ -257,7 +256,7 @@ const UserPage = ({counter, updateCounter}: IUserPageProps) => {
   return (
     <>
     <ShowAlert type={alertData.type} message={alertData.message} showAlert={alertData.showAlert} setAlertData={setAlertData} />
-    <Grid container spacing={1}  sx={{ margin:1, width:'calc(100% - 16px)' ,maxWidth: '100%', boxSizing: 'border-box',  overflowX: 'hidden'}}>
+    <Grid container spacing={1}  sx={{ margin:1, width:'calc(100% - 16px)' ,maxWidth: '100%', boxSizing: 'border-box',  overflowX: 'hidden', maxHeight:'100%'}}>
       <Grid size={{  sm: 0, md: 0, lg: 3  }} display={{ xs: 'none', sm: 'none', md: 'none', lg: editMode ? 'none' : 'block' }} border={'solid'} borderColor={'#4d4d4d'} borderRadius={5} padding={3}>
         <UserFolder 
           folders={folders}

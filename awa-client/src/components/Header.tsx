@@ -263,7 +263,7 @@ const Header = ({user, counter}:THeaderProps) => {
               color="inherit"
               onClick={()=> navigate('/')}
             >
-              <Badge badgeContent={(counter.fileCounter|| 0)+ (counter.folderCounter||0)} color="error">
+              <Badge badgeContent={(counter.fileCounter|| 0)} color="error">
                 <InventoryIcon />
               </Badge>
             </IconButton>

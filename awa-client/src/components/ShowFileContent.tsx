@@ -26,10 +26,11 @@ interface ShowFileContentProps {
   handleShare: (id:number, name:string) => void;
   downloadFile: (id: number, fileName: string, fileType: string) => void;
   setAlertData: (alert: IAlert) => void;
+  updateFolderList: () => void;
   }
 
 
-const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, handleShare, downloadFile, setAlertData }: ShowFileContentProps) => {
+const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, handleShare, downloadFile, setAlertData, updateFolderList }: ShowFileContentProps) => {
   const [value, setValue] = useState<string>('');
   const [file, setFile] = useState<IFile|null>(null);
   const [fileName, setFileName] = useState<string>('');
@@ -83,6 +84,10 @@ const ShowFileContent = ({ activeFile, setActiveFile, editMode, setEditMode, han
           fileContent: value
         }
         await fileService.saveFile(fileData);
+        if (fileName !== file.fileName) {
+          updateFolderList()
+        }
+
         setEditMode(false);
         setAlertData({type: 'success', message: 'File content saved successfully', showAlert: true});
       }
