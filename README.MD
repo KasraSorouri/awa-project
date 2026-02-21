@@ -45,8 +45,8 @@ For running the app you will need:
 
 ## **Backend Setup:**
 
-1. Navigate to the backend directory: “cd awa-server”  
-2. Install dependencies: “npm install”  
+1. Navigate to the backend directory: ```cd awa-server```
+2. Install dependencies: ```npm install``` 
 3. Create a “.env” file and add the following to the file:  
    
 

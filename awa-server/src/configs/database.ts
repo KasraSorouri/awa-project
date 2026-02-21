@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize';
-import { DATABASE_URL } from './config';
+import { DATABASE_URL, DATABASE_NAME } from './config';
 import { Umzug, SequelizeStorage, MigrationParams } from 'umzug';
 
 if (!DATABASE_URL) {
@@ -7,8 +7,27 @@ if (!DATABASE_URL) {
 }
 
 const sequelize : Sequelize = new Sequelize(DATABASE_URL, {
-  logging: console.log,
+  logging: false,
 });
+
+const checkDatabaseExists = async() => {
+
+  // Check the Database Exists
+  try {
+    sequelize.authenticate();
+    const [result] = await sequelize.query(
+      `SELECT 1 FROM pg_database WHERE datname = ${DATABASE_NAME}`
+    )
+    if (result.length === 0) {
+      console.log(`Database not found. Creating ${DATABASE_NAME} ...`)
+      await sequelize.query(`CREATE DATABASE ${DATABASE_NAME}`)
+      console.log(`Databse "${DATABASE_NAME}" created.`)
+    }
+  } catch (error) {
+    console.error('Creating Database Error:', error)
+  }
+}
+
 
 const migrationConf = {
   migrations: {
@@ -34,6 +53,7 @@ const runMigrations = async () => {
 };
 
 const rollbackMigration = async () => {
+  await connectToDatabase()
   await sequelize.authenticate();
   const migrator = new Umzug(migrationConf);
   await migrator.down();
@@ -41,6 +61,7 @@ const rollbackMigration = async () => {
 
 const connectToDatabase = async () => {
   try {
+    checkDatabaseExists()
     await sequelize.authenticate();
     await runMigrations();
     console.log('database connected');
