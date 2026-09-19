@@ -62,7 +62,7 @@ SERVER_URL = 'localhost:3000/api'
 ## **Frontend Setup:**
 
 1. Navigate to the Client directory: ```cd awa-client```
-2. Install dependencies: ```npm install”```
+2. Install dependencies: ```npm install```
 
 ## **Run Application:**
 
@@ -99,29 +99,6 @@ npm run dev:all
 │   │   ├── services/          \# service files for server connections  
 │   │   └── configs/            \# Configurations  
 └── README.md
-
-| Feature | points |
-| :---- | :---- |
-| User authentication (register and login) Add, remove, and rename files and folders Create a text document Share files with other users or with non-authenticated users via link Prevent simultaneous editing: other users cannot edit an open file and receive a notification stating the file is currently open by a specific user Fully usable on both desktop and mobile browsers | 25 |
-| Frontend built with React | 3 |
-| WYSIWYG document editor using QuillJS  | 2 |
-| Documents can be downloaded as PDF.  | 3 |
-| Displays document name, creation timestamp, and last updated timestamp | 1 |
-| Users can select a profile picture, stored on the server | 2 |
-| Files can be organized into folders; users can move files within the folder hierarchy | 4 |
-| Deleted documents go to the recycle bin; users can restore or permanently remove them | 2 |
-| Users can clone an existing document | 1 |
-| Users can upload any file to their drive | 2 |
-| Pagination implemented | 2 |
-| Users can search for the filename | 2 |
-| Users can view the number of their files, number of files in the recycle bin, and number of files shared with the | 1 |
-
-## **Use of AI:**
-
-Gemini was used to compare and evaluate different text editor options for the frontend, as well as to review various approaches for implementing PDF conversion (server‑side vs. client‑side). Based on its suggestions, I chose a Puppeteer‑based solution, and Gemini also assisted in implementing the PDF converter.  
-I also used Gemini for debugging parts of the code.  
-GitHub Copilot was used occasionally while writing the code.  
-For proofreading, spell‑checking, and grammar improvements of this document, Copilot was used.
 
 ## **Pictures of the App:**
 
